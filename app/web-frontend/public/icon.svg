@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="800"
+   height="800"
+   viewBox="0 0 800 800"
+   xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="metalBase" cx="30%" cy="20%" r="85%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="35%" stop-color="#f2f3f5"/>
+      <stop offset="60%" stop-color="#e2e4e8"/>
+      <stop offset="80%" stop-color="#eef0f3"/>
+      <stop offset="100%" stop-color="#d8dade"/>
+    </radialGradient>
+
+    <linearGradient id="sheen1" x1="10%" y1="0%" x2="55%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0.75"/>
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="sheen2" x1="60%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <radialGradient id="softShadowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+
+    <clipPath id="roundedClip">
+      <rect x="0" y="0" width="800" height="800" rx="176" ry="176"/>
+    </clipPath>
+
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="6" dy="10" stdDeviation="10" flood-color="#141419" flood-opacity="0.45"/>
+    </filter>
+
+    <linearGradient id="rimStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="50%" stop-color="#b8bac0"/>
+      <stop offset="100%" stop-color="#e6e7ea"/>
+    </linearGradient>
+  </defs>
+
+  <g clip-path="url(#roundedClip)">
+    <rect x="0" y="0" width="800" height="800" fill="url(#metalBase)"/>
+    <ellipse cx="220" cy="150" rx="260" ry="180" fill="#ffffff" opacity="0.5"/>
+    <rect x="0" y="0" width="800" height="800" fill="url(#sheen1)"/>
+    <rect x="0" y="0" width="800" height="800" fill="url(#sheen2)"/>
+    <ellipse cx="600" cy="700" rx="300" ry="150" fill="url(#softShadowGrad)"/>
+  </g>
+
+  <rect x="3" y="3" width="794" height="794" rx="174" ry="174"
+        fill="none" stroke="url(#rimStroke)" stroke-width="3" opacity="0.6"/>
+
+  <g filter="url(#dropShadow)">
+    <g transform="translate(176,186.353) scale(23.9316)">
+      <g transform="translate(-56.113981,-59.797431)">
+        <path
+           style="fill:#1a1a1a;stroke:#535353;stroke-width:0.264583;stroke-opacity:1"
+           d="m 61.507146,64.42427 -0.191199,8.795134 h 8.986332 l 0.191199,-8.699534 z" />
+        <path
+           style="fill:#666666;stroke:#535353;stroke-width:0.264583;stroke-opacity:1"
+           d="m 56.440383,68.726238 -0.191199,8.795134 h 8.986332 l 0.191199,-8.699534 z" />
+        <path
+           style="fill:#333333;stroke:#535353;stroke-width:0.264583;stroke-opacity:1"
+           d="m 65.713514,59.931104 -0.191199,8.795134 h 8.986332 l 0.191199,-8.699534 z" />
+      </g>
+    </g>
+  </g>
+</svg>

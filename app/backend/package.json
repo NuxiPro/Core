@@ -1,0 +1,41 @@
+{
+  "name": "@nuxipro/backend",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "NODE_ENV=production bun --env-file ../.env --env-file .env server.ts",
+    "dev": "NODE_ENV=development bun --env-file ../.env --env-file .env --watch server.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:deploy": "drizzle-kit migrate && bun run start",
+    "test": "bun test",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
+    "typecheck": "bun tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@better-auth/drizzle-adapter": "^1.7.7",
+    "@hono/standard-validator": "^0.4.0",
+    "@hono/zod-openapi": "^1.6.3",
+    "@types/node": "^22.20.5",
+    "better-auth": "^1.7.7",
+    "date-fns": "^4.4.0",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.3",
+    "fractional-indexing": "^4.0.0",
+    "hono": "^4.13.13",
+    "hono-rate-limiter": "^0.5.4",
+    "loops": "^7.3.0",
+    "pg": "^8.23.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "@types/pg": "^8.23.1",
+    "bun-types": "^1.4.2",
+    "drizzle-kit": "^0.31.11",
+    "typescript": "^7.0.2"
+  }
+}

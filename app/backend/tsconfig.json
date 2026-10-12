@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+
+    /* Runtime & Bundler */
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ESNext"],
+    "types": ["bun"],
+
+    /* Resolution des chemins (Alias) */
+    "baseUrl": ".",
+    "paths": {
+      "@backend/*": ["./*"],
+      "@packages/*": ["../../packages/*"],
+      "@type/*": ["./src/type/*"],
+      "@shared/*": ["../../packages/shared/*"],
+      "@utils/*": ["./utils/*"]
+    },
+
+    /* Strict Mode & Type-Checking */
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUncheckedIndexedAccess": true
+  },
+  "include": ["src/**/*", "../../packages/**/*"],
+  "exclude": ["node_modules", "./local", "dist"]
+}

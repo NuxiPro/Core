@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ESNext",
+    "ignoreDeprecations": "5.0",
+
+    "paths": {
+      "@/*": ["./*"],
+      "@src/*": ["./src/*"],
+      "@backend/*": ["../backend/*"],
+      "@packages/*": ["../../packages/*"]
+    },
+
+    // On ajoute "bun" pour que les commandes Bun soient reconnues
+    "types": ["vite/client", "bun", "vitest/globals"],
+
+    "sourceMap": true,
+    "strict": true,
+    "jsx": "react-jsx",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "skipLibCheck": true, // Indispensable
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "exactOptionalPropertyTypes": true
+  },
+
+  "include": [".", "src"],
+  "exclude": ["node_modules", "dist"]
+}

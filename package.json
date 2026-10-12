@@ -1,0 +1,24 @@
+{
+  "scripts": {
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
+    "test": "cd frontend && bun run test",
+    "test:run": "cd frontend && bun run test:run",
+    "test:backend": "cd backend && bun test",
+    "deploy": "bun run build && bunx wrangler pages deploy app/web-frontend/dist/ --project-name=nuxipro-cloud --branch=main"
+
+  },
+  "name": "center",
+  "private": true,
+  "workspaces": [
+    "app/backend",
+    "app/web-frontend",
+    "packages/*"
+  ],
+  "dependencies": {
+    "@biomejs/biome": "^2.5.15",
+    "fractional-indexing": "^4.0.0",
+    "vitest": "^4.1.11"
+  }
+}
