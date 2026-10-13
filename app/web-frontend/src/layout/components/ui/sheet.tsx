@@ -33,7 +33,7 @@ function SheetContent({
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "fixed inset-y-0 right-0 z-50 flex flex-col transition-transform duration-300 ease-out data-[side=left]:data-[state=closed]:-translate-x-full data-[side=left]:data-[state=open]:translate-x-0 data-[side=right]:data-[state=closed]:translate-x-full data-[side=right]:data-[state=open]:translate-x-0 data-[side=top]:data-[state=closed]:-translate-y-full data-[side=bottom]:data-[state=closed]:translate-y-full data-[state=open]:animate-[slideInRight_0.35s_ease-out_forwards] data-[state=closed]:animate-[slideOutRight_0.35s_ease-out_forwards]",
+          "fixed inset-y-0 z-50 flex flex-col transition-transform duration-300 ease-out data-[side=right]:right-0 data-[side=left]:left-0 data-[side=left]:data-[state=closed]:-translate-x-full data-[side=left]:data-[state=open]:translate-x-0 data-[side=right]:data-[state=closed]:translate-x-full data-[side=right]:data-[state=open]:translate-x-0 data-[side=top]:data-[state=closed]:-translate-y-full data-[side=bottom]:data-[state=closed]:translate-y-full data-[state=open]:animate-[slideInRight_0.35s_ease-out_forwards] data-[state=closed]:animate-[slideOutRight_0.35s_ease-out_forwards]",
           className,
         )}
         {...props}

@@ -1,10 +1,10 @@
 import { sendEmail } from "@backend/utils/helpers/email/loops";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth} from "better-auth";
-import { db } from "../drizzle/connection/index";
-import * as schema from "../drizzle/schemas/index";
-import { createLogger } from "../logique/logging/logger";
-import { admin, magicLink, role } from "better-auth/plugins";
+import { db } from "./drizzle/connection/index";
+import * as schema from "./drizzle/schemas/index";
+import { createLogger } from "./logique/logging/logger";
+import { admin, lastLoginMethod, magicLink } from "better-auth/plugins";
 const log = createLogger("auth");
 
 // Local dev: print magic links in the terminal, no email tool needed.
@@ -37,9 +37,11 @@ export const auth = betterAuth({
   },
   plugins: [
     magicLink({
+      // Magic links are valid 15 minutes only.
+      expiresIn: 900,
+      storeToken: "hashed",
       sendMagicLink: async ({ email, token, url }) => {
         if (isDev) {
-          // biome-ignore lint/suspicious/noConsole: dev-only, magic link in terminal
           console.log(`[dev] magic link for ${email}: ${url}`);
           return;
         }
@@ -48,12 +50,17 @@ export const auth = betterAuth({
         });
       }
     }),
-    admin()
+    admin(),
+    lastLoginMethod(),
   ],
   rateLimit: {
     enabled: true,
     window: 120,
     max: 20,
+    customRules: {
+      // Tighten email-sending routes: anti-spam on magic links.
+      "/sign-in/magic-link": { window: 60, max: 5 },
+    },
   },
   advanced: {
     ipAddress: {

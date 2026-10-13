@@ -1,5 +1,5 @@
 import { createMiddleware } from "hono/factory";
-import { roles_center, Role } from "../auth/permissions";
+import { roles_center, Role } from "../permissions";
 
 export const requirePermission = (permission: Record<string, string[]>) =>
   createMiddleware(async (c, next) => {

@@ -35,6 +35,11 @@
     "welcomeBack": "Bon retour.",
     "pickUpWhereLeftOff": "Reprenez là où vous en étiez.",
     "magicLinkSent": "Lien magique envoyé !",
+    "linkExpiredTitle": "Ce lien a expiré",
+    "linkExpiredHint": "Les liens de connexion ne sont valables que 15 minutes. Demandez-en un nouveau.",
+    "sendNewLink": "Recevoir un nouveau lien",
+    "lastUsed": "Dernier utilisé",
+    "magicLinkHint": "On vous envoie un lien de connexion par email : cliquez dessus pour entrer.",
     "checkInbox": "Vérifiez votre boîte mail.",
 
     "verifyEmailTitle": "Vérifiez votre adresse email",

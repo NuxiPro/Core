@@ -1,31 +1,35 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { RateLimitBanner } from "@/src/layout/components/animation/rate-limit-banner";
-import { BrandLogo } from "@/src/layout/components/ui/BrandLogo";
 import { GitHubIcon, GoogleIcon } from "@/src/layout/components/ui/auth-icons";
+import { BrandLogo } from "@/src/layout/components/ui/BrandLogo";
 import { Button } from "@/src/layout/components/ui/button";
 import { Input } from "@/src/layout/components/ui/input";
+import { LastUsedBadge } from "@/src/layout/components/ui/last-used-badge";
 import { createLogger } from "@/src/shared/api/logger";
 import { authClient } from "@/src/shared/lib/client";
 import {
   type LoginFields,
   LoginSchema,
 } from "@/src/shared/lib/schemas/auth-schemas";
-import { signIn } from "../api/auth";
+import { requestMagicLink } from "../api/auth";
 import { MagicLinkSent } from "./MagicLinkSent";
 
 const log = createLogger("auth/login");
 
 const INPUT =
-  "h-11 bg-[#0f1011] border-0 text-[#f7f8f8] placeholder:text-[#8a8f98] focus-visible:ring-1 focus-visible:ring-[#5e6ad2]";
+  "h-11 bg-[#0f1011] border-0 text-[#f7f8f8] placeholder:text-[#8a8f98] focus-visible:ring-1 focus-visible:ring-[#0f766e]";
 
 export default function LoginForm() {
   const { t } = useTranslation();
   const router = useRouter();
   const [sent, setSent] = useState(false);
+  const [showSent, setShowSent] = useState(false);
+  // Last used entry method (google, github, email) or null on first visit.
+  const [lastUsed] = useState(() => authClient.getLastUsedLoginMethod());
   const {
     register,
     handleSubmit,
@@ -42,7 +46,13 @@ export default function LoginForm() {
   };
 
   const onSubmit = async (data: LoginFields) => {
-    const { error } = await signIn(data.email);
+    // Minimum sending beat (~700ms) so the action feels done, not skipped.
+    const startedAt = Date.now();
+    const { error } = await requestMagicLink(data.email);
+    const elapsed = Date.now() - startedAt;
+    if (elapsed < 700) {
+      await new Promise((resolve) => setTimeout(resolve, 700 - elapsed));
+    }
     if (error) {
       if ("code" in error && error.code === "EMAIL_NOT_VERIFIED") {
         router.navigate({ to: "/verify-email", search: { email: data.email } });
@@ -53,10 +63,12 @@ export default function LoginForm() {
       return;
     }
     setSent(true);
+    // Let the form implode before swapping in the success state.
+    setTimeout(() => setShowSent(true), 450);
   };
 
   return (
-    <div className="relative h-full w-full bg-[#010102] font-sans selection:bg-[#5e6ad2]/20">
+    <div className="relative h-full w-full bg-[#010102] font-sans selection:bg-[#0f766e]/30">
       {isSubmitting && (
         <div className="fixed inset-x-0 top-0 z-[60] h-[2px] bg-[#23252a]">
           <div className="auth-loading-bar h-full w-full bg-gradient-to-r from-transparent via-white/60 to-transparent" />
@@ -75,21 +87,27 @@ export default function LoginForm() {
             <Button
               type="button"
               variant="outline"
-              className="w-full h-11 bg-white text-black hover:bg-zinc-200 border-0 font-medium"
+              className="w-full h-11 bg-white text-black hover:bg-zinc-200 border-0 font-medium relative transition-all duration-[420ms] ease-out"
               onClick={() => handleSocial("google")}
             >
               <GoogleIcon className="size-4" />
               {t("auth.continueWithGoogle")}
+              {lastUsed === "google" && (
+                <LastUsedBadge label={t("auth.lastUsed")} />
+              )}
             </Button>
 
             <Button
               type="button"
               variant="outline"
-              className="w-full h-11 bg-[#0f1011] text-[#f7f8f8] hover:bg-[#141516] border border-[#23252a] font-medium"
+              className="w-full h-11 bg-[#0f1011] text-[#f7f8f8] hover:bg-[#141516] border border-[#23252a] font-medium relative transition-all duration-[420ms] ease-out"
               onClick={() => handleSocial("github")}
             >
               <GitHubIcon className="size-4" />
               {t("auth.continueWithGitHub")}
+              {lastUsed === "github" && (
+                <LastUsedBadge label={t("auth.lastUsed")} />
+              )}
             </Button>
 
             <div className="relative py-2">
@@ -103,14 +121,18 @@ export default function LoginForm() {
               </div>
             </div>
 
-            {sent ? (
+            {showSent ? (
               <MagicLinkSent />
             ) : (
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className={`space-y-3 origin-center transition-all duration-500 ease-in ${sent ? "opacity-0 scale-90" : "opacity-100 scale-100"}`}
+              >
                 <RateLimitBanner />
                 <Input
                   id="email"
                   type="email"
+                  autoFocus
                   placeholder={t("auth.emailPlaceholder")}
                   className={INPUT}
                   {...register("email")}
@@ -127,24 +149,25 @@ export default function LoginForm() {
                 )}
                 <Button
                   type="submit"
-                  className="w-full h-11 bg-[#5e6ad2] text-white hover:bg-[#828fff] border-0 font-medium"
+                  className="w-full h-11 bg-[#0f766e] text-[#f0fdfa] hover:bg-[#0d655e] border-0 font-medium relative shadow-[0_1px_6px_rgba(15,118,110,0.35)] transition-all duration-[420ms] ease-out"
                   disabled={isSubmitting}
                 >
                   {t("auth.signInWithEmail")}
+                  {lastUsed &&
+                    lastUsed !== "google" &&
+                    lastUsed !== "github" && (
+                      <LastUsedBadge label={t("auth.lastUsed")} />
+                    )}
                 </Button>
               </form>
             )}
           </div>
 
-          <p className="text-sm text-[#8a8f98] text-center">
-            {t("auth.noAccountYet")}{" "}
-            <Link
-              to="/register"
-              className="text-[#f7f8f8] hover:text-[#d0d6e0] transition-colors"
-            >
-              {t("auth.createFreeAccount")}
-            </Link>
-          </p>
+          {!showSent && (
+            <p className="text-sm text-[#8a8f98] text-center">
+              {t("auth.magicLinkHint")}
+            </p>
+          )}
         </div>
       </div>
     </div>

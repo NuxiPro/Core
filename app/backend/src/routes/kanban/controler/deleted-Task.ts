@@ -14,10 +14,6 @@ app.use(requirePermission({ task: ["delete"] })); // Permission checking
 const deletedTask = app.openapi(deletedTaskRoute, async (c) => {
   // Vérification de l'authentification
   const user = c.get("user");
-  if (!user) {
-    return c.json({ message: "Non authentifié" }, 401);
-  }
-
   try {
     const { id } = c.req.valid("param");
 
@@ -26,8 +22,8 @@ const deletedTask = app.openapi(deletedTaskRoute, async (c) => {
       .where(and(eq(cardsTable.id, id), eq(cardsTable.userId, user.id)))
       .returning({ id: cardsTable.id });
 
-    if (!deleted) {
-      log.error("[deleted-task] Task not found", { taskId: id })
+    if (deleted.length === 0) {
+      log.warn("[deleted-task] Task not found", { taskId: id })
       return c.json({ message: "Task not found"}, 404)
     }
 

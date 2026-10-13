@@ -35,6 +35,11 @@
     "welcomeBack": "Welcome back.",
     "pickUpWhereLeftOff": "Pick up right where you left off.",
     "magicLinkSent": "Magic link sent!",
+    "linkExpiredTitle": "This link has expired",
+    "linkExpiredHint": "Sign-in links are only valid for 15 minutes. Get a new one.",
+    "sendNewLink": "Get a new link",
+    "lastUsed": "Last used",
+    "magicLinkHint": "We email you a sign-in link: click it to get in.",
     "checkInbox": "Check your inbox.",
 
     "verifyEmailTitle": "Verify your email address",

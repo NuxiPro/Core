@@ -23,18 +23,18 @@
     "better-auth": "^1.7.7",
     "date-fns": "^4.4.0",
     "dotenv": "^17.4.2",
-    "drizzle-orm": "^0.45.3",
+    "drizzle-orm": "^0.45.4",
     "fractional-indexing": "^4.0.0",
     "hono": "^4.13.13",
     "hono-rate-limiter": "^0.5.4",
     "loops": "^7.3.0",
     "pg": "^8.23.1",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@types/bun": "^1.4.2",
+    "@types/bun": "^1.4.3",
     "@types/pg": "^8.23.1",
-    "bun-types": "^1.4.2",
+    "bun-types": "^1.4.3",
     "drizzle-kit": "^0.31.11",
     "typescript": "^7.0.2"
   }

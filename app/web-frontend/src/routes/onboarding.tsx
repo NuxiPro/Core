@@ -16,7 +16,14 @@ const OnboardingWizard = lazy(() =>
 );
 
 export const Route = createFileRoute("/onboarding")({
-  loader: async () => {
+  validateSearch: (search: Record<string, unknown>) => ({
+    error: typeof search.error === "string" ? search.error : undefined,
+  }),
+  loader: async ({ search }) => {
+    // Expired or invalid magic link: dedicated feedback page.
+    if (search.error) {
+      throw redirect({ to: "/link-expired" });
+    }
     const session = await resolveSession();
     if (!session) {
       throw redirect({ to: "/login" });

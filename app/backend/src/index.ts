@@ -3,7 +3,7 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { compress } from "hono/compress";
 import { cors } from "hono/cors";
 import { createMiddleware } from "hono/factory";
-import { auth } from "./auth/auth";
+import { auth } from "./auth";
 import { httpLogger } from "./logique/logging/logger";
 import { projectsModule } from "./routes/projects";
 import { workspacesModule } from "./routes/workspace";
@@ -58,7 +58,11 @@ const app = new OpenAPIHono<AppEnv>({
     return c.redirect(redirectUrl);
   })
   .get("/onboarding", (c) => {
-    return c.redirect(`${frontendUrl}/onboarding`);
+    const error = c.req.query("error");
+    const redirectUrl = error
+      ? `${frontendUrl}/onboarding?error=${error}`
+      : `${frontendUrl}/onboarding`;
+    return c.redirect(redirectUrl);
   })
   .get("/", (c) => {
     return c.redirect(frontendUrl as string);

@@ -1,9 +1,12 @@
 import type { AppType } from "@backend/src/index";
+import { createLogger } from "@packages/shared/utils/logger";
 import type { AuthClient } from "better-auth/client";
 import { createAuthClient } from "better-auth/client";
-import { magicLinkClient } from "better-auth/client/plugins";
+import {
+  lastLoginMethodClient,
+  magicLinkClient,
+} from "better-auth/client/plugins";
 import { hc } from "hono/client";
-import { createLogger } from "@packages/shared/utils/logger";
 import { handleAuthError } from "./auth-guard";
 
 const log = createLogger("client");
@@ -31,12 +34,15 @@ if (import.meta.env.DEV) {
 }
 
 type AuthClientWithMagicLink = AuthClient<{
-  plugins: [ReturnType<typeof magicLinkClient>];
+  plugins: [
+    ReturnType<typeof magicLinkClient>,
+    ReturnType<typeof lastLoginMethodClient>,
+  ];
 }>;
 
 export const authClient = createAuthClient({
   baseURL: AUTH_URL,
-  plugins: [magicLinkClient()],
+  plugins: [magicLinkClient(), lastLoginMethodClient()],
 }) as AuthClientWithMagicLink;
 
 const fetcher = async (

@@ -9,8 +9,8 @@ import { lastLoginMethod } from "better-auth/plugins"
 
 /* Désactiver temporairement */
 /// const redis = new Redis({
-  // url: process.env.UPSTASH_REDIS_REST_URL!,
-  // token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+  // url: process.env.REDIS_REST_URL!,
+  // token: process.env.REDIS_REST_TOKEN!,
   // });
 
 

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './src/routes/__root'
 import { Route as DashboardRouteImport } from './src/routes/_dashboard'
 import { Route as OnboardingRouteImport } from './src/routes/onboarding'
+import { Route as AuthLinkExpiredRouteImport } from './src/routes/_auth/link-expired'
 import { Route as AuthLoginRouteImport } from './src/routes/_auth/login'
 import { Route as AuthRegisterRouteImport } from './src/routes/_auth/register'
 import { Route as AuthVerifyEmailRouteImport } from './src/routes/_auth/verify-email'
@@ -27,6 +28,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLinkExpiredRoute = AuthLinkExpiredRouteImport.update({
+  id: '/_auth/link-expired',
+  path: '/link-expired',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
@@ -75,6 +81,7 @@ const DashboardKanbanProjectSlugArchiveRoute =
 export interface FileRoutesByFullPath {
   '/': typeof DashboardIndexRoute
   '/onboarding': typeof OnboardingRoute
+  '/link-expired': typeof AuthLinkExpiredRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/verify-email': typeof AuthVerifyEmailRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
+  '/link-expired': typeof AuthLinkExpiredRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/verify-email': typeof AuthVerifyEmailRoute
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_dashboard': typeof DashboardRouteWithChildren
   '/onboarding': typeof OnboardingRoute
+  '/_auth/link-expired': typeof AuthLinkExpiredRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/verify-email': typeof AuthVerifyEmailRoute
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/onboarding'
+    | '/link-expired'
     | '/login'
     | '/register'
     | '/verify-email'
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/onboarding'
+    | '/link-expired'
     | '/login'
     | '/register'
     | '/verify-email'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_dashboard'
     | '/onboarding'
+    | '/_auth/link-expired'
     | '/_auth/login'
     | '/_auth/register'
     | '/_auth/verify-email'
@@ -145,6 +157,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   OnboardingRoute: typeof OnboardingRoute
+  AuthLinkExpiredRoute: typeof AuthLinkExpiredRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
@@ -164,6 +177,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/link-expired': {
+      id: '/_auth/link-expired'
+      path: '/link-expired'
+      fullPath: '/link-expired'
+      preLoaderRoute: typeof AuthLinkExpiredRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/login': {
@@ -271,6 +291,7 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   OnboardingRoute: OnboardingRoute,
+  AuthLinkExpiredRoute: AuthLinkExpiredRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,

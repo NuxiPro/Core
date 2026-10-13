@@ -7,7 +7,6 @@
     "test:run": "cd frontend && bun run test:run",
     "test:backend": "cd backend && bun test",
     "deploy:frontend": "cd app/web-frontend && bun run build && bunx wrangler pages deploy dist/ --project-name=nuxipro-cloud --branch=main"
-
   },
   "name": "center",
   "private": true,
