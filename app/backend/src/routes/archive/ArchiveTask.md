@@ -1,24 +1,24 @@
-Objectif : créer une gestion d'archive de tâches avec deux mode d'archivage : archive instantané et archive basée sur le temps
+Goal: create a task archive management with two archiving modes: instant archive and time-based archive
 
-Créer une colonne dans la table archive : **ArchiveMode** : qui dit soit en mode archive instantanée ou basée sur le temps
+Create a column in the archive table: **ArchiveMode**: which states either instant archive mode or time-based mode
 
-Cas : Créer  une tâches archivée tous en récupérent les donnée existant sans perte de donnée
+Case: Create an archived task while recovering existing data without any data loss
 
-**Utilisation de la transaction** : pour éviter de perdre des donnée car si une donnée est perdu alors l'action échou simplement sans réussite
+**Use of transaction**: to avoid losing data because if any data is lost then the action simply fails without succeeding
 
-1. Drag drop dans colonne DONE ==> Post  
-2. Post = TaskId + ProjectId + WorkspaceId + UserId + IsArchived (Booleen)
-3. Server reçoit = Lire UserId puis quel est le role de l'user  
-4. Déplacée la tâches vers la zone d'archive = stocké dans ArchiveCardsTable ==> Insert  
+1. Drag & drop into DONE column ==> Post
+2. Post = TaskId + ProjectId + WorkspaceId + UserId + IsArchived (Boolean)
+3. Server receives = Read UserId then what is the user's role
+4. Move the task to the archive zone = store in ArchiveCardsTable ==> Insert
 
-**Transaction : si sa réussi sa passe , si il y'a des donnée qui sont perdu alors l'action à échouer complètement car il y'a pas de perte de donnée qui ne sera tolérer** 
+**Transaction: if it succeeds it goes through, if any data is lost then the action has completely failed because no data loss will be tolerated**
 
-4. Stocké la tâches dans la tâble archive tâches 
-5. feeback pour dire que sa à vien était archivée 
-6. affichée la tâches
+4. Store the task in the archived tasks table
+5. Feedback to say that it was archived successfully
+6. Display the task
 
 ---
 
-Cas : désarchivée une tâches (patch = booleen pour dire si la tâches et archivée ou pas)
-Cas : supprimer une ou plusieurs tâches archivée (deleted)
-Cas : Possibilité de afficher la tâches (get)
+Case: unarchive a task (patch = boolean to say whether the task is archived or not)
+Case: delete one or more archived tasks (deleted)
+Case: Ability to display the task (get)

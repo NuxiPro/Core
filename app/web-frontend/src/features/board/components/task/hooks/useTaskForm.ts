@@ -11,12 +11,18 @@ export function useTaskForm(
   task: Task | null,
   onUpdate?: (
     id: string,
-    updates: { title: string; description: string; priority?: PriorityLabel },
+    updates: {
+      title: string;
+      description: string;
+      priority?: PriorityLabel;
+      dueDate?: string | null;
+    },
   ) => Promise<void>,
 ) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<PriorityLabel>("none");
+  const [dueDate, setDueDate] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { isSaving, handle } = useAsyncHandler({
     onError: (msg) => {
@@ -33,6 +39,7 @@ export function useTaskForm(
       setTitle(task.title);
       setDescription(task.description ?? "");
       setPriority(task.priority ?? "none");
+      setDueDate(task.dueDate ?? null);
       setError(null);
     }
   }, [task?.id]);
@@ -42,10 +49,13 @@ export function useTaskForm(
     const hasChanged =
       title !== task.title ||
       description !== (task.description ?? "") ||
-      priority !== (task.priority ?? "none");
+      priority !== (task.priority ?? "none") ||
+      dueDate !== (task.dueDate ?? null);
     if (!hasChanged) return;
     setError(null);
-    return handle(() => onUpdate(task.id, { title, description, priority }));
+    return handle(() =>
+      onUpdate(task.id, { title, description, priority, dueDate }),
+    );
   };
 
   return {
@@ -55,6 +65,8 @@ export function useTaskForm(
     setDescription,
     priority,
     setPriority,
+    dueDate,
+    setDueDate,
     handleSave,
     isSaving,
     error,

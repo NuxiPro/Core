@@ -9,10 +9,10 @@ export const requirePermission = (permission: Record<string, string[]>) =>
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    // Récupération du rôle correspondant
+    // Retrieve the matching role
     const userRole = roles_center[sessionUser.role as Role];
 
-    // Vérification instantanée en mémoire
+    // Instant in-memory check
     if (!userRole || !userRole.authorize(permission).success) {
       return c.json({ error: "Access denied" }, 403);
     }

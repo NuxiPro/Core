@@ -6,51 +6,51 @@ const UUID_V7_REGEX =
 const ISO_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 
 const baseInput = {
-  title: "Ma tâche",
-  description: "Sa description",
+  title: "My task",
+  description: "Its description",
   colId: "todo" as const,
   priority: "none",
 };
 
 describe("buildTask", () => {
-  it("génère un id UUID v7 et un createdAt ISO 8601", () => {
+  it("generates a UUID v7 id and an ISO 8601 createdAt", () => {
     const task = buildTask(baseInput);
     expect(task.id).toMatch(UUID_V7_REGEX);
     expect(task.createdAt).toMatch(ISO_REGEX);
   });
 
-  it("préserve tous les champs de l'input", () => {
+  it("preserves all input fields", () => {
     const task = buildTask(baseInput);
     expect(task).toMatchObject(baseInput);
   });
 
-  it("génère des ids uniques à chaque appel", () => {
+  it("generates unique ids on each call", () => {
     expect(buildTask(baseInput).id).not.toBe(buildTask(baseInput).id);
   });
 
-  it("génère 'a0' comme position par défaut (null, null)", () => {
+  it("generates 'a0' as default position (null, null)", () => {
     const task = buildTask(baseInput);
     expect(task.positionString).toBe("a0");
   });
 
-  it("génère une position après 'a0' quand prevPosition='a0'", () => {
+  it("generates a position after 'a0' when prevPosition='a0'", () => {
     const task = buildTask(baseInput, "a0", null);
     expect(task.positionString).toBe("a1");
     expect(task.positionString > "a0").toBe(true);
   });
 
-  it("génère une position avant 'a0' quand nextPosition='a0'", () => {
+  it("generates a position before 'a0' when nextPosition='a0'", () => {
     const task = buildTask(baseInput, null, "a0");
     expect(task.positionString < "a0").toBe(true);
   });
 
-  it("génère une position entre 'a0' et 'a2'", () => {
+  it("generates a position between 'a0' and 'a2'", () => {
     const task = buildTask(baseInput, "a0", "a2");
     expect(task.positionString > "a0").toBe(true);
     expect(task.positionString < "a2").toBe(true);
   });
 
-  it("génère des positions uniques quand les paramètres diffèrent", () => {
+  it("generates unique positions when parameters differ", () => {
     const task1 = buildTask(baseInput, null, null); // "a0"
     const task2 = buildTask(baseInput, "a0", null); // "a1"
     const task3 = buildTask(baseInput, null, "a0"); // "Z"

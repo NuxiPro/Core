@@ -6,13 +6,13 @@ import type { Task } from "@packages/shared/types/task/task";
 import { generateKeyBetween } from "fractional-indexing";
 
 /**
- * Construit un objet Task prêt à être inséré en base.
- * La position est calculée par fractional indexing entre les deux voisins.
+ * Builds a Task object ready for database insertion.
+ * Position is computed via fractional indexing between the two neighbors.
  *
- * @param input        - Données de la tâche (title, description, colId)
- * @param prevPosition - Position du voisin du dessus (null = tout en haut)
- * @param nextPosition - Position du voisin du dessous (null = tout en bas)
- * @throws "INVALID_POSITION" si les positions voisines sont incohérentes
+ * @param input        - Task data (title, description, colId)
+ * @param prevPosition - Position of the neighbor above (null = very top)
+ * @param nextPosition - Position of the neighbor below (null = very bottom)
+ * @throws "INVALID_POSITION" if neighbor positions are inconsistent
  */
 export function buildTask(
   input: z.infer<typeof CreateTaskInput>,

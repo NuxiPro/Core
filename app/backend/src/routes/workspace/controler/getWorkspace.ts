@@ -4,16 +4,15 @@ import { createOpenAPIHono } from "@backend/src/lib/openapi";
 import { createLogger } from "@backend/src/logique/logging/logger";
 import { getDbDateStr } from "@backend/utils/dateHelpers";
 import { getWorkspaceRoute } from "../workspace.router";
+import { requirePermission } from "@backend/src/lib/auth-middleware";
 import { and, eq } from "drizzle-orm";
 
 const log = createLogger("workspaces/get");
 
-const app = createOpenAPIHono().openapi(getWorkspaceRoute, async (c) => {
+const app = createOpenAPIHono();
+app.use(requirePermission({ workspace: ["read"] }));
+app.openapi(getWorkspaceRoute, async (c) => {
   const user = c.get("user");
-  if (!user) {
-    return c.json({ message: "Non authentifié" }, 401);
-  }
-
   const { id } = c.req.valid("param");
 
   try {
@@ -30,7 +29,7 @@ const app = createOpenAPIHono().openapi(getWorkspaceRoute, async (c) => {
       .limit(1);
 
     if (!workspace) {
-      return c.json({ message: "Workspace non trouvé" }, 404);
+      return c.json({ message: "Workspace not found" }, 404);
     }
 
     return c.json(
@@ -45,8 +44,8 @@ const app = createOpenAPIHono().openapi(getWorkspaceRoute, async (c) => {
       200,
     );
   } catch (err) {
-    log.error("Erreur lors du chargement du workspace", err);
-    return c.json({ message: "Erreur interne du serveur" }, 500);
+    log.error("Failed to load workspace", err);
+    return c.json({ message: "Internal server error" }, 500);
   }
 });
 

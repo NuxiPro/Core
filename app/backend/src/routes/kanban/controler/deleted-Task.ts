@@ -12,7 +12,7 @@ const app = createOpenAPIHono();
 
 app.use(requirePermission({ task: ["delete"] })); // Permission checking
 const deletedTask = app.openapi(deletedTaskRoute, async (c) => {
-  // Vérification de l'authentification
+  // Authentication check
   const user = c.get("user");
   try {
     const { id } = c.req.valid("param");
@@ -29,8 +29,8 @@ const deletedTask = app.openapi(deletedTaskRoute, async (c) => {
 
     return c.json({ success: true }, 200);
   } catch (err) {
-    log.error("[DELETE /deletedTask] erreur DB", err);
-    return c.json({ message: "Erreur serveur" }, 500);
+    log.error("[DELETE /deletedTask] Failed to delete task", err);
+    return c.json({ message: "Internal server error" }, 500);
   }
 });
 

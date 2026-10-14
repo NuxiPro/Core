@@ -14,7 +14,7 @@ export type Task = {
   priority?: PriorityLabel; // Priorité de la tâche
   Isarchived?: boolean;     // Status d'archive de la tâches
   positionString: string;   // Position de la tâche (fractional indexing)
-  dueDate?: string;         // Date d'échéance optionnelle (ex: "2026-09-30")
+  dueDate?: string | null;  // Date d'échéance optionnelle (ex: "2026-09-30")
   createdAt: string;        // Création de date au moment de créer une tâche
   updatedAt?: string;       // Date de modification optionnel
 };
@@ -35,7 +35,7 @@ export type ArchivedTask = {
 /** Résumé allégé pour la liste initiale (id + title max 255 octets) */
 export type TaskSummary = Pick<
   Task,
-  "id" | "title" | "colId" | "createdAt" | "positionString" | "priority"
+  "id" | "title" | "colId" | "createdAt" | "positionString" | "priority" | "dueDate"
 >;
 
 // Ce que le client envoie pour la création

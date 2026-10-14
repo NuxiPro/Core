@@ -4,10 +4,10 @@ export const createWorkspaceSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "Le nom est obligatoire")
-    .max(30, "Le nom du workspace ne doit pas dépasser 30 caractères")
+    .min(1, "Name is required")
+    .max(30, "Workspace name must not exceed 30 characters")
     .refine((val) => !/[<>]/.test(val), {
-      message: "Les caractères < et > ne sont pas autorisés",
+      message: "Characters < and > are not allowed",
     }),
 });
 

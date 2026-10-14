@@ -2,7 +2,7 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import createProject from "./controler/createProject";
 import deletedProjet from "./controler/deleted-project";
 import getBoard from "./controler/get-board";
-import listProjects from "./controler/list";
+import listProjects from "./controler/list-projects";
 
 export const projectsModule = new OpenAPIHono()
   .route("/", listProjects)

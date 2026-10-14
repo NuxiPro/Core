@@ -11,8 +11,8 @@ import {
 import { user } from "./auth-schema";
 
 /**
- *  Table de Workspaces - Ici on créer l'espace de travaille de l'user
- * On stocke cette espace dédier à l'user
+ * Workspaces table - Here we create the user's workspace
+ * We store this space dedicated to the user
  */
 export const WorkspacesTable = pgTable("workspace", {
   id: uuid("id").primaryKey(),
@@ -24,7 +24,7 @@ export const WorkspacesTable = pgTable("workspace", {
 });
 
 /**
- * Table de projects - Ici sera stocker le projet kanban de l'utilisateur
+ * Projects table - The user's kanban project will be stored here
  */
 export const projectsTable = pgTable(
   "projects",
@@ -53,30 +53,31 @@ export const projectsTable = pgTable(
 );
 
 /**
- * Table des tâches - chaque tâche appartient à un utilisateur
- * Le backend remplit toutes les valeurs (id généré, timestamps, userId de la session)
+ * Tasks table - each task belongs to a user
+ * The backend fills in all values (generated id, timestamps, session userId)
  */
 export const cardsTable = pgTable(
   "cards",
   {
-    id: uuid("id").primaryKey(), // ID généré en UUID v7 par ton backend Hono
-    userId: text("user_id") // Identifie le créateur de la tâche (Préparation au multi-user)
+    id: uuid("id").primaryKey(), // ID generated as UUID v7 by your Hono backend
+    userId: text("user_id") // Identifies the task creator (preparation for multi-user)
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }), // Si l'user supprime son compte, ses tâches partent avec !
+      .references(() => user.id, { onDelete: "cascade" }), // If the user deletes their account, their tasks go with it!
     projectId: uuid("project_id")
       .references(() => projectsTable.id, { onDelete: "cascade" })
       .notNull(),
     title: varchar("title", { length: 255 }).notNull(),
-    description: text("description"), // Description stockée en TEXT (gérée à 50 000 max par ton Zod)
+    description: text("description"), // Description stored as TEXT (capped at 50,000 max by your Zod schema)
     quadrant: integer("quadrant").notNull(),
     priorityLabel: varchar("priority_label", { length: 10 }),
     positionString: varchar("task_position", { length: 255 })
       .notNull()
       .default("a0"),
+    dueDate: timestamp("due_date", { mode: "date" }),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" })
       .defaultNow()
-      .$onUpdate(() => new Date()) // Met à jour la date automatiquement à chaque modification !
+      .$onUpdate(() => new Date()) // Automatically updates the date on every change!
       .notNull(),
   },
   (table) => [
@@ -97,14 +98,14 @@ export const cardsTable = pgTable(
 );
 
 /**
- * Table d'archive des tâche - Ici on stocke les tâche archiver des utilisateurs séparer du kanban
- * Cette table retire les tâche dans cardsTable pour la déplacer ici
+ * Archived tasks table - Here we store users' archived tasks separately from the kanban
+ * This table removes tasks from cardsTable to move them here
  */
 export const archivedCardsTable = pgTable(
   "archived_cards",
   {
     id: uuid("id").primaryKey(),
-    taskId: uuid("task_id").notNull(), // UUID original de la carte dans cardsTable
+    taskId: uuid("task_id").notNull(), // Original UUID of the card in cardsTable
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
@@ -113,8 +114,8 @@ export const archivedCardsTable = pgTable(
       .notNull(),
     title: varchar("title", { length: 255 }).notNull(),
     description: text("description"),
-    createdAt: timestamp("created_at", { mode: "date" }).notNull(), // Éléments important pour le trie
-    archivedAt: timestamp("archived_at", { mode: "date" })  // Date de la tâches terminée le x j
+    createdAt: timestamp("created_at", { mode: "date" }).notNull(), // Important element for sorting
+    archivedAt: timestamp("archived_at", { mode: "date" })  // Date the task was completed
       .defaultNow()
       .notNull(),
   },

@@ -33,7 +33,7 @@ app.openapi(updateTaskPositionRoute, async (c) => {
     return c.json({ success: true, newPosition }, 200);
   } catch (err: unknown) {
     if (err instanceof PositionImpossibleError) {
-      log.warn("[PATCH /updateTaskPosition] position impossible", {
+      log.warn("[PATCH /updateTaskPosition] impossible position", {
         taskId: c.req.valid("param").id,
       });
       return c.json({ message: err.message }, 409);
@@ -42,13 +42,13 @@ app.openapi(updateTaskPositionRoute, async (c) => {
       return c.json({ message: "Task not found" }, 404);
     }
     if (err instanceof Error && err.message === "INVALID_NEIGHBORS") {
-      return c.json({ message: "Voisins invalides" }, 400);
+      return c.json({ message: "Invalid neighbouring tasks" }, 400);
     }
     if (err instanceof Error && err.message === "MISSING_TARGET_COLUMN") {
-      return c.json({ message: "colId requis" }, 400);
+      return c.json({ message: "colId is required" }, 400);
     }
-    log.error("[PATCH /updateTaskPosition] erreur", err);
-    return c.json({ message: "Erreur serveur" }, 500);
+    log.error("[PATCH /updateTaskPosition] error", err);
+    return c.json({ message: "Internal server error" }, 500);
   }
 });
 

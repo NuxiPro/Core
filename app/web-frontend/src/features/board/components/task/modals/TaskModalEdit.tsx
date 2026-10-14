@@ -5,14 +5,23 @@ import type { Task } from "@packages/shared/types/task/task";
 import { History } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { DatePicker } from "@/src/layout/components/ui/date-picker";
 import { DialogTitle } from "@/src/layout/components/ui/dialog";
 import { CONTENT_MAX, TITLE_MAX } from "@/src/shared/lib/constants";
+import { sanitizeHtml } from "@/src/shared/utils/sanitize";
 import { PrioritySelect } from "../card/priority";
 import { TipTapEditor } from "../editor";
 import { useTaskForm } from "../hooks/useTaskForm";
 import { MetadataSection } from "../sections/MetadataSection";
-import { sanitizeHtml } from "@/src/shared/utils/sanitize";
 import { TaskDialogShell } from "./TaskDialogShell";
+
+// Due dates are day-precision: noon UTC survives ±12h timezones without day-shift.
+const toUTCNoonISO = (d: Date | undefined): string | null => {
+  if (!d) return null;
+  return new Date(
+    Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 12),
+  ).toISOString();
+};
 
 export function TaskModalEdit({ task, onClose, onUpdate }: TaskModalEditProps) {
   const { t } = useTranslation();
@@ -20,8 +29,17 @@ export function TaskModalEdit({ task, onClose, onUpdate }: TaskModalEditProps) {
   const handleUpdate = onUpdate
     ? (
         id: Task["id"],
-        u: { title: string; description: string; priority?: PriorityLabel },
-      ) => onUpdate(id, { ...u, description: sanitizeHtml(u.description) }) as Promise<void>
+        u: {
+          title: string;
+          description: string;
+          priority?: PriorityLabel;
+          dueDate?: string | null;
+        },
+      ) =>
+        onUpdate(id, {
+          ...u,
+          description: sanitizeHtml(u.description),
+        }) as Promise<void>
     : undefined;
   const {
     title,
@@ -30,6 +48,8 @@ export function TaskModalEdit({ task, onClose, onUpdate }: TaskModalEditProps) {
     setDescription,
     priority,
     setPriority,
+    dueDate,
+    setDueDate,
     handleSave,
     error,
   } = useTaskForm(task, handleUpdate);
@@ -123,7 +143,9 @@ export function TaskModalEdit({ task, onClose, onUpdate }: TaskModalEditProps) {
             <div className="flex-1 min-h-0 flex flex-col rounded-xl border border-border bg-card overflow-hidden focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-300">
               <TipTapEditor
                 value={description}
-                onChange={(v) => setDescription(sanitizeHtml(v).slice(0, CONTENT_MAX))}
+                onChange={(v) =>
+                  setDescription(sanitizeHtml(v).slice(0, CONTENT_MAX))
+                }
                 className="flex-1 min-h-[220px] [&_.ProseMirror]:p-3 [&_.ProseMirror]:min-h-[200px]"
               />
             </div>
@@ -167,6 +189,24 @@ export function TaskModalEdit({ task, onClose, onUpdate }: TaskModalEditProps) {
               <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
                 {t("task.quickPriorityHint")}
               </p>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.08em]">
+                  {t("metadata.dueDate")}
+                </span>
+                <span className="text-[10px] font-mono text-muted-foreground/50 border border-border rounded px-1">
+                  D
+                </span>
+              </div>
+              <div className="mt-2 [&_button]:w-full">
+                <DatePicker
+                  date={dueDate ? new Date(dueDate) : undefined}
+                  onSelect={(d) => setDueDate(toUTCNoonISO(d))}
+                  placeholder={t("task.selectDate")}
+                />
+              </div>
             </div>
 
             <div className="h-px bg-border" />

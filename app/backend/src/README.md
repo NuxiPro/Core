@@ -1,13 +1,13 @@
-utiliser ceci : c'est un indicateurs qui aider les user as réutiliser ce connecter (last connection)
+Use this: it is an indicator that helps users log back in (last connection)
 import { lastLoginMethod } from "better-auth/plugins"
 
 ---
 
-**Redis (Plus tard)**
+**Redis (Later)**
 
 // import { Redis } from "@upstash/redis";
 
-/* Désactiver temporairement */
+/* Temporarily disabled */
 /// const redis = new Redis({
   // url: process.env.REDIS_REST_URL!,
   // token: process.env.REDIS_REST_TOKEN!,

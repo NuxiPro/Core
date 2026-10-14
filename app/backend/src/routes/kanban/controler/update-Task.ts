@@ -23,12 +23,12 @@ app.openapi(updateTaskRoute, async (c) => {
     const { id } = c.req.valid("param");
     const updates = c.req.valid("json") as UpdateTaskBodyType;
 
-    // Sécurité : si le body est vide, on ne fait rien
+    // Safety: if the body is empty, do nothing
     if (Object.keys(updates).length === 0) {
-      return c.json({ message: "Aucune modification fournie" }, 400);
+      return c.json({ message: "No changes provided" }, 400);
     }
 
-    const { priority, ...rest } = updates;
+    const { priority, dueDate, ...rest } = updates;
     const dbPayload: Record<string, unknown> = {
       ...rest,
       updatedAt: new Date(),
@@ -36,8 +36,12 @@ app.openapi(updateTaskRoute, async (c) => {
     if (priority !== undefined) {
       dbPayload.priorityLabel = priority;
     }
+    // ISO string → Date, null clears the deadline, undefined leaves it untouched.
+    if (dueDate !== undefined) {
+      dbPayload.dueDate = dueDate === null ? null : new Date(dueDate);
+    }
 
-    // UPDATE + RETURNING en une seule requête (au lieu de UPDATE séparé + SELECT)
+    // UPDATE + RETURNING in a single query (instead of separate UPDATE + SELECT)
     const rows = await db
       .update(cardsTable)
       .set(dbPayload)
@@ -47,6 +51,7 @@ app.openapi(updateTaskRoute, async (c) => {
         title: cardsTable.title,
         description: cardsTable.description,
         quadrant: cardsTable.quadrant,
+        dueDate: cardsTable.dueDate,
         priorityLabel: cardsTable.priorityLabel,
         positionString: cardsTable.positionString,
         createdAt: cardsTable.createdAt,
@@ -68,6 +73,10 @@ app.openapi(updateTaskRoute, async (c) => {
           title: updatedTask.title,
           description: updatedTask.description ?? "",
           colId: getColIdFromSqlId(updatedTask.quadrant),
+          dueDate:
+            updatedTask.dueDate instanceof Date
+              ? updatedTask.dueDate.toISOString()
+              : null,
           priority: updatedTask.priorityLabel ?? "none",
           positionString: updatedTask.positionString,
           createdAt: updatedTask.createdAt.toISOString(),
@@ -77,8 +86,8 @@ app.openapi(updateTaskRoute, async (c) => {
       200,
     );
   } catch (err) {
-    log.error("[PATCH /updateTask] erreur DB", err);
-    return c.json({ message: "Erreur serveur" }, 500);
+    log.error("[PATCH /updateTask] DB error", err);
+    return c.json({ message: "Internal server error" }, 500);
   }
 });
 

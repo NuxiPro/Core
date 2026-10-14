@@ -6,15 +6,14 @@ import { getDbDateStr } from "@backend/utils/dateHelpers";
 import { and, eq } from "drizzle-orm";
 import { createLogger } from "../../../logique/logging/logger";
 import { getBoardRoute } from "../projects.router";
+import { requirePermission } from "@backend/src/lib/auth-middleware";
 
 const log = createLogger("projects/get-board");
 
-const app = createOpenAPIHono().openapi(getBoardRoute, async (c) => {
+const app = createOpenAPIHono();
+app.use(requirePermission({ project: ["read"] }));
+app.openapi(getBoardRoute, async (c) => {
   const user = c.get("user");
-  if (!user) {
-    return c.json({ message: "Non authentifié" }, 401);
-  }
-
   const { projectId } = c.req.valid("param");
 
   try {
@@ -26,7 +25,7 @@ const app = createOpenAPIHono().openapi(getBoardRoute, async (c) => {
       );
 
     if (!project) {
-      return c.json({ message: "Projet non trouvé" }, 404);
+      return c.json({ message: "Project not found" }, 404);
     }
 
     const tasks = await getTasksByProject(projectId, user.id);
@@ -46,11 +45,11 @@ const app = createOpenAPIHono().openapi(getBoardRoute, async (c) => {
       200,
     );
   } catch (err) {
-    log.error("[GET /projects/:projectId/board] erreur DB", {
+    log.error("[GET /projects/:projectId/board] DB error", {
       projectId,
       error: err,
     });
-    return c.json({ message: "Erreur interne du serveur" }, 500);
+    return c.json({ message: "Internal server error" }, 500);
   }
 });
 

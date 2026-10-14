@@ -7,8 +7,9 @@ import {
   type PriorityLabel,
   priorityStyles,
 } from "@packages/shared/types/task/priority-level";
-import { GripVertical, Trash } from "lucide-react";
+import { CalendarDays, GripVertical, Trash } from "lucide-react";
 import { type KeyboardEvent, memo, useCallback } from "react";
+import i18n from "@/src/features/i18n";
 import { Button } from "@/src/layout/components/ui/button";
 import { cn } from "@/src/shared/utils/utils";
 import { PriorityIcon } from "./priority";
@@ -45,7 +46,9 @@ const TaskCardView = memo(function TaskCardView({
     : {
         transform: CSS.Transform.toString(transform) || undefined,
         // Transform géré par dnd-kit, pas par Tailwind transition-all
-        transition: transform ? "transform 200ms cubic-bezier(0.25,0.1,0.25,1)" : undefined,
+        transition: transform
+          ? "transform 200ms cubic-bezier(0.25,0.1,0.25,1)"
+          : undefined,
         opacity: isDragging ? 0 : 1,
         pointerEvents: isDragging ? "none" : "auto",
       };
@@ -85,7 +88,8 @@ const TaskCardView = memo(function TaskCardView({
         "task-card group/card relative w-full rounded-xl px-3.5 pt-4 pb-3.5 select-none outline-none",
         // Pas de transition-all sur transform (conflit dnd) — seulement couleurs/ombre
         "transition-[background-color,border-color,box-shadow] duration-[400ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] will-change-transform",
-        isOver && "ring-1 ring-primary/20 bg-primary/[0.03] shadow-[0_4px_12px_rgba(94,106,210,0.10)] scale-[1.01]",
+        isOver &&
+          "ring-1 ring-primary/20 bg-primary/[0.03] shadow-[0_4px_12px_rgba(94,106,210,0.10)] scale-[1.01]",
         // Apple: 400ms spring, no jump — shadow breathes, border stays calm
         "transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] will-change-transform",
         "bg-card dark:bg-popover border border-border-subtle dark:border-border-subtle shadow-[0_1px_3px_0_rgba(17,19,24,0.08),0_4px_16px_0_rgba(17,19,24,0.08),0_0_0_1px_rgba(17,19,24,0.05)] dark:shadow-[0_2px_8px_0_rgba(0,0,0,0.5),0_8px_24px_0_rgba(0,0,0,0.45)]",
@@ -101,7 +105,10 @@ const TaskCardView = memo(function TaskCardView({
       )}
     >
       {isOver && (
-        <div className="absolute -top-1.5 left-3 right-3 h-0.5 bg-primary rounded-full shadow-[0_1px_4px_rgba(94,106,210,0.4)] pointer-events-none" aria-hidden />
+        <div
+          className="absolute -top-1.5 left-3 right-3 h-0.5 bg-primary rounded-full shadow-[0_1px_4px_rgba(94,106,210,0.4)] pointer-events-none"
+          aria-hidden
+        />
       )}
       <div className="flex items-start gap-2.5">
         <span
@@ -119,6 +126,18 @@ const TaskCardView = memo(function TaskCardView({
           <div title={currentStyle.label}>
             <PriorityIcon priority={priorityKey} className="size-3.5" />
           </div>
+          {task.dueDate && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-border px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+              <CalendarDays className="size-3 text-teal-600 dark:text-teal-400" />
+              {new Date(task.dueDate).toLocaleDateString(
+                i18n.language || "en",
+                {
+                  day: "numeric",
+                  month: "short",
+                },
+              )}
+            </span>
+          )}
         </div>
         {!isOverlay && (
           <Button

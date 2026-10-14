@@ -106,11 +106,11 @@ const createTaskApp = app.openapi(createTaskRoute, async (c) => {
 
     return c.json(task, 201);
   } catch (err) {
-    log.error("[POST /newTask] erreur DB", {
+    log.error("[POST /newTask] DB error", {
       projectId,
       error: err instanceof Error ? err.message : String(err),
     });
-    return c.json({ message: "Erreur interne du serveur" }, 500);
+    return c.json({ message: "Internal server error" }, 500);
   }
 });
 export default createTaskApp;

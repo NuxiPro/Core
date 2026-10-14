@@ -8,7 +8,7 @@ let isPurgeRunning = false;
 
 export async function purgeUnverifiedUsers() {
   if (isPurgeRunning) {
-    log.warn("Purge déjà en cours — skip");
+    log.warn("Purge already running — skip");
     return;
   }
   isPurgeRunning = true;
@@ -16,7 +16,7 @@ export async function purgeUnverifiedUsers() {
   const LIMIT = 500;
   const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
 
-  log.info("Purge des utilisateurs non vérifiés (>2j) démarrée");
+  log.info("Purge of unverified users (>2d) started");
 
   try {
     while (true) {
@@ -27,20 +27,20 @@ export async function purgeUnverifiedUsers() {
         .limit(LIMIT);
 
       if (targets.length === 0) {
-        log.info("Aucun utilisateur à purger");
+        log.info("No users to purge");
         break;
       }
 
       const ids = targets.map((u) => u.id);
-      log.info(`Suppression de ${ids.length} utilisateurs`);
+      log.info(`Deleting ${ids.length} users`);
       await db.delete(user).where(inArray(user.id, ids));
 
       if (targets.length < LIMIT) break;
       await new Promise((r) => setTimeout(r, 1000));
     }
-    log.info("Purge terminée");
+    log.info("Purge completed");
   } catch (error) {
-    log.error("Erreur purge utilisateurs", error);
+    log.error("User purge error", error);
   } finally {
     isPurgeRunning = false;
   }

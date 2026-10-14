@@ -3,17 +3,16 @@ import { WorkspacesTable } from "@backend/src/drizzle/schemas";
 import { createOpenAPIHono } from "@backend/src/lib/openapi";
 import { createLogger } from "@backend/src/logique/logging/logger";
 import { uuid } from "@backend/utils/uuid";
+import { requirePermission } from "@backend/src/lib/auth-middleware";
 import { createWorkspaceRoute } from "../workspace.router";
 
 const log = createLogger("workspace/create");
 
 
-const app = createOpenAPIHono().openapi(createWorkspaceRoute, async (c) => {
+const app = createOpenAPIHono();
+app.use(requirePermission({ workspace: ["create"] }));
+app.openapi(createWorkspaceRoute, async (c) => {
   const user = c.get("user");
-  if (!user) {
-    return c.json({ message: "Non authentifié" }, 401);
-  }
-
   try {
     const data = c.req.valid("json");
 
@@ -29,8 +28,8 @@ const app = createOpenAPIHono().openapi(createWorkspaceRoute, async (c) => {
 
     return c.json(newWorkspace, 201);
   } catch (err) {
-    log.error("Impossible de créer un nouveau workspace", err);
-    return c.json({ message: "Erreur interne du serveur" }, 500);
+    log.error("Failed to create workspace", err);
+    return c.json({ message: "Internal server error" }, 500);
   }
 });
 

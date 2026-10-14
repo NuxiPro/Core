@@ -1,22 +1,22 @@
 # Plan API Routes — Projects
 
-## Routes existantes
+## Existing routes
 
-| Route | Méthode | Fichier | Description |
+| Route | Method | File | Description |
 |---|---|---|---|
-| `GET /projects` | GET | `list.ts` | Lister les projets de l'utilisateur |
-| `POST /projects/newProjects` | POST | `createProject.ts` | Créer un projet |
-| `GET /projects/:projectId/board` | GET | `get-board.ts` | Board Kanban complet |
+| `GET /projects` | GET | `list.ts` | List the user's projects |
+| `POST /projects/newProjects` | POST | `createProject.ts` | Create a project |
+| `GET /projects/:projectId/board` | GET | `get-board.ts` | Full Kanban board |
 
-## Routes manquantes
+## Missing routes
 
-| Route | Méthode | Fichier | Description |
+| Route | Method | File | Description |
 |---|---|---|---|
-| `GET /projects/:id` | GET | `getProject.ts` | Détail d'un projet |
-| `PATCH /projects/:id` | PATCH | `updateProject.ts` | Modifier un projet (nom, description) |
-| `DELETE /projects/:id` | DELETE | `deleteProject.ts` | Supprimer un projet + ses cards |
+| `GET /projects/:id` | GET | `getProject.ts` | Project detail |
+| `PATCH /projects/:id` | PATCH | `updateProject.ts` | Update a project (name, description) |
+| `DELETE /projects/:id` | DELETE | `deleteProject.ts` | Delete a project + its cards |
 
-## Schémas Zod
+## Zod schemas
 
 ### UpdateProjectInput
 ```typescript
@@ -37,19 +37,19 @@ z.object({
 })
 ```
 
-## Sécurité
+## Security
 
-- Vérifier `c.get("user")` sur chaque route
-- Filtre `userId` sur chaque requête DB
-- Cascade delete : project → cards
+- Check `c.get("user")` on each route
+- `userId` filter on each DB query
+- Cascade delete: project → cards
 
-## Statut
+## Status
 
-| Étape | Fichier | Statut |
+| Step | File | Status |
 |---|---|---|
-| 1 | `getProject.ts` | [ ] À faire |
-| 2 | `updateProject.ts` | [ ] À faire |
-| 3 | `deleteProject.ts` | [X] À faire |
-| 4 | `index.ts` | [ ] À modifier |
+| 1 | `getProject.ts` | [ ] To do |
+| 2 | `updateProject.ts` | [ ] To do |
+| 3 | `deleteProject.ts` | [X] To do |
+| 4 | `index.ts` | [ ] To modify |
 
-getProject.ts et updateProject.ts sont fait que pour les setting du projet
+getProject.ts and updateProject.ts are only for the project settings

@@ -4,15 +4,14 @@ import { createOpenAPIHono } from "@backend/src/lib/openapi";
 import { createLogger } from "@backend/src/logique/logging/logger";
 import { and, eq } from "drizzle-orm";
 import { DeletedProjectRoute } from "../projects.router";
+import { requirePermission } from "@backend/src/lib/auth-middleware";
 
 const log = createLogger("Project/deleted-project");
 
-const app = createOpenAPIHono().openapi(DeletedProjectRoute, async (c) => {
+const app = createOpenAPIHono();
+app.use(requirePermission({ project: ["delete"] }));
+app.openapi(DeletedProjectRoute, async (c) => {
   const user = c.get("user");
-  if (!user) {
-    return c.json({ message: "Non authentifié" }, 401);
-  }
-
   try {
     const { id } = c.req.valid("param");
 
@@ -23,17 +22,17 @@ const app = createOpenAPIHono().openapi(DeletedProjectRoute, async (c) => {
 
     if (deleted.length === 0) {
       return c.json(
-        { message: "projects introuvable ou accès non autorisé" },
+        { message: "Project not found" },
         404,
       );
     }
     return c.json({ success: true }, 200);
   } catch (err) {
     log.error(
-      "[DELETED /deletedProject] Erreur de suppression  de projects",
+      "[DELETE /deletedProject] Failed to delete project",
       err,
     );
-    return c.json({ message: "Erreur server" }, 500);
+    return c.json({ message: "Internal server error" }, 500);
   }
 });
 

@@ -14,7 +14,7 @@ export class PositionImpossibleError extends Error {
 
 type DbTx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
-// Rebalance du quadrant : réécrit les positionString en ordre serré
+// Quadrant rebalance: rewrites positionStrings in tight order
 async function rebalanceQuadrant(
   tx: DbTx,
   userId: string,
@@ -56,7 +56,7 @@ export async function MoveTask(
   const targetQuadrant = getColumnId(colId);
 
   return await db.transaction(async (tx) => {
-    // 1. Vérifie que la tâche à déplacer existe et récupère son projectId
+    // 1. Check that the task to move exists and get its projectId
     const [taskRows] = await tx
       .select({ id: cardsTable.id, projectId: cardsTable.projectId })
         .from(cardsTable)
@@ -66,13 +66,13 @@ export async function MoveTask(
     if (!taskRows) throw new Error("TASK_NOT_FOUND");
     const projectId = taskRows.projectId;
 
-    // Garde : self-drop (le front l'aborte déjà via activeId === overId,
-    // mais ne jamais générer une clé entre une tâche et elle-même).
+    // Guard: self-drop (the frontend already aborts it via activeId === overId,
+    // but never generate a key between a task and itself).
     if (overTaskId !== null && overTaskId === taskId) {
       throw new PositionImpossibleError("Voisin invalide");
     }
 
-    // 2. Valide overTaskId et récupère overPos
+    // 2. Validate overTaskId and get overPos
     let overPos: string | null = null;
     if (overTaskId) {
       const [overRows] = await tx
@@ -85,15 +85,15 @@ export async function MoveTask(
         .where(and(eq(cardsTable.id, overTaskId), eq(cardsTable.userId, userId)))
         .limit(1);
       if (!overRows) throw new Error("TASK_NOT_FOUND");
-      // Sécurité : overTask doit être dans le même projet ET la même colonne cible
+      // Safety: overTask must be in the same project AND the same target column
       if (overRows.projectId !== projectId) throw new PositionImpossibleError("Voisin invalide");
       if (overRows.quadrant !== targetQuadrant) throw new PositionImpossibleError("Voisin invalide");
       overPos = overRows.positionString;
     }
 
-    // 3. Voisins : scope commun qui exclut la tâche déplacée.
-    // Sans le `ne`, un état stale (ou un move intra-colonne sans garde front)
-    // peut prendre sa propre position comme voisine et générer une clé inutile.
+    // 3. Neighbors: shared scope excluding the moved task.
+    // Without `ne`, a stale state (or an intra-column move without frontend guard)
+    // could take its own position as neighbor and generate a useless key.
     const scope = and(
       eq(cardsTable.userId, userId),
       eq(cardsTable.projectId, projectId),
@@ -121,7 +121,7 @@ export async function MoveTask(
       return rows[0]?.positionString ?? null;
     };
 
-    // Dernière position du quadrant (tâche déplacée exclue) — pour l'append.
+    // Last position of the quadrant (moved task excluded) — for append.
     const findLast = async (): Promise<string | null> => {
       const rows = await tx
         .select({ positionString: cardsTable.positionString })
@@ -132,9 +132,9 @@ export async function MoveTask(
       return rows[0]?.positionString ?? null;
     };
 
-    // Résout prev/next en O(1) sans scan colonne.
-    // overTaskId === null (colonne vide) → append après le dernier plutôt que
-    // (null, null) qui régénère "a0" et collisionne en cas de race.
+    // Resolve prev/next in O(1) without a column scan.
+    // overTaskId === null (empty column) → append after the last one rather than
+    // (null, null) which regenerates "a0" and collides in case of race.
     const resolveNeighbors = async (
       over: string | null,
     ): Promise<{ prev: string | null; next: string | null }> => {
@@ -145,14 +145,14 @@ export async function MoveTask(
 
     let { prev: prevPos, next: nextPos } = await resolveNeighbors(overPos);
 
-    // 4. Génération avec rebalance préventif + retry 23505
+    // 4. Generation with preventive rebalance + 23505 retry
     const tryGenerate = (a: string | null, b: string | null) => {
       if ((a && a.length > 180) || (b && b.length > 180)) throw new Error("REBALANCE_NEEDED");
       return generateKeyBetween(a, b);
     };
 
-    // Re-résout les voisins par id après un rebalance : toutes les positions
-    // ont été réécrites, les anciennes strings sont invalides.
+    // Re-resolve neighbors by id after a rebalance: all positions
+    // have been rewritten, old strings are invalid.
     const resolveAfterRebalance = async () => {
       if (overTaskId) {
         const [refetched] = await tx
@@ -182,7 +182,7 @@ export async function MoveTask(
         .set({ positionString: newPosition, quadrant: targetQuadrant, updatedAt: new Date() })
         .where(and(eq(cardsTable.id, taskId), eq(cardsTable.userId, userId)));
     } catch (e: unknown) {
-      // Collision uniqueIndex (userId, projectId, quadrant, positionString) → 23505
+      // uniqueIndex collision (userId, projectId, quadrant, positionString) → 23505
       const isUniqueViolation =
         e instanceof Error && (e.message.includes("23505") || (e as { code?: string }).code === "23505");
       if (isUniqueViolation) {

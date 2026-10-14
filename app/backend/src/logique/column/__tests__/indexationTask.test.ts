@@ -9,25 +9,25 @@ function expectBetween(prev: string | null, next: string | null) {
 }
 
 describe("fractional-indexing (generateKeyBetween)", () => {
-  it("génère une position quand aucune position n'existe (null, null)", () => {
+  it("generates a position when no position exists (null, null)", () => {
     const result = generateKeyBetween(null, null);
     expect(typeof result).toBe("string");
     expect(result.length).toBeGreaterThan(0);
   });
 
-  it("génère une position AVANT quand prev=null", () => {
+  it("generates a position BEFORE when prev=null", () => {
     const base = generateKeyBetween(null, null);
     const result = generateKeyBetween(null, base);
     expect(result < base).toBe(true);
   });
 
-  it("génère une position APRÈS quand next=null", () => {
+  it("generates a position AFTER when next=null", () => {
     const base = generateKeyBetween(null, null);
     const result = generateKeyBetween(base, null);
     expect(result > base).toBe(true);
   });
 
-  it("génère une position ENTRE deux positions", () => {
+  it("generates a position BETWEEN two positions", () => {
     const a = generateKeyBetween(null, null);
     const b = generateKeyBetween(a, null);
     const result = generateKeyBetween(a, b);
@@ -35,7 +35,7 @@ describe("fractional-indexing (generateKeyBetween)", () => {
     expect(result < b).toBe(true);
   });
 
-  it("génère des positions uniques pour des appels consécutifs", () => {
+  it("generates unique positions for consecutive calls", () => {
     const a = generateKeyBetween(null, null);
     const b = generateKeyBetween(a, null);
     const pos1 = generateKeyBetween(a, b);
@@ -46,7 +46,7 @@ describe("fractional-indexing (generateKeyBetween)", () => {
     expect(pos2 < b).toBe(true);
   });
 
-  it("respecte toujours l'invariant prev < result < next", () => {
+  it("always respects the prev < result < next invariant", () => {
     expectBetween(null, null);
     const a = generateKeyBetween(null, null);
     expectBetween(null, a);
@@ -55,14 +55,14 @@ describe("fractional-indexing (generateKeyBetween)", () => {
     expectBetween(a, b);
   });
 
-  it("gère une longue séquence d'insertions", () => {
+  it("handles a long sequence of insertions", () => {
     let pos = generateKeyBetween(null, null);
     const positions = [pos];
     for (let i = 0; i < 20; i++) {
       pos = generateKeyBetween(pos, null);
       positions.push(pos);
     }
-    // Vérifier que la liste est triée
+    // Check that the list is sorted
     for (let i = 1; i < positions.length; i++) {
       expect(positions[i] > positions[i - 1]).toBe(true);
     }

@@ -3,16 +3,19 @@ import { projectsTable } from "@backend/src/drizzle/schemas";
 import { createOpenAPIHono } from "@backend/src/lib/openapi";
 import { createLogger } from "@backend/src/logique/logging/logger";
 import { listProjectsRoute } from "../projects.router";
+import { requirePermission } from "@backend/src/lib/auth-middleware";
 import { eq } from "drizzle-orm";
 
 const log = createLogger("projects/list");
 
-const app = createOpenAPIHono().openapi(listProjectsRoute, async (c) => {
+/**
+ * GET /projects — loads only the project list for the sidebar.
+ * Does not load tasks (see get-board.ts for a project + its tasks).
+ */
+const app = createOpenAPIHono();
+app.use(requirePermission({ project: ["read"] }));
+app.openapi(listProjectsRoute, async (c) => {
   const user = c.get("user");
-  if (!user) {
-    return c.json({ message: "Non authentifié" }, 401);
-  }
-
   try {
     const projects = await db
       .select({
@@ -33,8 +36,8 @@ const app = createOpenAPIHono().openapi(listProjectsRoute, async (c) => {
 
     return c.json(result, 200);
   } catch (err) {
-    log.error("Erreur lors du chargement des projets", err);
-    return c.json({ message: "Erreur interne du serveur" }, 500);
+    log.error("Failed to load projects", err);
+    return c.json({ message: "Internal server error" }, 500);
   }
 });
 

@@ -178,6 +178,7 @@ export const updateTaskRoute = createRoute({
             description: z.string(),
             colId: z.string(),
             priority: z.string().optional(),
+            dueDate: z.string().nullable(),
             positionString: z.string(),
             createdAt: z.string(),
             updatedAt: z.string(),

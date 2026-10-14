@@ -47,9 +47,9 @@ const app = new OpenAPIHono<AppEnv>({
 })
 
   /**
-   * Cette éléments et à modifier directement car obsolète !
+   * These elements are deprecated — do not modify directly!
    */
-  // Redirects après vérification email Better Auth → frontend
+  // Redirects after Better Auth email verification → frontend
   .get("/login", (c) => {
     const error = c.req.query("error");
     const redirectUrl = error
@@ -93,14 +93,14 @@ const app = new OpenAPIHono<AppEnv>({
     c.header("X-XSS-Protection", "0");
     c.header("Content-Security-Policy", "default-src 'self'");
   })
-  // En production, masquer les détails d'erreur Zod
+  // In production, hide Zod error details
   .onError((err, c) => {
     if (err.message?.includes("ZodError")) {
       return c.json({ error: "Données invalides" }, 400);
     }
     return c.json({ error: "Erreur interne" }, 500);
   })
-  // Session auth — guard centralisé sur les routes métier
+  // Session auth — centralized guard on business routes
   .use("/kanban/*", authGuard)
   .use("/projects/*", authGuard)
   .use("/workspaces/*", authGuard)
@@ -124,7 +124,7 @@ const app = new OpenAPIHono<AppEnv>({
   // Better Auth handler
   .all("/auth/*", (c) => auth.handler(c.req.raw))
 
-  // 7. Routes métier
+  // 7. Business routes
   .route("/kanban", kanbanModule)
   .route("/projects", projectsModule)
   .route("/workspaces", workspacesModule);

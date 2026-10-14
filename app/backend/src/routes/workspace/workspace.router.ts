@@ -4,7 +4,7 @@ import { createWorkspaceSchema, WorkspaceReponse } from "./worspace.shemas";
 export const createWorkspaceRoute = createRoute({
   method: "post",
   path: "/NewWorkspace",
-  description: "Créer un workspace",
+  description: "Creates a workspace",
   request: {
     body: {
       content: {
@@ -16,7 +16,7 @@ export const createWorkspaceRoute = createRoute({
   },
   responses: {
     201: {
-      description: "Workspace créé avec succès",
+      description: "Workspace created successfully",
       content: {
         "application/json": {
           schema: WorkspaceReponse,
@@ -24,7 +24,7 @@ export const createWorkspaceRoute = createRoute({
       },
     },
     401: {
-      description: "Non authentifié",
+      description: "Authentication is required.",
       content: {
         "application/json": {
           schema: z.object({ message: z.string() }),
@@ -32,7 +32,7 @@ export const createWorkspaceRoute = createRoute({
       },
     },
     500: {
-      description: "Erreur interne du serveur",
+      description: "An internal server error occurred.",
       content: {
         "application/json": {
           schema: z.object({ message: z.string() }),
@@ -46,7 +46,7 @@ export const createWorkspaceRoute = createRoute({
 export const getWorkspaceRoute = createRoute({
   method: "get",
   path: "/{id}",
-  description: "Retourne le détail d'un workspace",
+  description: "Returns workspace details",
   request: {
     params: z.object({
       id: z.uuid({ version: "v7" }),
@@ -54,7 +54,7 @@ export const getWorkspaceRoute = createRoute({
   },
   responses: {
     200: {
-      description: "Détail du workspace",
+      description: "Workspace details",
       content: {
         "application/json": {
           schema: WorkspaceReponse,
@@ -62,7 +62,7 @@ export const getWorkspaceRoute = createRoute({
       },
     },
     401: {
-      description: "Non authentifié",
+      description: "Authentication is required.",
       content: {
         "application/json": {
           schema: z.object({ message: z.string() }),
@@ -70,7 +70,7 @@ export const getWorkspaceRoute = createRoute({
       },
     },
     404: {
-      description: "Workspace non trouvé",
+      description: "Workspace not found",
       content: {
         "application/json": {
           schema: z.object({ message: z.string() }),
@@ -78,7 +78,7 @@ export const getWorkspaceRoute = createRoute({
       },
     },
     500: {
-      description: "Erreur interne du serveur",
+      description: "An internal server error occurred.",
       content: {
         "application/json": {
           schema: z.object({ message: z.string() }),
@@ -92,10 +92,10 @@ export const getWorkspaceRoute = createRoute({
 export const listWorkspacesRoute = createRoute({
   method: "get",
   path: "/",
-  description: "Liste tous les workspaces de l'utilisateur connecté",
+  description: "Lists all workspaces of the authenticated user",
   responses: {
     200: {
-      description: "Liste des workspaces",
+      description: "Workspace list",
       content: {
         "application/json": {
           schema: z.array(WorkspaceReponse),
@@ -103,7 +103,7 @@ export const listWorkspacesRoute = createRoute({
       },
     },
     401: {
-      description: "Non authentifié",
+      description: "Authentication is required.",
       content: {
         "application/json": {
           schema: z.object({ message: z.string() }),
@@ -111,7 +111,7 @@ export const listWorkspacesRoute = createRoute({
       },
     },
     500: {
-      description: "Erreur interne du serveur",
+      description: "An internal server error occurred.",
       content: {
         "application/json": {
           schema: z.object({ message: z.string() }),

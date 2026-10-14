@@ -1,24 +1,24 @@
-# Routes Workspace
+# Workspace Routes
 
-## Opérations
+## Operations
 
-| Opération | Route | Méthode | Description |
+| Operation | Route | Method | Description |
 |---|---|---|---|
-| Créer | `POST /workspaces/newWorkspace` | POST | Créer un workspace |
-| Lister | `GET /workspaces` | GET | Lister les workspaces de l'utilisateur |
-| Détail | `GET /workspaces/:id` | GET | Détail d'un workspace |
-| Modifier | `PATCH /workspaces/:id` | PATCH | Renommer le workspace |
-| Supprimer | `DELETE /workspaces/:id` | DELETE | Supprime le workspace + projets (cascade) |
+| Create | `POST /workspaces/newWorkspace` | POST | Create a workspace |
+| List | `GET /workspaces` | GET | List the user's workspaces |
+| Detail | `GET /workspaces/:id` | GET | Workspace detail |
+| Update | `PATCH /workspaces/:id` | PATCH | Rename the workspace |
+| Delete | `DELETE /workspaces/:id` | DELETE | Delete the workspace + projects (cascade) |
 
-## Champs modifiables
+## Editable fields
 
-| Champ | Modifiable | Raison |
+| Field | Editable | Reason |
 |---|---|---|
-| `name` | ✅ Oui | Renommer le workspace |
-| `userId` | ❌ Non | Propriétaire figé |
-| `createdAt` | ❌ Non | Date de création figée |
+| `name` | ✅ Yes | Rename the workspace |
+| `userId` | ❌ No | Frozen owner |
+| `createdAt` | ❌ No | Frozen creation date |
 
-## Schéma
+## Schema
 
 ```
 Workspace
@@ -28,18 +28,18 @@ Workspace
 └── createdAt (timestamp)
 ```
 
-## Sécurité
+## Security
 
-- Vérifier `c.get("user")` sur chaque route
-- Filtre `userId` sur chaque requête DB
-- Cascade delete : workspace → projects → cards
+- Check `c.get("user")` on each route
+- `userId` filter on each DB query
+- Cascade delete: workspace → projects → cards
 
-## Statut
+## Status
 
-| Route | Fichier | Statut |
+| Route | File | Status |
 |---|---|---|
-| `POST /newWorkspace` | `CreateWorkspace.ts` | [X] Terminé |
-| `GET /` | `list.ts` | [ ] À faire |
-| `GET /:id` | `getWorkspace.ts` | [ ] À faire |
-| `PATCH /:id` | `updateWorkspace.ts` | [ ] À faire |
-| `DELETE /:id` | `deleteWorkspace.ts` | [ ] À faire |
+| `POST /newWorkspace` | `CreateWorkspace.ts` | [X] Done |
+| `GET /` | `list.ts` | [ ] To do |
+| `GET /:id` | `getWorkspace.ts` | [ ] To do |
+| `PATCH /:id` | `updateWorkspace.ts` | [ ] To do |
+| `DELETE /:id` | `deleteWorkspace.ts` | [ ] To do |

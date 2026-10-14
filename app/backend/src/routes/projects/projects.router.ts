@@ -11,7 +11,7 @@ import {
 export const createProjetRoute = createRoute({
   method: "post",
   path: "/newProjects",
-  description: "Cette route permet de créer un projet",
+  description: "Creates a new project",
   request: {
     body: {
       content: {
@@ -23,7 +23,7 @@ export const createProjetRoute = createRoute({
   },
   responses: {
     201: {
-      description: "Projet créé avec succès",
+      description: "Project created successfully",
       content: {
         "application/json": {
           schema: ProjetReponse,
@@ -31,7 +31,7 @@ export const createProjetRoute = createRoute({
       },
     },
     401: {
-      description: "Non authentifié",
+      description: "Authentication is required.",
       content: {
         "application/json": {
           schema: z.object({ message: z.string() }),
@@ -39,7 +39,7 @@ export const createProjetRoute = createRoute({
       },
     },
     500: {
-      description: "Erreur interne du serveur",
+      description: "An internal server error occurred.",
       content: {
         "application/json": {
           schema: z.object({ message: z.string() }),
@@ -47,7 +47,7 @@ export const createProjetRoute = createRoute({
       },
     },
     404: {
-      description: "Workspace non trouvé",
+      description: "Workspace not found",
       content: {
         "application/json": {
           schema: z.object({ message: z.string() }),
@@ -61,7 +61,7 @@ export const createProjetRoute = createRoute({
 export const DeletedProjectRoute = createRoute({
   method: "delete",
   path: "/deletedProject/{id}",
-  description: "Cette route permet de supprimer un projet entier",
+  description: "Deletes an entire project",
   request: {
     params: DeletedProject,
   },
@@ -74,7 +74,7 @@ export const DeletedProjectRoute = createRoute({
           }),
         },
       },
-      description: "Projects supprimer avec succès",
+      description: "Project deleted successfully",
     },
     401: {
       content: {
@@ -82,7 +82,7 @@ export const DeletedProjectRoute = createRoute({
           schema: z.object({ message: z.string() }),
         },
       },
-      description: "Non authentifié",
+      description: "Authentication is required.",
     },
     404: {
       content: {
@@ -90,7 +90,7 @@ export const DeletedProjectRoute = createRoute({
           schema: z.object({ message: z.string() }),
         },
       },
-      description: "Project introuvable ou accès non autorisé",
+      description: "Project not found or access denied",
     },
     500: {
       content: {
@@ -98,7 +98,7 @@ export const DeletedProjectRoute = createRoute({
           schema: z.object({ message: z.string() }),
         },
       },
-      description: "Erreur interne du serveur",
+      description: "An internal server error occurred.",
     },
   },
 });
@@ -106,7 +106,7 @@ export const DeletedProjectRoute = createRoute({
 export const getBoardRoute = createRoute({
   method: "get",
   path: "/{projectId}/board",
-  description: "Retourne le projet et toutes ses tâches en une seule requête.",
+  description: "Returns the project and all its tasks in a single request.",
   request: {
     params: z.object({
       projectId: z.uuid({ version: "v7" }),
@@ -114,7 +114,7 @@ export const getBoardRoute = createRoute({
   },
   responses: {
     200: {
-      description: "Projet avec ses tâches",
+      description: "Project with its tasks",
       content: {
         "application/json": {
           schema: BoardResponse,
@@ -122,15 +122,15 @@ export const getBoardRoute = createRoute({
       },
     },
     401: {
-      description: "Non authentifié",
+      description: "Authentication is required.",
       content: { "application/json": { schema: ErrorResponse } },
     },
     404: {
-      description: "Projet non trouvé",
+      description: "Project not found",
       content: { "application/json": { schema: ErrorResponse } },
     },
     500: {
-      description: "Erreur interne du serveur",
+      description: "An internal server error occurred.",
       content: { "application/json": { schema: ErrorResponse } },
     },
   },
@@ -140,10 +140,10 @@ export const getBoardRoute = createRoute({
 export const listProjectsRoute = createRoute({
   method: "get",
   path: "/",
-  description: "Liste tous les projets de l'utilisateur connecté",
+  description: "Lists all projects of the authenticated user",
   responses: {
     200: {
-      description: "Liste des projets",
+      description: "Project list",
       content: {
         "application/json": {
           schema: z.array(ProjectListItem),
@@ -151,7 +151,7 @@ export const listProjectsRoute = createRoute({
       },
     },
     401: {
-      description: "Non authentifié",
+      description: "Authentication is required.",
       content: {
         "application/json": {
           schema: z.object({ message: z.string() }),
@@ -159,7 +159,7 @@ export const listProjectsRoute = createRoute({
       },
     },
     500: {
-      description: "Erreur interne du serveur",
+      description: "An internal server error occurred.",
       content: {
         "application/json": {
           schema: z.object({ message: z.string() }),

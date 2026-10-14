@@ -6,14 +6,14 @@ import { uuid } from "@backend/utils/uuid";
 import { createSlug } from "@packages/shared/utils/slug";
 import { and, eq } from "drizzle-orm";
 import { createProjetRoute } from "../projects.router";
+import { requirePermission } from "@backend/src/lib/auth-middleware";
 
 const log = createLogger("projects/newProjects");
 
-const app = createOpenAPIHono().openapi(createProjetRoute, async (c) => {
+const app = createOpenAPIHono();
+app.use(requirePermission({ project: ["create"] }));
+app.openapi(createProjetRoute, async (c) => {
   const user = c.get("user");
-  if (!user) {
-    return c.json({ message: "Non authentifié" }, 401);
-  }
   try {
     const data = c.req.valid("json");
     const result = await db.transaction(async (tx) => {
@@ -31,7 +31,6 @@ const app = createOpenAPIHono().openapi(createProjetRoute, async (c) => {
         return null;
       }
 
-      // Génère un slug lisible (marketing-q3, marketing-q3-2) sans chiffres aléatoires
       const existing = await tx
         .select({ slug: projectsTable.slug })
         .from(projectsTable)
@@ -54,13 +53,13 @@ const app = createOpenAPIHono().openapi(createProjetRoute, async (c) => {
     });
 
     if (result === null) {
-      return c.json({ message: "Workspace non trouvé" }, 404);
+      return c.json({ message: "Workspace not found" }, 404);
     }
 
     return c.json(result, 201);
   } catch (err) {
-    log.error("Impossible de créer un nouveau projet", err);
-    return c.json({ message: "Erreur interne du serveur" }, 500);
+    log.error("Failed to create project", err);
+    return c.json({ message: "Internal server error" }, 500);
   }
 });
 

@@ -6,12 +6,12 @@ import { COLUMNS, type ColumnId } from "@shared/config";
 export { COLUMNS };
 
 /**
- * Convertit un ColumnId (string) en sqlId (number) pour PostgreSQL.
- * Dérivé de COLUMNS — synchronisé automatiquement à chaque ajout de colonne.
+ * Converts a ColumnId (string) to a sqlId (number) for PostgreSQL.
+ * Derived from COLUMNS — automatically kept in sync whenever a column is added.
  *
  * @param col - "urgent" | "planned" | "other"
- * @returns Le sqlId correspondant dans COLUMNS
- * @throws Si col n'existe pas dans COLUMNS
+ * @returns The corresponding sqlId in COLUMNS
+ * @throws If col does not exist in COLUMNS
  */
 export const getColumnId = (col: ColumnId): number => {
   if (Object.hasOwn(COLUMNS, col)) {
@@ -20,7 +20,7 @@ export const getColumnId = (col: ColumnId): number => {
   throw new Error(`Colonne inconnue : ${col}`);
 };
 
-// Map pré-construite pour lookup O(1) au lieu de Object.find() O(n)
+// Prebuilt map for O(1) lookup instead of Object.find() O(n)
 export const sqlIdToColId = new Map<number, ColumnId>(
   Object.entries(COLUMNS).map(([id, cfg]) => [cfg.sqlId, id as ColumnId]),
 );

@@ -5,18 +5,18 @@ export const createProjetInput = z.object({
   name: z
     .string()
     .trim()
-    .min(1, { message: "Un caractère minimum" })
+    .min(1, { message: "At least 1 character" })
     .max(30)
     .refine((val) => !/[<>]/.test(val), {
-      message: "Les caractères < et > ne sont pas autorisés",
+      message: "Characters < and > are not allowed",
     }),
   description: z
     .string()
-    .max(200, { message: "Description trop longue" })
+    .max(200, { message: "Description too long" })
     .default("")
     .refine((val) => !/[<>]/.test(val), {
       message:
-        "Les caractères < et > ne sont pas autorisés dans la description",
+        "Characters < and > are not allowed in the description",
     }),
   workspaceId: z.string(),
 });
@@ -31,7 +31,7 @@ export const ProjetReponse = z.object({
 
 
 export const DeletedProject = z.object({
-  id: z.uuid({ version: "v7", message: "ID invalide : format UUID attendu" }),
+  id: z.uuid({ version: "v7", message: "Invalid ID: UUID format expected" }),
 });
 
 
