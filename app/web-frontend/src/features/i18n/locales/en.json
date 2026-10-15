@@ -54,6 +54,7 @@
     "titlePlaceholder": "Title",
     "titleRequired": "A title is required",
     "createTask": "Create task",
+    "createHint": "to create",
     "save": "Save",
     "saving": "Saving...",
     "cancel": "Cancel",
@@ -63,7 +64,10 @@
     "taskModified": "Task modified",
     "taskCreated": "Task created",
     "descriptionPlaceholder": "Write something...",
+    "descriptionName": "Description",
     "descriptionHint": "Add a detailed description…",
+    "editDescription": "Edit description",
+    "clickToEditHint": "Click to edit",
     "saveHint": "to save",
     "quickPriorityHint": "Quick change — keyboard accessible.",
     "selectDate": "Pick a date",
@@ -71,6 +75,9 @@
     "saveShortcut": "Save",
     "closeShortcut": "Close",
     "done": "Done"
+  },
+  "column": {
+    "addTask": "Add a task"
   },
   "metadata": {
     "priority": "Priority",

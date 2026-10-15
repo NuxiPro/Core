@@ -21,7 +21,7 @@ export function MagicLinkSent({ email }: { email?: string }) {
   return (
     <div className="space-y-3 text-center py-4">
       <div
-        className={`mx-auto size-12 rounded-full bg-[#0f766e]/15 flex items-center justify-center shadow-[0_0_24px_rgba(15,118,110,0.45)] ${step()}`}
+        className={`mx-auto size-12 rounded-full bg-primary/15 flex items-center justify-center shadow-[0_0_24px_rgba(15,118,110,0.45)] ${step()}`}
         style={{ transitionDelay: "0ms" }}
       >
         <CheckIcon

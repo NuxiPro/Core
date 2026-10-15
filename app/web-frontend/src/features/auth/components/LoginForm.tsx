@@ -21,7 +21,7 @@ import { MagicLinkSent } from "./MagicLinkSent";
 const log = createLogger("auth/login");
 
 const INPUT =
-  "h-11 bg-[#0f1011] border-0 text-[#f7f8f8] placeholder:text-[#8a8f98] focus-visible:ring-1 focus-visible:ring-[#0f766e]";
+  "h-11 bg-[#0f1011] border-0 text-[#f7f8f8] placeholder:text-[#8a8f98] focus-visible:ring-1 focus-visible:ring-primary";
 
 export default function LoginForm() {
   const { t } = useTranslation();
@@ -68,7 +68,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="relative h-full w-full bg-[#010102] font-sans selection:bg-[#0f766e]/30">
+    <div className="relative h-full w-full bg-[#010102] font-sans selection:bg-primary/30">
       {isSubmitting && (
         <div className="fixed inset-x-0 top-0 z-[60] h-[2px] bg-[#23252a]">
           <div className="auth-loading-bar h-full w-full bg-gradient-to-r from-transparent via-white/60 to-transparent" />
@@ -149,7 +149,7 @@ export default function LoginForm() {
                 )}
                 <Button
                   type="submit"
-                  className="w-full h-11 bg-[#0f766e] text-[#f0fdfa] hover:bg-[#0d655e] border-0 font-medium relative shadow-[0_1px_6px_rgba(15,118,110,0.35)] transition-all duration-[420ms] ease-out"
+                  className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary-hover border-0 font-medium relative shadow-[0_1px_6px_rgba(15,118,110,0.35)] transition-all duration-[420ms] ease-out"
                   disabled={isSubmitting}
                 >
                   {t("auth.signInWithEmail")}

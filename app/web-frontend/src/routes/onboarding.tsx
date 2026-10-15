@@ -21,7 +21,7 @@ export const Route = createFileRoute("/onboarding")({
   }),
   loader: async ({ search }) => {
     // Expired or invalid magic link: dedicated feedback page.
-    if (search.error) {
+    if (search?.error) {
       throw redirect({ to: "/link-expired" });
     }
     const session = await resolveSession();

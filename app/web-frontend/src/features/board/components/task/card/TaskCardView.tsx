@@ -87,11 +87,11 @@ const TaskCardView = memo(function TaskCardView({
       className={cn(
         "task-card group/card relative w-full rounded-xl px-3.5 pt-4 pb-3.5 select-none outline-none",
         // Pas de transition-all sur transform (conflit dnd) — seulement couleurs/ombre
-        "transition-[background-color,border-color,box-shadow] duration-[400ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] will-change-transform",
+        "transition-[background-color,border-color,box-shadow] duration-[400ms] ease-spring will-change-transform",
         isOver &&
           "ring-1 ring-primary/20 bg-primary/[0.03] shadow-[0_4px_12px_rgba(94,106,210,0.10)] scale-[1.01]",
         // Apple: 400ms spring, no jump — shadow breathes, border stays calm
-        "transition-all duration-[400ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] will-change-transform",
+        "transition-all duration-[400ms] ease-spring will-change-transform",
         "bg-card dark:bg-popover border border-border-subtle dark:border-border-subtle shadow-[0_1px_3px_0_rgba(17,19,24,0.08),0_4px_16px_0_rgba(17,19,24,0.08),0_0_0_1px_rgba(17,19,24,0.05)] dark:shadow-[0_2px_8px_0_rgba(0,0,0,0.5),0_8px_24px_0_rgba(0,0,0,0.45)]",
         "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card",
         glowClass,
@@ -113,11 +113,11 @@ const TaskCardView = memo(function TaskCardView({
       <div className="flex items-start gap-2.5">
         <span
           {...listeners}
-          className="mt-0.5 shrink-0 text-text-muted-hard hover:text-text-label cursor-grab transition-all duration-[300ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] p-0.5 -ml-0.5 rounded opacity-0 group-hover/card:opacity-100 focus-within:opacity-100"
+          className="mt-0.5 shrink-0 text-text-muted-hard hover:text-text-label cursor-grab transition-all duration-[300ms] ease-spring p-0.5 -ml-0.5 rounded opacity-0 group-hover/card:opacity-100 focus-within:opacity-100"
         >
           <GripVertical width={14} height={14} />
         </span>
-        <h3 className="text-sm font-semibold tracking-tight text-foreground transition-colors duration-[300ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] line-clamp-2 leading-snug flex-1 min-w-0">
+        <h3 className="text-sm font-semibold tracking-tight text-foreground transition-colors duration-[300ms] ease-spring line-clamp-2 leading-snug flex-1 min-w-0">
           {task.title || "Untitled"}
         </h3>
       </div>
@@ -145,7 +145,7 @@ const TaskCardView = memo(function TaskCardView({
             size="icon-xs"
             onClick={handleDelete}
             onPointerDown={(e) => e.stopPropagation()}
-            className="text-text-muted-hard hover:text-red-400 transition-all duration-[300ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] rounded-md w-5 h-5 opacity-0 group-hover/card:opacity-100 focus-visible:opacity-100"
+            className="text-text-muted-hard hover:text-red-400 transition-all duration-[300ms] ease-spring rounded-md w-5 h-5 opacity-0 group-hover/card:opacity-100 focus-visible:opacity-100"
             aria-label="Supprimer la tâche"
           >
             <Trash width={10} height={10} strokeWidth={2} />

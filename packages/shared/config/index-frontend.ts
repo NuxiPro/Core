@@ -2,16 +2,16 @@
 import { COLUMNS, type ColumnId } from "./index";
 
 /**
- * Convertit un sqlId (number) en ColumnId (string).
- * Sens inverse de getColumnId — utilisé par le backend avant d'envoyer au frontend.
- * Dérivé de COLUMNS, donc jamais désynchronisé.
+ * Converts a sqlId (number) to a ColumnId (string).
+ * Inverse of getColumnId — used by the backend before sending to the frontend.
+ * Derived from COLUMNS, so never out of sync.
  */
 export const SQL_ID_MAP: Record<number, ColumnId> = Object.fromEntries(
   Object.entries(COLUMNS).map(([key, val]) => [val.sqlId, key as ColumnId]),
 ) as Record<number, ColumnId>;
 
 /**
- * Liste exhaustive des ColumnId valides.
- * Tuple typé pour garantir qu'elle n'est jamais vide.
+ * Exhaustive list of valid ColumnIds.
+ * Typed tuple to guarantee it is never empty.
  */
 export const COLUMN_IDS = Object.keys(COLUMNS) as [ColumnId, ...ColumnId[]];

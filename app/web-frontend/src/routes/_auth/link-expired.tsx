@@ -28,7 +28,7 @@ function RouteComponent() {
           <p className="text-sm text-[#8a8f98]">{t("auth.linkExpiredHint")}</p>
           <Button
             type="button"
-            className="w-full h-11 bg-[#0f766e] text-[#f0fdfa] hover:bg-[#0d655e] border-0 font-medium transition-all duration-[420ms] ease-out"
+            className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary-hover border-0 font-medium transition-all duration-[420ms] ease-out"
             asChild
           >
             <Link to="/login">{t("auth.sendNewLink")}</Link>

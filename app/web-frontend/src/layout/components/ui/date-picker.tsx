@@ -16,6 +16,7 @@ interface DatePickerProps {
   onSelect: (date: Date | undefined) => void;
   placeholder?: string;
   disabled?: Matcher | Matcher[] | undefined;
+  triggerClassName?: string;
 }
 
 export function DatePicker({
@@ -23,6 +24,7 @@ export function DatePicker({
   onSelect,
   placeholder = "Pick a date",
   disabled,
+  triggerClassName = "",
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
 
@@ -34,6 +36,7 @@ export function DatePicker({
           className={cn(
             "justify-start text-left font-normal",
             !date && "text-muted-foreground",
+            triggerClassName,
           )}
         >
           <CalendarDays className="mr-2 size-4" />

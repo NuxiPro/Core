@@ -1,6 +1,6 @@
 /**
- * Slug partagé — source unique pour backend et frontend
- * Lisible non-tech : "Marketing Q3" → "marketing-q3", doublon → "marketing-q3-2"
+ * Shared slug — single source for backend and frontend
+ * Non-tech readable: "Marketing Q3" → "marketing-q3", duplicate → "marketing-q3-2"
  */
 
 export function slugify(name: string): string {

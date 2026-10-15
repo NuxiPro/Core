@@ -2,8 +2,11 @@ import { kanbanModule } from "@backend/src/routes/kanban/index";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { compress } from "hono/compress";
 import { cors } from "hono/cors";
+import { secureHeaders } from "hono/secure-headers";
+import type { Context } from "hono";
 import { createMiddleware } from "hono/factory";
 import { auth } from "./auth";
+import { securityAlert } from "./lib/security-alert";
 import { httpLogger } from "./logique/logging/logger";
 import { projectsModule } from "./routes/projects";
 import { workspacesModule } from "./routes/workspace";
@@ -14,6 +17,13 @@ if (!allowedOrigin) {
 }
 
 const frontendUrl = allowedOrigin.split(",")[0];
+
+// Post-auth landing redirects (paths mirror the frontend router).
+const authRedirect = (path: string, withError: boolean) => (c: Context) => {
+  const error = withError ? c.req.query("error") : undefined;
+  const target = `${frontendUrl}${path}`;
+  return c.redirect(error ? `${target}?error=${error}` : target);
+};
 
 export interface AppEnv {
   Variables: {
@@ -26,11 +36,11 @@ export const authGuard = createMiddleware<AppEnv>(async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
   if (!session?.user) {
-    return c.json({ error: "Non authentifié" }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
 
   if (!session.user.emailVerified) {
-    return c.json({ error: "Email non vérifié" }, 403);
+    return c.json({ error: "Email not verified" }, 403);
   }
 
   c.set("user", session.user);
@@ -41,7 +51,7 @@ export const authGuard = createMiddleware<AppEnv>(async (c, next) => {
 const app = new OpenAPIHono<AppEnv>({
   defaultHook: (result, c) => {
     if (!result.success) {
-      return c.json({ error: "Données invalides" }, 400);
+      return c.json({ error: "Invalid data" }, 400);
     }
   },
 })
@@ -49,26 +59,14 @@ const app = new OpenAPIHono<AppEnv>({
   /**
    * These elements are deprecated — do not modify directly!
    */
-  // Redirects after Better Auth email verification → frontend
-  .get("/login", (c) => {
-    const error = c.req.query("error");
-    const redirectUrl = error
-      ? `${frontendUrl}/login?error=${error}`
-      : `${frontendUrl}/login`;
-    return c.redirect(redirectUrl);
-  })
-  .get("/onboarding", (c) => {
-    const error = c.req.query("error");
-    const redirectUrl = error
-      ? `${frontendUrl}/onboarding?error=${error}`
-      : `${frontendUrl}/onboarding`;
-    return c.redirect(redirectUrl);
-  })
-  .get("/", (c) => {
-    return c.redirect(frontendUrl as string);
-  })
+  // Redirects after Better Auth email verification → frontend.
+  // Single handler factory: paths mirror the frontend router.
+  .get("/login", authRedirect("/login", true))
+  .get("/onboarding", authRedirect("/onboarding", true))
+  .get("/", authRedirect("/", false))
   .basePath("/api/v1")
   .use("*", httpLogger())
+  .use("*", securityAlert())
   .use(
     "*",
     cors({
@@ -81,24 +79,13 @@ const app = new OpenAPIHono<AppEnv>({
     }),
   )
   .use("*", compress())
-  .use("*", async (c, next) => {
-    await next();
-    c.header("X-Frame-Options", "DENY");
-    c.header("X-Content-Type-Options", "nosniff");
-    c.header(
-      "Strict-Transport-Security",
-      "max-age=31536000; includeSubDomains",
-    );
-    c.header("Referrer-Policy", "strict-origin-when-cross-origin");
-    c.header("X-XSS-Protection", "0");
-    c.header("Content-Security-Policy", "default-src 'self'");
-  })
+  .use("*", secureHeaders())
   // In production, hide Zod error details
   .onError((err, c) => {
     if (err.message?.includes("ZodError")) {
-      return c.json({ error: "Données invalides" }, 400);
+      return c.json({ error: "Invalid data" }, 400);
     }
-    return c.json({ error: "Erreur interne" }, 500);
+    return c.json({ error: "Internal error" }, 500);
   })
   // Session auth — centralized guard on business routes
   .use("/kanban/*", authGuard)
@@ -114,7 +101,7 @@ const app = new OpenAPIHono<AppEnv>({
       const contentType = c.req.header("content-type");
       if (!contentType?.includes("application/json")) {
         return c.json(
-          { error: "Content-Type doit être application/json" },
+          { error: "Content-Type must be application/json" },
           415,
         );
       }

@@ -5,6 +5,7 @@ import { db } from "./drizzle/connection/index";
 import * as schema from "./drizzle/schemas/index";
 import { createLogger } from "./logique/logging/logger";
 import { admin, lastLoginMethod, magicLink } from "better-auth/plugins";
+import { RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS } from "./lib/rate-limit-config";
 const log = createLogger("auth");
 
 // Local dev: print magic links in the terminal, no email tool needed.
@@ -17,9 +18,19 @@ export const auth = betterAuth({
       name: {
         type: "string",
         required: false,
-        defaultValue: "user",
+        defaultValue: "User",
       },
       role: { type: "string", defaultValue: "user", input: false},
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        // Magic-link sign-up inserts name: "" — backfill the default here.
+        before: async (user) => ({
+          data: { ...user, name: user.name?.trim() ? user.name : "User" },
+        }),
+      },
     },
   },
   baseURL: process.env.BETTER_AUTH_URL,
@@ -55,8 +66,9 @@ export const auth = betterAuth({
   ],
   rateLimit: {
     enabled: true,
-    window: 120,
-    max: 20,
+    // better-auth window is in seconds.
+    window: RATE_LIMIT_WINDOW_MS / 1000,
+    max: RATE_LIMIT_MAX,
     customRules: {
       // Tighten email-sending routes: anti-spam on magic links.
       "/sign-in/magic-link": { window: 60, max: 5 },

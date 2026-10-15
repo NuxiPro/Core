@@ -86,6 +86,7 @@ html.theme-transition *::after {
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: "Geist Variable", sans-serif;
+  --ease-spring: cubic-bezier(0.25, 0.1, 0.25, 1);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -152,10 +153,10 @@ html.theme-transition *::after {
   --foreground: #111318;
   --popover: #ffffff;
   --popover-foreground: #111318;
-  /* Primary: bleu confiance — soft slate-blue, trustworthy, not generic mauve */
-  --primary: #2d6a9f;
-  --primary-hover: #3d84be;
-  --primary-active: #1e4f73;
+  /* Primary: teal identité — sobre, signature du projet */
+  --primary: #0f766e;
+  --primary-hover: #0d655e;
+  --primary-active: #0b4f49;
   --primary-foreground: #ffffff;
   /* Secondary / muted: paper fill #eceef2 — one step above canvas, visible but calm */
   --secondary: #eceef2;
@@ -180,7 +181,7 @@ html.theme-transition *::after {
   /* Sidebar: one step darker than canvas — anchors the layout without harshness */
   --sidebar: #eceef2;
   --sidebar-foreground: #111318;
-  --sidebar-primary: #5e6ad2;
+  --sidebar-primary: #0f766e;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #ffffff;
   --sidebar-accent-foreground: #111318;
@@ -223,10 +224,10 @@ html.theme-transition *::after {
   --foreground: #f7f8f8;
   --popover: #141516;
   --popover-foreground: #f7f8f8;
-  /* Primary: bleu confiance — même teinte, lisible sur canvas #010102 */
-  --primary: #2d6a9f;
-  --primary-hover: #3d84be;
-  --primary-active: #1e4f73;
+  /* Primary: teal identité — même teinte, lisible sur canvas #010102 */
+  --primary: #0f766e;
+  --primary-hover: #0d655e;
+  --primary-active: #0b4f49;
   --primary-foreground: #ffffff;
   /* Secondary & muted: surface-2 level */
   --secondary: #141516;
@@ -251,7 +252,7 @@ html.theme-transition *::after {
   /* Sidebar: sits between canvas and surface-1 */
   --sidebar: #08090a;
   --sidebar-foreground: #d0d6e0;
-  --sidebar-primary: #5e6ad2;
+  --sidebar-primary: #0f766e;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #0f1011;
   --sidebar-accent-foreground: #f7f8f8;

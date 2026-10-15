@@ -14,7 +14,7 @@ function RouteComponent() {
   const email = search?.email ?? "";
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-[#010102] font-sans selection:bg-[#0f766e]/30 px-4 overflow-y-auto">
+    <div className="w-full h-full flex flex-col items-center justify-center bg-[#010102] font-sans selection:bg-primary/30 px-4 overflow-y-auto">
       <div className="w-full max-w-sm space-y-8">
         {/* Brand + Icône */}
         <div className="text-center animate-fade-in-up space-y-4">

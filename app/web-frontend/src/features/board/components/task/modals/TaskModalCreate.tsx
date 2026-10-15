@@ -68,7 +68,7 @@ export function TaskModalCreate({
             {...register("title", { required: t("task.titleRequired") })}
             placeholder={t("task.titlePlaceholder")}
             aria-invalid={!!errors.title}
-            className="w-full bg-background border border-border rounded-xl px-3.5 py-3 text-[15px] font-medium leading-5 text-foreground placeholder:text-text-muted-hard outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
+            className="w-full bg-background border border-border rounded-xl px-3.5 py-3 text-[15px] font-medium leading-5 text-foreground placeholder:text-text-muted-hard outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-300 ease-spring"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -92,11 +92,7 @@ export function TaskModalCreate({
               ↵
             </kbd>
             <span className="text-muted-foreground font-medium">
-              pour créer
-            </span>
-            <span className="hidden sm:inline text-muted-foreground/40">·</span>
-            <span className="hidden sm:inline text-muted-foreground/60">
-              Maj+Entrée nouvelle ligne
+              {t("task.createHint")}
             </span>
           </div>
           <div className="flex items-center gap-2">

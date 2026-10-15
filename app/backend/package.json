@@ -26,7 +26,6 @@
     "drizzle-orm": "^0.45.4",
     "fractional-indexing": "^4.0.0",
     "hono": "^4.13.13",
-    "hono-rate-limiter": "^0.5.4",
     "loops": "^7.3.0",
     "pg": "^8.23.1",
     "zod": "^4.6.7"

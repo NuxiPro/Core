@@ -56,11 +56,13 @@ export function PriorityIcon({
 interface PrioritySelectProps {
   value: PriorityLabel;
   onValueChange: (priority: PriorityLabel) => void;
+  compact?: boolean;
 }
 
 export const PrioritySelect = memo(function PrioritySelect({
   value,
   onValueChange,
+  compact = false,
 }: PrioritySelectProps) {
   const currentStyle = priorityStyles[value];
   const handleSelect = useCallback(
@@ -74,17 +76,22 @@ export const PrioritySelect = memo(function PrioritySelect({
         <button
           type="button"
           className={cn(
-            "w-full flex items-center justify-between gap-2 px-3 py-2",
-            "rounded-xl text-sm",
-            "transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]",
+            "flex items-center justify-between gap-2 rounded-xl",
+            compact ? "w-auto px-2.5 py-1.5 text-[13px]" : "w-full px-3 py-2 text-sm",
+            "transition-all duration-300 ease-spring",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
             "cursor-pointer",
-            "bg-white dark:bg-[#0f1011] border border-[#d9dce4] dark:border-[#23252a] hover:border-[#cbd0dc] dark:hover:border-[#34343a] hover:shadow-sm shadow-sm",
+            "bg-white dark:bg-card border border-border-subtle dark:border-border hover:border-[#cbd0dc] dark:hover:border-border-subtle hover:shadow-sm shadow-sm",
           )}
         >
           <div className="flex items-center gap-2">
             <PriorityIcon priority={value} className="size-3.5" />
-            <span className="text-sm font-medium text-foreground">
+            <span
+              className={cn(
+                "font-medium text-foreground",
+                compact ? "text-[13px]" : "text-sm",
+              )}
+            >
               {currentStyle.label}
             </span>
           </div>
@@ -95,7 +102,7 @@ export const PrioritySelect = memo(function PrioritySelect({
       <DropdownMenuContent
         align="start"
         sideOffset={4}
-        className="w-[180px] rounded-xl border border-[#d9dce4] dark:border-[#23252a] bg-white dark:bg-[#141516] shadow-[0_8px_24px_rgba(17,19,24,0.08),0_16px_48px_rgba(17,19,24,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-1.5"
+        className="w-[180px] rounded-xl border border-border-subtle dark:border-border bg-card dark:bg-popover shadow-[0_8px_24px_rgba(17,19,24,0.08),0_16px_48px_rgba(17,19,24,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-1.5"
       >
         {PRIORITY_ORDER.map((p) => {
           const style = priorityStyles[p];
@@ -106,11 +113,11 @@ export const PrioritySelect = memo(function PrioritySelect({
               onClick={() => handleSelect(p)}
               className={cn(
                 "flex items-center gap-2 px-2.5 py-2 rounded-lg cursor-pointer",
-                "bg-transparent transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]",
+                "bg-transparent transition-all duration-200 ease-spring",
                 "focus:outline-none focus:bg-transparent focus:text-inherit",
                 isActive
                   ? "bg-primary/10 dark:bg-primary/15 font-medium"
-                  : "hover:bg-[#f6f7f9] dark:hover:bg-[#0f1011]",
+                  : "hover:bg-background dark:hover:bg-card",
               )}
             >
               <PriorityIcon priority={p} className="size-3.5" />

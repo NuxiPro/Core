@@ -11,40 +11,40 @@ const server = Bun.serve({
   fetch: app.fetch,
 });
 
-log.info(`Serveur en ligne sur http://localhost:${server.port}`);
+log.info(`Server online at http://localhost:${server.port}`);
 
 // ─── Graceful shutdown ───────────────────────────────────────
 const gracefulShutdown = async (signal: string) => {
-  log.warn(`Signal ${signal} reçu — arrêt progressif en cours`);
+  log.warn(`Signal ${signal} received — graceful shutdown in progress`);
 
-  // Timeout de sécurité pour éviter un blocage infini
+  // Safety timeout to avoid hanging forever
   const forceExitTimeout = setTimeout(() => {
-    log.error("Arrêt forcé après timeout de 10s");
+    log.error("Forced shutdown after 10s timeout");
     process.exit(1);
   }, 10000);
 
   try {
-    // 1. On arrête d'abord le serveur Bun proprement (attend la fin des requêtes HTTP en cours)
+    // 1. Stop the Bun server first (wait for in-flight HTTP requests)
     await server.stop(false);
-    log.info("Bun ne prend plus de nouvelles requêtes HTTP");
+    log.info("Bun no longer accepts new HTTP requests");
 
-    // 2. On arrête les tâches de fond (Cron)
+    // 2. Stop background tasks (Cron)
     try {
       CronCenter.stop();
-      log.info("Tâches Cron arrêtées");
+      log.info("Cron tasks stopped");
     } catch (error) {
-      log.error("Échec arrêt CronCenter", error);
+      log.error("Failed to stop CronCenter", error);
     }
 
-    // 3. En dernier, on ferme la base de données une fois que plus personne n'en a besoin
+    // 3. Last, close the database once nobody needs it
     try {
       await pool.end();
-      log.info("Pool PostgreSQL fermé proprement");
+      log.info("PostgreSQL pool closed cleanly");
     } catch (error) {
-      log.error("Échec fermeture pool PostgreSQL", error);
+      log.error("Failed to close PostgreSQL pool", error);
     }
 
-    log.info("Serveur complètement éteint.");
+    log.info("Server fully shut down.");
   } finally {
     clearTimeout(forceExitTimeout);
     process.exit(0);

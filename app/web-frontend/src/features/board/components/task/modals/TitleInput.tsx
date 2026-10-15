@@ -31,7 +31,7 @@ export function TitleInput({
         onChange={(e) => onChange(e.target.value.slice(0, TITLE_MAX))}
         placeholder={placeholder}
         className={cn(
-          "w-full bg-background border border-border rounded-xl px-3.5 py-3 text-[15px] font-medium leading-5 text-foreground placeholder:text-text-muted-hard outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]",
+          "w-full bg-background border border-border rounded-xl px-3.5 py-3 text-[15px] font-medium leading-5 text-foreground placeholder:text-text-muted-hard outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-300 ease-spring",
           className,
         )}
       />

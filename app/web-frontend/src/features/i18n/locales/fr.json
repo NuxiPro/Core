@@ -54,6 +54,7 @@
     "titlePlaceholder": "Titre",
     "titleRequired": "Un titre est requis",
     "createTask": "Créer la tâche",
+    "createHint": "pour créer",
     "save": "Enregistrer",
     "saving": "Enregistrement...",
     "cancel": "Annuler",
@@ -62,8 +63,11 @@
     "activity": "Activité",
     "taskModified": "Tâche modifiée",
     "taskCreated": "Tâche créée",
+    "descriptionName": "Description",
     "descriptionPlaceholder": "Écrire quelque chose...",
     "descriptionHint": "Ajoutez une description détaillée…",
+    "editDescription": "Modifier la description",
+    "clickToEditHint": "Cliquez pour modifier",
     "saveHint": "pour enregistrer",
     "quickPriorityHint": "Changement rapide — accessible au clavier.",
     "selectDate": "Choisir une date",
@@ -180,6 +184,9 @@
     "incorrectEmailOrPassword": "Email incorrect",
     "registrationError": "Une erreur est survenue lors de l'inscription.",
     "noWorkspaceAvailable": "Aucun workspace disponible"
+  },
+  "column": {
+    "addTask": "Ajouter une tâche"
   },
   "archive": {
     "title": "Archives du projet",

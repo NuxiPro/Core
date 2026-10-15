@@ -1,7 +1,7 @@
 import type { ColumnConfig, ColumnId } from "../../config/index";
 import type { CreateTaskInput, Task, TaskSummary } from "../task/task";
 
-// Handlers réutilisables — DRY
+// Reusable handlers — DRY
 export type TaskId = Task["id"];
 export type TaskUpdateHandler = (
   taskId: TaskId,
