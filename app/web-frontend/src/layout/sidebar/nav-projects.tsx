@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { CircleIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   SidebarGroup,
@@ -8,6 +7,7 @@ import {
   SidebarMenuItem,
 } from "@/src/layout/components/ui/sidebar";
 import { slugify } from "@/src/shared/utils/utils";
+
 type Project = {
   id: string;
   name: string;
@@ -20,26 +20,12 @@ export function NavProjects({
   isLoading,
   activeProjectId,
 }: {
-  projects?: Project[];
-  isLoading?: boolean;
-  activeProjectId?: string;
+  projects?: Project[] | undefined;
+  isLoading?: boolean | undefined;
+  activeProjectId?: string | undefined;
 }) {
   const { t } = useTranslation();
   const items = projects ?? [];
-
-  // Simple color generator based on project ID
-  const getProjectColor = (id: string) => {
-    const colors = [
-      "text-rose-500",
-      "text-amber-500",
-      "text-emerald-500",
-      "text-sky-500",
-      "text-violet-500",
-      "text-pink-500",
-    ];
-    const index = id.charCodeAt(0) % colors.length;
-    return colors[index];
-  };
 
   return (
     <SidebarGroup className="p-0">
@@ -66,32 +52,32 @@ export function NavProjects({
         )}
         {items.map((item) => {
           const isActive = item.id === activeProjectId;
-          const colorClass = getProjectColor(item.id);
 
           return (
-            <SidebarMenuItem key={item.id} className="my-1">
+            <SidebarMenuItem key={item.id} className="my-0.5">
               <SidebarMenuButton
                 asChild
                 isActive={isActive}
-                className={`group/item relative rounded-md transition-all duration-200 border ${
-                  isActive
-                    ? "border-black/15 dark:border-border bg-secondary shadow-[0_1px_2px_0_rgba(0,0,0,0.04)]"
-                    : "border-transparent hover:border-black/8 dark:hover:border-border hover:bg-sidebar-accent"
-                }`}
+                className="rounded-md transition-colors duration-200 hover:bg-sidebar-accent/60 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium"
               >
                 <Link
                   to="/kanban/$projectSlug"
                   params={{ projectSlug: item.slug ?? slugify(item.name) }}
-                  className="px-2.5 py-2"
+                  preload="intent"
+                  activeOptions={{ exact: false }}
+                  activeProps={{ className: "bg-sidebar-accent font-medium" }}
+                  aria-current={isActive ? "page" : undefined}
+                  className="group flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 transition-colors hover:bg-sidebar-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
-                  {isActive ? (
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 ring-2 ring-emerald-500/30" />
-                  ) : (
-                    <CircleIcon
-                      className={`size-2.5 ${colorClass} group-hover/item:opacity-100 opacity-80 transition-opacity duration-200`}
-                    />
-                  )}
-                  <span className="text-[13px] text-sidebar-foreground truncate">
+                  <span
+                    aria-hidden
+                    className={`size-2.5 shrink-0 rounded-full transition-colors group-data-[status=active]:bg-emerald-500 group-data-[status=active]:ring-2 group-data-[status=active]:ring-emerald-500/25 ${
+                      isActive
+                        ? "bg-emerald-500 ring-2 ring-emerald-500/25"
+                        : "bg-muted-foreground/50"
+                    }`}
+                  />
+                  <span className="truncate text-[13px] text-sidebar-foreground">
                     {item.name}
                   </span>
                 </Link>

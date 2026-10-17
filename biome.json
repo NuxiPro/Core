@@ -71,6 +71,19 @@
   },
   "overrides": [
     {
+      "includes": [
+        "app/web-frontend/src/components/tiptap-ui/**",
+        "app/web-frontend/src/components/tiptap-ui-primitive/**",
+        "app/web-frontend/src/components/tiptap-node/**",
+        "app/web-frontend/src/components/tiptap-icons/**",
+        "app/web-frontend/src/hooks/**",
+        "app/web-frontend/src/lib/tiptap-utils.ts"
+      ],
+      "linter": {
+        "rules": { "recommended": false }
+      }
+    },
+    {
       "includes": ["**/*.css"],
       "linter": {
         "rules": {

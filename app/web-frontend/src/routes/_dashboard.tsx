@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useSyncLanguage } from "@/src/shared/hooks/useSyncLanguage";
 import { resolveSession } from "@/src/shared/lib/auth-guard";
 import { AppBreadcrumb } from "../layout/breadcrumb/app-breadcrumb";
+import { RateLimitBanner } from "../layout/components/animation/rate-limit-banner";
 import {
   SidebarProvider,
   SidebarTrigger,
@@ -37,17 +38,11 @@ function DashboardLayout() {
                 <div className="h-3 w-px bg-border-subtle mx-1 shrink-0" />
                 <AppBreadcrumb />
               </div>
-              <a
-                href="https://nuxipro.com/legal-center/notices"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 px-4 py-2 text-xs text-text-muted-hard hover:text-text-label hover:underline transition-colors whitespace-nowrap"
-              >
-                <Scale size={12} />
-                Legal Information
-              </a>
             </header>
             <div className="flex-1 min-h-0 overflow-hidden">
+              <div className="px-3 pt-2 shrink-0">
+                <RateLimitBanner />
+              </div>
               <Outlet />
             </div>
           </div>

@@ -74,7 +74,7 @@ export interface TaskModalCreateProps {
 }
 
 export interface TaskModalEditProps {
-  task: Task | null;
+  task: Task | TaskSummary | null;
   onClose: () => void;
   onUpdate?: TaskUpdateHandler | undefined;
 }

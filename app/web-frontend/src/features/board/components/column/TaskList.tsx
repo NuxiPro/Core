@@ -12,7 +12,7 @@ import type { ColumnId } from "@packages/shared/config/index";
 import type { TaskListProps } from "@packages/shared/types/components";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { CheckCircle2, Inbox } from "lucide-react";
-import { memo, useRef } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Loader } from "@/src/layout/components/animation/loading/Loader";
 import TaskCard from "../task/card/TaskCardView";
 import { EmptyState } from "./EmptyState";
@@ -51,6 +51,31 @@ export const TaskList = memo(function TaskList({
   activeTaskId = null,
 }: TaskListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [canUp, setCanUp] = useState(false);
+  const [canDown, setCanDown] = useState(false);
+
+  const updateEdges = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanUp(el.scrollTop > 4);
+    setCanDown(el.scrollTop < el.scrollHeight - el.clientHeight - 4);
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    updateEdges();
+    el.addEventListener("scroll", updateEdges, { passive: true });
+    window.addEventListener("resize", updateEdges);
+    return () => {
+      el.removeEventListener("scroll", updateEdges);
+      window.removeEventListener("resize", updateEdges);
+    };
+  }, [updateEdges]);
+  // Recalcule les fades quand le nombre de tâches change (hauteur du contenu).
+  useEffect(() => {
+    if (tasks.length >= 0) updateEdges();
+  }, [updateEdges, tasks.length]);
   const hasContent = tasks && tasks.length > 0;
   const isEmpty = !isLoading && !hasContent;
   const shouldVirtualize = tasks.length > 20;
@@ -65,12 +90,17 @@ export const TaskList = memo(function TaskList({
   const sortableItems = tasks.map((t) => t.id);
 
   return (
-    <section
-      ref={scrollRef}
-      className="flex-1 h-full overflow-y-auto overflow-x-hidden flex flex-col gap-2 px-3 pt-1 pb-2 scrollbar-thin"
-      aria-label="Task list"
-      aria-busy={isLoading}
-    >
+    <div className="relative flex-1 min-h-0 flex flex-col">
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute top-0 inset-x-3 h-6 z-10 rounded-t-lg bg-gradient-to-b from-card to-transparent transition-opacity duration-300 ${canUp ? "opacity-100" : "opacity-0"}`}
+      />
+      <section
+        ref={scrollRef}
+        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-y-contain flex flex-col gap-2 px-3 pt-1 pb-2 scrollbar-thin"
+        aria-label="Task list"
+        aria-busy={isLoading}
+      >
       {isLoading ? (
         <div className="h-full flex-1 flex items-center justify-center">
           <Loader />
@@ -139,6 +169,11 @@ export const TaskList = memo(function TaskList({
           )}
         </SortableContext>
       )}
-    </section>
+      </section>
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute bottom-0 inset-x-3 h-6 z-10 rounded-b-lg bg-gradient-to-t from-card to-transparent transition-opacity duration-300 ${canDown ? "opacity-100" : "opacity-0"}`}
+      />
+    </div>
   );
 });

@@ -7,6 +7,7 @@ import {
   magicLinkClient,
 } from "better-auth/client/plugins";
 import { hc } from "hono/client";
+import { reportRateLimited } from "@/src/layout/components/animation/rate-limit-policy";
 import { handleAuthError } from "./auth-guard";
 
 const log = createLogger("client");
@@ -65,11 +66,13 @@ const fetcher = async (
     handleAuthError();
   }
   if (res.status === 429) {
-    const v = Number(res.headers.get("X-Retry-After") || "120");
+    const v = Number(
+      res.headers.get("Retry-After") ??
+        res.headers.get("X-Retry-After") ??
+        "120",
+    );
     if (Number.isFinite(v)) {
-      window.dispatchEvent(
-        new CustomEvent("rate-limit", { detail: { retryAfter: String(v) } }),
-      );
+      reportRateLimited(v);
     }
   }
   return res;

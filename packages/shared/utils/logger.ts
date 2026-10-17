@@ -21,11 +21,12 @@ export const C = {
   cyan: "\x1b[36m",
   green: "\x1b[32m",
   gray: "\x1b[90m",
+  magenta: "\x1b[35m",
 } as const;
 
-type Level = "debug" | "info" | "warn" | "error";
-const LABEL: Record<Level, string> = { debug: "DEBUG", info: "INFO ", warn: "WARN ", error: "ERROR" };
-const COLOR: Record<Level, string> = { debug: C.gray, info: C.cyan, warn: C.yellow, error: C.red };
+type Level = "debug" | "info" | "warn" | "alert" | "error";
+const LABEL: Record<Level, string> = { debug: "DEBUG", info: "INFO ", warn: "WARN ", alert: "ALERT", error: "ERROR" };
+const COLOR: Record<Level, string> = { debug: C.gray, info: C.cyan, warn: C.yellow, alert: C.magenta, error: C.red };
 
 // Error -> {message, stack}, circular-safe fallback to String().
 function detail(extra: unknown): unknown {
@@ -41,7 +42,7 @@ function detail(extra: unknown): unknown {
 function print(level: Level, ctx: string, msg: string, extra?: unknown): void {
   if (JSON_LOGS) {
     // biome-ignore lint/suspicious/noConsole: single allowed place
-    console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](
+    console[level === "error" ? "error" : level === "warn" || level === "alert" ? "warn" : "log"](
       JSON.stringify({ ts: new Date().toISOString(), level, ctx, msg, extra: detail(extra) }),
     );
     return;
@@ -50,7 +51,7 @@ function print(level: Level, ctx: string, msg: string, extra?: unknown): void {
   const line =
     extra === undefined ? `${prefix} ${msg}` : `${prefix} ${msg}\n${C.dim}${JSON.stringify(detail(extra), null, 2)}${C.reset}`;
   // biome-ignore lint/suspicious/noConsole: single allowed place
-  console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](line);
+  console[level === "error" ? "error" : level === "warn" || level === "alert" ? "warn" : "log"](line);
 }
 
 export type SentryLike = {
@@ -60,7 +61,7 @@ export type SentryLike = {
 
 export function createLogger(context: string, _sentry?: SentryLike) {
   return {
-    // info/debug stay silent in prod (deliberate); warn/error always ship.
+    // info/debug stay silent in prod (deliberate); warn/alert/error always ship.
     debug(msg: string, extra?: unknown): void {
       if (!IS_PROD) print("debug", context, msg, extra);
     },
@@ -69,6 +70,9 @@ export function createLogger(context: string, _sentry?: SentryLike) {
     },
     warn(msg: string, extra?: unknown): void {
       print("warn", context, msg, extra);
+    },
+    alert(msg: string, extra?: unknown): void {
+      print("alert", context, msg, extra);
     },
     error(msg: string, firstDetail?: unknown, secondDetail?: unknown): void {
       const a = detail(firstDetail);

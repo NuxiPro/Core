@@ -16,11 +16,11 @@
     "typecheck": "bun tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@better-auth/drizzle-adapter": "^1.7.7",
+    "@better-auth/drizzle-adapter": "^1.7.10",
     "@hono/standard-validator": "^0.4.0",
     "@hono/zod-openapi": "^1.6.3",
     "@types/node": "^22.20.5",
-    "better-auth": "^1.7.7",
+    "better-auth": "^1.7.10",
     "date-fns": "^4.4.0",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.4",

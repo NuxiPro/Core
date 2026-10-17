@@ -182,7 +182,9 @@
     "unknown": "unknown",
     "incorrectEmail": "Incorrect email",
     "registrationError": "An error occurred during registration.",
-    "noWorkspaceAvailable": "No workspace available"
+    "noWorkspaceAvailable": "No workspace available",
+    "rateLimitedPolite": "You're going a bit fast. Try again in {{duration}}.",
+    "rateLimitedFirm": "Too many repeated requests. Your access is temporarily restricted. Try again in {{duration}}."
   },
   "archive": {
     "title": "Project archives",

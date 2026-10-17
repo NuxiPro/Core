@@ -13,7 +13,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 import { slugify } from "@packages/shared/utils/slug";
-export { createSlug, isSlugAvailable, generateProjectSlug } from "@packages/shared/utils/slug";
+
+export {
+  createSlug,
+  generateProjectSlug,
+  isSlugAvailable,
+} from "@packages/shared/utils/slug";
 export { slugify };
 
 /**
@@ -32,20 +37,22 @@ export function slugToId(slug: string): string {
   // Compat ancien format avec suffixe id : on retire le dernier segment si 4 chars hex
   const parts = slug.split("-");
   const last = parts[parts.length - 1];
-  if (/^[a-f0-9]{4}$/i.test(last) && parts.length > 1) return parts.slice(0, -1).join("-");
+  if (/^[a-f0-9]{4}$/i.test(last) && parts.length > 1)
+    return parts.slice(0, -1).join("-");
   return slug;
 }
 
 /**
  * Trouve un projet par son slug stocké en DB.
  */
-export function findProjectBySlug<T extends { id: string; name: string; slug?: string }>(
-  projects: T[],
-  slug: string,
-): T | undefined {
+export function findProjectBySlug<
+  T extends { id: string; name: string; slug?: string },
+>(projects: T[], slug: string): T | undefined {
   // Priorité au slug stocké en DB (lisible, stable)
   const byStored = projects.find((p) => (p as { slug?: string }).slug === slug);
   if (byStored) return byStored;
   // Fallback ancien format ou sans DB : compare slugify(name)
-  return projects.find((p) => slugify(p.name) === slug || projectSlug(p.name, p.id) === slug);
+  return projects.find(
+    (p) => slugify(p.name) === slug || projectSlug(p.name, p.id) === slug,
+  );
 }

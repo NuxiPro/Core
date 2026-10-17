@@ -1,5 +1,5 @@
 import { useLocation } from "@tanstack/react-router";
-import { BuildingIcon, Check, ChevronDown } from "lucide-react";
+import { BuildingIcon, Check, ChevronDown, Plus } from "lucide-react";
 import type { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
 import { useProjects } from "@/src/features/board/hooks/useProjects";
@@ -28,7 +28,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   const { workspaces } = useWorkspaces();
   const location = useLocation();
 
-  // Extraire le slug depuis l'URL : /kanban/marketing-q3-a671
+  // Slug depuis l'URL : /kanban/marketing-q3-a671
   const slugMatch = location.pathname.match(/\/kanban\/([^/]+)/);
   const slug = slugMatch?.[1] ?? "";
   const matchedProject = findProjectBySlug(projects, slug);
@@ -45,18 +45,16 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant="inset" className="z-1" {...props}>
       <SidebarContent className="bg-sidebar">
-        {/* Section 1: Workspace Selector */}
-        <SidebarHeader className="p-3">
+        {/* ZONE HAUTE — sélecteur workspace, hauteur fixe */}
+        <SidebarHeader className="shrink-0 p-3 pb-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="flex items-center gap-2 p-2 border border-black/10 dark:border-border rounded-md cursor-pointer hover:bg-sidebar-accent transition-colors bg-black/[0.04]">
-                <BuildingIcon className="size-4 text-sidebar-foreground" />
-                <div className="flex flex-col min-w-0 flex-1">
-                  <span className="text-[13px] font-medium text-sidebar-foreground truncate">
-                    {currentWorkspace?.name ?? t("sidebar.noWorkspace")}
-                  </span>
-                </div>
-                <ChevronDown className="size-3.5 text-sidebar-foreground flex-shrink-0" />
+              <div className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-colors hover:bg-sidebar-accent">
+                <BuildingIcon className="size-4 shrink-0 text-sidebar-foreground" />
+                <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-sidebar-foreground">
+                  {currentWorkspace?.name ?? t("sidebar.noWorkspace")}
+                </span>
+                <ChevronDown className="size-3.5 shrink-0 text-sidebar-foreground" />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" sideOffset={4} className="w-56">
@@ -75,66 +73,44 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
             </DropdownMenuContent>
           </DropdownMenu>
         </SidebarHeader>
-        {/* Section 2: First Separator */}{" "}
-        {/* Veuillez ne pas touchée cette section car il est utile pour plus tard */}
-        {/*<div className="px-3 py-2">
-          <div className="h-px bg-border/30" />
-        </div>*/}
-        {/* Section 3: General Views (Placeholder) */}
-        {/*<div className="px-3 mb-2">
-          <div className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase mb-2 ml-2.5">
-            {t("sidebar.views")}
-          </div>
-          <div className="text-[11px] text-muted-foreground italic">
-             // Will be implemented later
-          </div>
-        </div>*/}
-        {/* Section 4: Second Separator */}
-        <div className="px-3 py-2">
-          <div className="h-px bg-border/30" />
+
+        {/* ZONE CENTRALE — scroll interne, ne pousse jamais le footer */}
+        <div className="px-5 pt-2.5" aria-hidden>
+          <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
         </div>
-        {/* Section 5: Projects List */}
-        <div className="px-3 mb-2">
-          <div className="flex items-center justify-between mb-2 px-2.5">
-            <div className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+        <div className="flex min-h-0 flex-1 flex-col px-3 pt-3">
+          <div className="flex shrink-0 items-center justify-between px-2.5 pb-1">
+            <span className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
               {t("sidebar.projects")}
-            </div>
+            </span>
             <NewProjectDialog
               trigger={
                 <button
                   type="button"
-                  className="p-0.5 rounded hover:bg-sidebar-accent transition-colors"
+                  className="rounded p-0.5 cursor-pointer transition-colors hover:bg-sidebar-accent"
                   aria-label={t("sidebar.newProject")}
                 >
-                  <svg
+                  <Plus
                     className="size-3.5 text-muted-foreground hover:text-sidebar-foreground"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 5v14m7-7H5"
-                    />
-                  </svg>
+                    aria-hidden
+                  />
                 </button>
               }
             />
           </div>
-          <NavProjects
-            projects={projects}
-            isLoading={isLoading}
-            activeProjectId={activeProjectId}
-          />
+          <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto pb-2">
+            <NavProjects
+              projects={projects}
+              isLoading={isLoading}
+              activeProjectId={activeProjectId}
+            />
+          </div>
         </div>
-        {/* Section 6: Third Separator */}
-        <div className="mt-auto px-3 py-2">
-          <div className="h-px bg-border/30" />
+
+        {/* ZONE BASSE — profil, toujours visible */}
+        <div className="mt-auto shrink-0 px-5 pt-2.5" aria-hidden>
+          <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
         </div>
-        {/* Section 7: User Menu */}
         <div className="p-3">
           <NavUser user={userData} />
         </div>

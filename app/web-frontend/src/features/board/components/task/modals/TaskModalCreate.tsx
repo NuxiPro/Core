@@ -1,5 +1,5 @@
 import type { TaskModalCreateProps } from "@packages/shared/types/components";
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { TITLE_MAX } from "@/src/shared/lib/constants";
@@ -19,14 +19,22 @@ export function TaskModalCreate({
     handleSubmit,
     reset,
     watch,
+    setFocus,
     formState: { errors },
   } = useForm({ defaultValues: { title: "" } });
   const len = watch("title", "").length;
+  useEffect(() => {
+    setFocus("title");
+  }, [setFocus]);
+  // Anti-spam: Entrée martelée / double-clic = une seule création.
+  const submittedRef = useRef(false);
 
   const onSubmit = useCallback(
     (d: { title: string }) => {
+      if (submittedRef.current) return;
       const title = d.title.trim().slice(0, TITLE_MAX);
       if (!title) return;
+      submittedRef.current = true;
       onAdd({ title, colId });
       reset();
       onOpenChange(false);
@@ -63,7 +71,6 @@ export function TaskModalCreate({
           </label>
           <input
             id="task-title"
-            autoFocus
             maxLength={TITLE_MAX}
             {...register("title", { required: t("task.titleRequired") })}
             placeholder={t("task.titlePlaceholder")}

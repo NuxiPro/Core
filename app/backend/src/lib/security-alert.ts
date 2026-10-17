@@ -1,13 +1,13 @@
 import { createLogger } from "@packages/shared/utils/logger";
 import type { MiddlewareHandler } from "hono";
-import { RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS } from "./rate-limit-config";
+import { RATE_LIMIT_WINDOW_MS, SECURITY_ALERT_THRESHOLD } from "./rate-limit-config";
 
 const log = createLogger("security");
 
 // Alert when refusals (403/429) stack up to the global rate-limit budget:
 // whoever hits the limiter repeatedly gets one log line (OpenObserve picks it up).
 const WINDOW_MS = RATE_LIMIT_WINDOW_MS;
-const THRESHOLD = RATE_LIMIT_MAX;
+const THRESHOLD = SECURITY_ALERT_THRESHOLD;
 const MAX_KEYS = 1000;
 
 const hits = new Map<string, { count: number; resetAt: number; alerted: boolean }>();
@@ -26,11 +26,10 @@ export function securityAlert(): MiddlewareHandler {
     const status = c.res.status;
     if (status !== 403 && status !== 429) return;
 
-    // Authenticated user id when known, shared "anon" bucket otherwise.
-    // No IP parsing: proxy headers are spoofable, raw socket IP is
-    // unavailable under plain Bun.serve without the hono adapter.
-    const key =
+    // Anonymous key: user UUID (or "anon") + route only — no email, no IP (GDPR-safe).
+    const userId =
       (c.get("user") as { id?: string } | undefined)?.id ?? "anon";
+    const key = `${userId} ${c.req.path}`;
     const now = Date.now();
     sweep(now);
 
@@ -43,9 +42,11 @@ export function securityAlert(): MiddlewareHandler {
     entry.count += 1;
     if (!entry.alerted && entry.count >= THRESHOLD) {
       entry.alerted = true;
-      log.warn(
-        `[SECURITY] repeated ${status} from ${key} (${entry.count} in ${WINDOW_MS / 60000}min)`,
-        { path: c.req.path },
+      // Self-explanatory + queryable (OpenObserve): who (UUID), where, how many.
+      // No action taken — alert only. If legit user: raise quota. If attack: block at proxy.
+      log.alert(
+        `[SECURITY] repeated refusals (alert only, nothing blocked): user=${userId} route=${c.req.path} status=${status} count=${entry.count} window=${WINDOW_MS / 60000}min`,
+        { userId, route: c.req.path, status, count: entry.count },
       );
     }
   };

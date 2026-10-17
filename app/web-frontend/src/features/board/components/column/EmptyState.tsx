@@ -1,6 +1,7 @@
 /**
  * EmptyState
- * Dashed placeholder slot — minimal geometric icon, lightweight micro-copy.
+ * Colonne vide façon Trello : contenu fantôme centré, sans boîte —
+ * tout le puits est la zone de drop.
  */
 
 import type { EmptyStateProps as SharedEmptyStateProps } from "@packages/shared/types/components";
@@ -20,9 +21,9 @@ export const EmptyState = memo(function EmptyState({
   action,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center h-full border border-dashed border-border-column rounded-xl p-6 text-center">
+    <div className="flex flex-col items-center justify-center h-full px-6 py-10 text-center select-none">
       {icon && (
-        <div className="mb-2.5 text-slate-400 dark:text-text-muted-hard">
+        <div className="mb-2.5 text-slate-400 dark:text-text-muted-hard opacity-60">
           {icon}
         </div>
       )}

@@ -85,8 +85,9 @@ export function useKanbanDnd({
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      // Plus réactif : distance 6 sans délai, évite l'impression de "collé"
-      activationConstraint: { distance: 6, delay: 0, tolerance: 5 },
+      // Click = ouvre le détail ; appui maintenu + mouvement = drag.
+      // Le délai laisse le clic passer, la tolérance garde le drag précis.
+      activationConstraint: { delay: 180, tolerance: 6 },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
@@ -206,6 +207,9 @@ export function useKanbanDnd({
     const payload = { taskId: activeId, colId, overTaskId, insertBefore };
     log.debug("→ onMoveTask", payload);
 
+    // Ferme l'overlay immédiatement : la carte réapparaît à sa place
+    // sans attendre le réseau (l'update optimiste a déjà bougé la carte).
+    setActiveTask(null);
     try {
       await onMoveTask(payload);
       log.debug("onMoveTask success", payload);
@@ -219,8 +223,6 @@ export function useKanbanDnd({
       }
       log.debug("onMoveTask error", { payload, error: String(err) });
       throw err;
-    } finally {
-      setActiveTask(null);
     }
   };
 

@@ -204,8 +204,8 @@ html.theme-transition *::after {
   --surface-elevated: #ffffff;
   --surface-gradient-mid: #fefefe;
   --surface-gradient-end: #eceef2;
-  --border-subtle: #d9dce4;
-  --border-column: #e9ebf0;
+  --border-subtle: #cfd4de;
+  --border-column: #d2d7e0;
   /* Text ladder — graphite, not pure black (less fatigue) */
   --text-primary: #111318;
   --text-label: #6b7283;
@@ -279,7 +279,7 @@ html.theme-transition *::after {
   --surface-gradient-end: #0f1011;
   /* Border tokens: hairline scale */
   --border-subtle: #34343a;
-  --border-column: #2a2a2e;
+  --border-column: #3b3b42;
   /* Text tokens: ink scale */
   --text-primary: #f7f8f8;
   --text-label: #8a8f98;
@@ -374,6 +374,49 @@ html {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+/* Apple-like expand: height + fade + slight rise, spring easing */
+@keyframes desc-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.99);
+    max-height: 64px;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    max-height: 60vh;
+  }
+}
+.animate-desc-expand {
+  animation: desc-expand 450ms var(--ease-spring);
+  transform-origin: top;
+  will-change: max-height, opacity, transform;
+}
+@keyframes desc-collapse {
+  from {
+    opacity: 0.4;
+    transform: translateY(6px) scale(0.995);
+    max-height: 55vh;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    max-height: 72px;
+  }
+}
+.animate-desc-collapse {
+  animation: desc-collapse 380ms var(--ease-spring);
+  transform-origin: top;
+  will-change: max-height, opacity, transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-desc-expand {
+    animation: none;
+  }
+  .animate-desc-collapse {
+    animation: none;
   }
 }
 @keyframes radialSettle {

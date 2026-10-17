@@ -183,7 +183,9 @@
     "unknown": "inconnue",
     "incorrectEmailOrPassword": "Email incorrect",
     "registrationError": "Une erreur est survenue lors de l'inscription.",
-    "noWorkspaceAvailable": "Aucun workspace disponible"
+    "noWorkspaceAvailable": "Aucun workspace disponible",
+    "rateLimitedPolite": "Vous allez un peu vite. Réessayez dans {{duration}}.",
+    "rateLimitedFirm": "Trop de requêtes répétées. Votre accès est temporairement restreint. Réessayez dans {{duration}}."
   },
   "column": {
     "addTask": "Ajouter une tâche"

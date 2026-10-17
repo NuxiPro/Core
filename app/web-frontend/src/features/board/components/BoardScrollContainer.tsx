@@ -46,7 +46,7 @@ export function BoardScrollContainer({
     });
 
   return (
-    <div className="relative group">
+    <div className="relative group h-full min-h-0">
       {canLeft && (
         <div
           className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent pointer-events-none z-10"

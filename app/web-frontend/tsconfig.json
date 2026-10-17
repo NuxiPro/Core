@@ -10,7 +10,8 @@
       "@/*": ["./*"],
       "@src/*": ["./src/*"],
       "@backend/*": ["../backend/*"],
-      "@packages/*": ["../../packages/*"]
+      "@packages/*": ["../../packages/*"],
+      "@layout/*": ["./src/layout/*"],
     },
 
     // On ajoute "bun" pour que les commandes Bun soient reconnues

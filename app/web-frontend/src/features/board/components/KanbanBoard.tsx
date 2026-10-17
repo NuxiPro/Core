@@ -83,7 +83,7 @@ export function KanbanBoard() {
           {COLUMN_IDS.map((id) => (
             <div
               key={id}
-              className="shrink-0 h-full snap-start w-[85vw] sm:w-[340px] sm:min-w-[300px] lg:flex-1 lg:w-auto lg:min-w-[280px] lg:max-w-[400px] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform"
+              className="shrink-0 h-full min-h-0 snap-start w-[85vw] sm:w-[340px] sm:min-w-[300px] lg:flex-1 lg:w-auto lg:min-w-[280px] lg:max-w-[400px] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform"
             >
               <Column
                 cfg={COLUMNS[id]}

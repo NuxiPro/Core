@@ -3,18 +3,17 @@ import type { TaskModalEditProps } from "@packages/shared/types/components";
 import type { PriorityLabel } from "@packages/shared/types/task/priority-level";
 import type { Task } from "@packages/shared/types/task/task";
 import { FileText } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Loader } from "@/src/layout/components/animation/loading/Loader";
 import { DatePicker } from "@/src/layout/components/ui/date-picker";
 import { DialogTitle } from "@/src/layout/components/ui/dialog";
-import { Separator } from "@/src/layout/components/ui/separator";
 import { CONTENT_MAX, TITLE_MAX } from "@/src/shared/lib/constants";
 import { sanitizeHtml } from "@/src/shared/utils/sanitize";
 
 import { PrioritySelect } from "../card/priority";
-import type { EditorHandle } from "../editor";
-import { TipTapEditor } from "../editor";
+import MarkdownEditor from "@/src/layout/md-editor/index";
 import { useTaskForm } from "../hooks/useTaskForm";
 import { TaskDialogShell } from "./TaskDialogShell";
 
@@ -25,6 +24,45 @@ const toUTCNoonISO = (d: Date | undefined): string | null => {
     Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 12),
   ).toISOString();
 };
+
+function DescriptionField({
+  description,
+  setDescription,
+}: {
+  description: string;
+  setDescription: (v: string) => void;
+}) {
+  const { t } = useTranslation();
+  const showCounter = description.length > CONTENT_MAX - 200;
+
+  return (
+    <div className="flex-1 min-h-0 px-5 pt-3 pb-4 flex flex-col gap-1.5">
+      <div className="flex h-8 items-center justify-between">
+        <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <FileText
+            className="h-4 w-4 shrink-0 text-muted-foreground"
+            aria-hidden="true"
+          />
+          {t("task.descriptionName")}
+        </div>
+        {showCounter && (
+          <span className="text-xs font-mono tabular-nums text-muted-foreground">
+            {description.length}/{CONTENT_MAX}
+          </span>
+        )}
+      </div>
+      <fieldset className="ml-6 flex flex-col rounded-lg border border-border bg-card focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-300">
+        <MarkdownEditor
+          value={description}
+          onChange={(v) =>
+            setDescription(sanitizeHtml(v).slice(0, CONTENT_MAX))
+          }
+          className="min-h-[150px] [&_.w-md-editor-content]:p-3 [&_.w-md-editor-content]:min-h-[150px] [&_.w-md-editor-content]:text-sm [&_.w-md-editor-content]:leading-6 [&_.w-md-editor-content]:max-h-[50vh] [&_.w-md-editor-content]:overflow-y-auto"
+        />
+      </fieldset>
+    </div>
+  );
+}
 
 export function TaskModalEdit({ task, onClose, onUpdate }: TaskModalEditProps) {
   const { t } = useTranslation();
@@ -62,13 +100,6 @@ export function TaskModalEdit({ task, onClose, onUpdate }: TaskModalEditProps) {
   }, [handleSave, onClose]);
   const colTitle = task ? (COLUMNS[task.colId]?.title ?? task.colId) : "";
 
-  // Two-phase description: clean read view, editor only on click.
-  const [editing, setEditing] = useState(false);
-  const editorRef = useRef<EditorHandle | null>(null);
-  useEffect(() => {
-    if (editing) editorRef.current?.focus();
-  }, [editing]);
-
   useEffect(() => {
     if (!task) return;
     const h = (e: KeyboardEvent) => {
@@ -87,6 +118,32 @@ export function TaskModalEdit({ task, onClose, onUpdate }: TaskModalEditProps) {
       {colTitle}
     </span>
   );
+
+  // Résumé du board en attendant le détail : modale ouverte, zéro action.
+  // Fermer = annule, aucune sauvegarde possible.
+  // Discriminant : le détail complet expose toujours `description`.
+  if (task && !("description" in task)) {
+    return (
+      <TaskDialogShell
+        open
+        onOpenChange={(o) => !o && onClose()}
+        maxW="max-w-[640px] sm:max-w-[720px]"
+        badge={badge}
+        closeLabel={t("task.close")}
+        className="flex flex-col max-h-[85vh]"
+      >
+        <DialogTitle className="sr-only">{task.title}</DialogTitle>
+        {/* Délai de grâce : si le détail arrive vite, ce bloc disparaît
+            avant d'être visible — pas de flash de chargement. */}
+        <div className="px-5 py-8 flex flex-col items-center gap-3 animate-[fadeIn_0.3s_ease_0.2s_both]">
+          <p className="text-[15px] font-medium text-foreground text-center">
+            {task.title}
+          </p>
+          <Loader />
+        </div>
+      </TaskDialogShell>
+    );
+  }
 
   return (
     <TaskDialogShell
@@ -138,71 +195,17 @@ export function TaskModalEdit({ task, onClose, onUpdate }: TaskModalEditProps) {
           />
         </div>
 
-        <div className="flex-1 min-h-0 px-5 pt-3 flex flex-col">
-          <div className="flex items-center gap-2 text-base font-medium text-foreground">
-            <FileText
-              className="h-4 w-4 text-muted-foreground"
-              aria-hidden="true"
-            />
-            {t("task.descriptionName")}
+        <DescriptionField
+          description={description}
+          setDescription={setDescription}
+        />
+        {error && (
+          <div className="mx-5 mb-4 p-2.5 bg-destructive/10 border border-destructive/20 rounded-xl">
+            <p className="text-xs font-medium text-destructive" role="alert">
+              {error}
+            </p>
           </div>
-          <Separator className="my-1.5 opacity-50" />
-          {editing ? (
-            <fieldset
-              onBlur={(e) => {
-                if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                  setEditing(false);
-                }
-              }}
-              className="flex flex-col rounded-xl border border-border bg-card overflow-hidden focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-300"
-            >
-              <TipTapEditor
-                ref={editorRef}
-                value={description}
-                onChange={(v) =>
-                  setDescription(sanitizeHtml(v).slice(0, CONTENT_MAX))
-                }
-                className="min-h-[200px] max-h-[50vh] overflow-y-auto [&_.ProseMirror]:p-3 [&_.ProseMirror]:min-h-[200px]"
-              />
-            </fieldset>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setEditing(true)}
-              aria-label={t("task.editDescription")}
-              className="min-h-[120px] max-h-[40vh] overflow-y-auto w-full rounded-xl px-3 py-2 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              {description.trim() ? (
-                <span
-                  className="tiptap block whitespace-pre-wrap"
-                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
-                />
-              ) : (
-                <span className="text-sm font-medium text-foreground">
-                  {t("task.descriptionPlaceholder")}
-                </span>
-              )}
-            </button>
-          )}
-          <div className="border-t border-border my-2" />
-          <div className="flex items-center justify-between py-2">
-            <span className="text-xs text-muted-foreground">
-              {editing ? t("task.descriptionHint") : t("task.clickToEditHint")}
-            </span>
-            {editing && description.length > CONTENT_MAX - 200 && (
-              <span className="text-xs font-mono tabular-nums text-muted-foreground">
-                {description.length}/{CONTENT_MAX}
-              </span>
-            )}
-          </div>
-          {error && (
-            <div className="mb-2 p-2.5 bg-destructive/10 border border-destructive/20 rounded-xl">
-              <p className="text-xs font-medium text-destructive" role="alert">
-                {error}
-              </p>
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </TaskDialogShell>
   );

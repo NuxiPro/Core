@@ -1,11 +1,12 @@
 import { kanbanModule } from "@backend/src/routes/kanban/index";
 import { OpenAPIHono } from "@hono/zod-openapi";
+import type { Context } from "hono";
 import { compress } from "hono/compress";
 import { cors } from "hono/cors";
-import { secureHeaders } from "hono/secure-headers";
-import type { Context } from "hono";
 import { createMiddleware } from "hono/factory";
+import { secureHeaders } from "hono/secure-headers";
 import { auth } from "./auth";
+import { apiRateLimit } from "./lib/api-rate-limit";
 import { securityAlert } from "./lib/security-alert";
 import { httpLogger } from "./logique/logging/logger";
 import { projectsModule } from "./routes/projects";
@@ -73,7 +74,13 @@ const app = new OpenAPIHono<AppEnv>({
       origin: allowedOrigin,
       allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowHeaders: ["Content-Type", "Authorization"],
-      exposeHeaders: ["Content-Length"],
+      exposeHeaders: [
+        "Content-Length",
+        "X-RateLimit-Limit",
+        "X-RateLimit-Remaining",
+        "X-RateLimit-Reset",
+        "Retry-After",
+      ],
       credentials: true,
       maxAge: 86400,
     }),
@@ -91,6 +98,10 @@ const app = new OpenAPIHono<AppEnv>({
   .use("/kanban/*", authGuard)
   .use("/projects/*", authGuard)
   .use("/workspaces/*", authGuard)
+  // Per-user quota on business routes (after guard: user is known)
+  .use("/kanban/*", apiRateLimit())
+  .use("/projects/*", apiRateLimit())
+  .use("/workspaces/*", apiRateLimit())
   .use("*", async (c, next) => {
     const method = c.req.method;
     if (["POST", "PATCH"].includes(method)) {
@@ -100,10 +111,7 @@ const app = new OpenAPIHono<AppEnv>({
       }
       const contentType = c.req.header("content-type");
       if (!contentType?.includes("application/json")) {
-        return c.json(
-          { error: "Content-Type must be application/json" },
-          415,
-        );
+        return c.json({ error: "Content-Type must be application/json" }, 415);
       }
     }
     await next();

@@ -1,5 +1,5 @@
 import type { PriorityLabel } from "@packages/shared/types/task/priority-level";
-import type { Task } from "@packages/shared/types/task/task";
+import type { Task, TaskSummary } from "@packages/shared/types/task/task";
 import { useEffect, useState } from "react";
 import { createLogger } from "@/src/shared/api/logger";
 import { useAsyncHandler } from "@/src/shared/hooks/useAsyncHandler";
@@ -8,7 +8,7 @@ const log = createLogger("task/useTaskForm");
 
 // Hook pour gérer l'état du formulaire et la logique de sauvegarde avec gestion d'erreur
 export function useTaskForm(
-  task: Task | null,
+  task: Task | TaskSummary | null,
   onUpdate?: (
     id: string,
     updates: {
@@ -37,7 +37,7 @@ export function useTaskForm(
   useEffect(() => {
     if (task) {
       setTitle(task.title);
-      setDescription(task.description ?? "");
+      setDescription("description" in task ? (task.description ?? "") : "");
       setPriority(task.priority ?? "none");
       setDueDate(task.dueDate ?? null);
       setError(null);
@@ -45,10 +45,12 @@ export function useTaskForm(
   }, [task?.id]);
 
   const handleSave = () => {
-    if (!task || !onUpdate) return;
+    if (!task || !onUpdate || !("description" in task)) return;
+    const taskDescription =
+      "description" in task ? (task.description ?? "") : "";
     const hasChanged =
       title !== task.title ||
-      description !== (task.description ?? "") ||
+      description !== taskDescription ||
       priority !== (task.priority ?? "none") ||
       dueDate !== (task.dueDate ?? null);
     if (!hasChanged) return;

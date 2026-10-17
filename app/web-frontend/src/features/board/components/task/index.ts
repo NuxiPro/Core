@@ -4,13 +4,11 @@
 export { PRIORITY_ICONS, PriorityIcon, PrioritySelect } from "./card/priority";
 export { default as TaskCardView } from "./card/TaskCardView";
 export { useTaskCardActions } from "./card/useTaskCardActions";
-// editor
-export {
-  EditorFallback,
-  type EditorHandle,
-  LazyTipTapEditor,
-  TipTapEditor,
-} from "./editor";
+// editor – now plain markdown
+export { type EditorHandle } from "../../../layout/md-editor/MarkdownEditor";
+export { MarkdownEditor as TipTapEditor } from "../../../layout/md-editor/MarkdownEditor"; // keep old name for backward compatibility
+export { MarkdownEditor as LazyTipTapEditor } from "../../../layout/md-editor/MarkdownEditor";
+export { EditorFallback } from "../../../layout/md-editor/MarkdownEditor"; // dummy fallback (no‑op) to preserve API
 export { useTaskForm } from "./hooks/useTaskForm";
 // modals
 export { default as TaskModal } from "./modals/TaskModal";
