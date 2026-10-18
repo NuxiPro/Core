@@ -29,6 +29,6 @@
     "exactOptionalPropertyTypes": true
   },
 
-  "include": [".", "src"],
-  "exclude": ["node_modules", "dist"]
+  "include": [".", "src", "../../local/dump"],
+  "exclude": ["node_modules", "dist", "local", ".wrangler", ".tanstack", "../../local/dump"]
 }

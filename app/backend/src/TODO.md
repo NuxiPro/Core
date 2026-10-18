@@ -11,6 +11,7 @@ Pattern for all three: scope by `userId`, `requirePermission`, `404` when not fo
 
 ## Settings (global)
 - [ ] `GET /api/v1/setting/general` + `PATCH /api/v1/setting/general` — global settings (language, timezone, notifications). Frontend already calls them (`update-general.ts`), backend module does not exist.
+- [ ] `GET /api/v1/setting/notification` + `PATCH /api/v1/setting/notification` — notification settings. Frontend already calls them (`features/settings/api/index.ts` : `getNotificationSettings` / `updateNotificationSettings`, exports morts tant que les routes n'existent pas).
 - [ ] Fix frontend inconsistency: `$get` uses `api.v1.setting.general` but `$patch` uses `api.setting.general` (missing `/v1`).
 
 ## Archive (feature)

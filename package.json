@@ -17,7 +17,11 @@
   ],
   "dependencies": {
     "@biomejs/biome": "^2.5.15",
-    "fractional-indexing": "^4.0.0",
     "vitest": "^4.1.11"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "knip": "^6.42.0",
+    "typescript": "^7.0.2"
   }
 }

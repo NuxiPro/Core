@@ -1,35 +1,76 @@
-/* 
-  NOTION-LIKE MINIMALIST DESIGN 
+/*
+  NOTION-LIKE MINIMALIST DESIGN
   Compatible avec Light & Dark Mode via variables système
-*/
 
+  SOURCE UNIQUE des styles de l'éditeur md-editor (TipTap).
+  Le wrapper JSX porte les classes "tiptap notion-editor" : chaque
+  règle est scopée sous ".notion-editor" pour éviter tout mélange
+  avec les styles généraux de l'application (global.css).
+*/
 .notion-editor {
   background-color: transparent; /* S'adapte au fond du parent */
   border: 1px solid var(--border);
   border-radius: 8px;
   transition: all 0.2s ease-in-out;
-  padding: 20px;
+  padding: 0; /* la toolbar occupe la première ligne, le contenu gère son padding */
   overflow: auto;
 }
 
-/* Effet de focus subtil et élégant */
+/* Effet de focus subtil et élégant (var()/10% n'existe pas : color-mix) */
 .notion-editor:focus-within {
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px var(--primary / 10%);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
-/* Zone de saisie (ProseMirror) */
+/* Zone de saisie (ProseMirror) — line-height en px entiers : un ratio
+   (1.6 × 14px = 22.4px) crée un sous-pixel qui fait déborder le caret. */
 .notion-editor .ProseMirror {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 22px;
   color: var(--foreground);
   outline: none;
+  padding: 12px 16px;
+  min-height: 60px;
+}
+
+/* ------------------------------------------------------------------
+   TOOLBAR (composants MIT copiés par le CLI TipTap, thème --tt-*
+   fourni par styles/_variables.scss, dark-mode native .dark)
+   ------------------------------------------------------------------ */
+
+/* Barre collée au haut de la boîte : reste visible pendant le scroll
+   du contenu de l'éditeur. */
+.notion-editor .tiptap-toolbar[data-variant="fixed"] {
+  border-radius: 8px 8px 0 0;
+  flex-wrap: nowrap;
+}
+
+/* Pas de docking bas en mobile : dans une modal, une barre absolue en
+   bas de la boîte cache le contenu. Le sticky-haut convient partout. */
+@media (max-width: 480px) {
+  .notion-editor .tiptap-toolbar[data-variant="fixed"] {
+    position: sticky;
+    top: 0;
+    height: auto;
+    padding: 0 0.5rem;
+    border-bottom: 1px solid var(--tt-toolbar-border-color);
+    overflow-x: auto;
+  }
+}
+
+/* Surlignages multicolors (@tiptap/extension-highlight) : le popover
+   applique la couleur via var(--tt-color-highlight-*). */
+.notion-editor mark {
+  padding: 0.1em 0.2em;
+  border-radius: 3px;
+  background-color: var(--tt-color-highlight-green);
+  color: inherit;
 }
 
 /* Titres minimalistes et aérés */
-.notion-editor h1, 
-.notion-editor h2, 
+.notion-editor h1,
+.notion-editor h2,
 .notion-editor h3 {
   font-weight: 600;
   color: var(--foreground);
@@ -48,14 +89,65 @@
   opacity: 0.9;
 }
 
-.notion-editor ul, 
+.notion-editor ul,
 .notion-editor ol {
   margin-bottom: 1rem;
   padding-left: 1.5rem;
 }
 
+/* list-style explicite : le preflight Tailwind force `list-style: none`
+   partout — sans ça, puce/numéro n'apparaissent pas (le "1." tapé qui
+   devient une liste semble "disparaître"). */
+.notion-editor ul { list-style: disc; }
+
+.notion-editor ol { list-style: decimal; }
+
 .notion-editor li {
   margin-bottom: 0.25rem;
+}
+
+.notion-editor li p {
+  margin-bottom: 0;
+}
+
+/* Placeholder : position absolue ancrée en haut du node vide — le
+   flottant (float:left; height:0) alignait le texte sur le TOP du line
+   box, plus haut que la baseline du caret, avec un caret démesuré. */
+.notion-editor .is-empty {
+  position: relative;
+}
+.notion-editor .is-empty::before {
+  content: attr(data-placeholder);
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 14px;
+  line-height: inherit;
+  color: color-mix(in srgb, var(--foreground) 45%, transparent);
+  pointer-events: none;
+}
+.notion-editor h1.is-empty::before,
+.notion-editor h2.is-empty::before,
+.notion-editor h3.is-empty::before {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* Tâches (@tiptap/extension-list) */
+.notion-editor ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+.notion-editor ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.notion-editor ul[data-type="taskList"] li label {
+  margin-top: 0.125rem;
+}
+.notion-editor ul[data-type="taskList"] li input[type="checkbox"] {
+  accent-color: var(--primary);
 }
 
 /* Blocs de code élégants */
@@ -76,6 +168,10 @@
   font-size: 85%;
   font-family: 'JetBrainsMono', monospace;
 }
+.notion-editor pre code {
+  background: transparent;
+  padding: 0;
+}
 
 /* Citations discrètes */
 .notion-editor blockquote {
@@ -84,6 +180,13 @@
   margin: 1rem 0;
   font-style: italic;
   opacity: 0.8;
+}
+
+/* Liens (StarterKit inclut l'extension Link en v3) */
+.notion-editor a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .notion-editor hr {

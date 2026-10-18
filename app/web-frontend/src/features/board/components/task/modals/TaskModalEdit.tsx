@@ -13,7 +13,7 @@ import { CONTENT_MAX, TITLE_MAX } from "@/src/shared/lib/constants";
 import { sanitizeHtml } from "@/src/shared/utils/sanitize";
 
 import { PrioritySelect } from "../card/priority";
-import MarkdownEditor from "@/src/layout/md-editor/index";
+import { LazyTipTapEditorWithSuspense } from "@layout/md-editor/lazy-tiptap-editor";
 import { useTaskForm } from "../hooks/useTaskForm";
 import { TaskDialogShell } from "./TaskDialogShell";
 
@@ -52,12 +52,11 @@ function DescriptionField({
         )}
       </div>
       <fieldset className="ml-6 flex flex-col rounded-lg border border-border bg-card focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-300">
-        <MarkdownEditor
+        <LazyTipTapEditorWithSuspense
           value={description}
           onChange={(v) =>
             setDescription(sanitizeHtml(v).slice(0, CONTENT_MAX))
           }
-          className="min-h-[150px] [&_.w-md-editor-content]:p-3 [&_.w-md-editor-content]:min-h-[150px] [&_.w-md-editor-content]:text-sm [&_.w-md-editor-content]:leading-6 [&_.w-md-editor-content]:max-h-[50vh] [&_.w-md-editor-content]:overflow-y-auto"
         />
       </fieldset>
     </div>

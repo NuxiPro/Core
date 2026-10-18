@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": ["-lintignore"],
+  "ignoreExportsUsedInFile": true,
+  "ignore": ["**/routeTree.gen.ts"],
+  "workspaces": {
+    ".": {},
+    "app/backend": { "entry": ["server.ts", "drizzle.config.ts"], "drizzle": false },
+    "app/web-frontend": {},
+    "packages/shared": { "entry": ["{config,utils,types}/**/*.ts"] }
+  }
+}

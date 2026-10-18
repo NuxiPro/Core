@@ -8,12 +8,3 @@ import { isValid, parseISO } from "date-fns";
 export const getDbDateStr = (): string => {
   return new Date().toISOString();
 };
-
-/**
- * Vérifie si une chaîne est au format ISO 8601.
- * Adapté pour valider ce que getDbDateStr génère.
- */
-export const isDBDateStr = (str: string): boolean => {
-  const parsed = parseISO(str);
-  return isValid(parsed);
-};
