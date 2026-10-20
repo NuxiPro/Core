@@ -1,8 +1,5 @@
-import { lazy, Suspense, type RefObject } from "react";
-import type {
-  EditorHandle,
-  MarkdownEditorProps,
-} from "@/src/layout/md-editor";
+import { lazy, type RefObject, Suspense } from "react";
+import type { EditorHandle, MarkdownEditorProps } from "@/src/layout/md-editor";
 
 // Chargement différé : la dépendance TipTap n'est téléchargée que si
 // un éditeur est réellement affiché (code-splitting du bundle).

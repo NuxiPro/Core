@@ -101,46 +101,61 @@ export const TaskList = memo(function TaskList({
         aria-label="Task list"
         aria-busy={isLoading}
       >
-      {isLoading ? (
-        <div className="h-full flex-1 flex items-center justify-center">
-          <Loader />
-        </div>
-      ) : isEmpty ? (
-        <div
-          className="flex-1 h-full flex items-center justify-center py-8"
-          data-droppable-column={colId}
-        >
-          <EmptyState
-            icon={EMPTY_STATE[colId].icon}
-            title={EMPTY_STATE[colId].title}
-            description={EMPTY_STATE[colId].description}
-          />
-        </div>
-      ) : (
-        <SortableContext
-          items={sortableItems}
-          strategy={verticalListSortingStrategy}
-        >
-          {shouldVirtualize ? (
-            <ul
-              className="relative w-full"
-              style={{ height: virtualizer.getTotalSize() }}
-              data-droppable-column={colId}
-            >
-              {virtualizer.getVirtualItems().map((virtualRow) => {
-                const task = tasks[virtualRow.index];
-                return (
-                  <li
-                    key={task.id}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: `${virtualRow.size}px`,
-                      transform: `translateY(${virtualRow.start}px)`,
-                    }}
-                  >
+        {isLoading ? (
+          <div className="h-full flex-1 flex items-center justify-center">
+            <Loader />
+          </div>
+        ) : isEmpty ? (
+          <div
+            className="flex-1 h-full flex items-center justify-center py-8"
+            data-droppable-column={colId}
+          >
+            <EmptyState
+              icon={EMPTY_STATE[colId].icon}
+              title={EMPTY_STATE[colId].title}
+              description={EMPTY_STATE[colId].description}
+            />
+          </div>
+        ) : (
+          <SortableContext
+            items={sortableItems}
+            strategy={verticalListSortingStrategy}
+          >
+            {shouldVirtualize ? (
+              <ul
+                className="relative w-full"
+                style={{ height: virtualizer.getTotalSize() }}
+                data-droppable-column={colId}
+              >
+                {virtualizer.getVirtualItems().map((virtualRow) => {
+                  const task = tasks[virtualRow.index];
+                  return (
+                    <li
+                      key={task.id}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: `${virtualRow.size}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                    >
+                      <TaskCard
+                        task={task}
+                        isSelected={selectedTaskId === task.id}
+                        onOpenDetail={onSelectTask}
+                        onDelete={onDeleteTask}
+                        activeTaskId={activeTaskId}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <ul className="flex flex-col gap-2" data-droppable-column={colId}>
+                {tasks.map((task) => (
+                  <li key={task.id}>
                     <TaskCard
                       task={task}
                       isSelected={selectedTaskId === task.id}
@@ -149,26 +164,11 @@ export const TaskList = memo(function TaskList({
                       activeTaskId={activeTaskId}
                     />
                   </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <ul className="flex flex-col gap-2" data-droppable-column={colId}>
-              {tasks.map((task) => (
-                <li key={task.id}>
-                  <TaskCard
-                    task={task}
-                    isSelected={selectedTaskId === task.id}
-                    onOpenDetail={onSelectTask}
-                    onDelete={onDeleteTask}
-                    activeTaskId={activeTaskId}
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
-        </SortableContext>
-      )}
+                ))}
+              </ul>
+            )}
+          </SortableContext>
+        )}
       </section>
       <div
         aria-hidden

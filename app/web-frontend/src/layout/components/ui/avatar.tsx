@@ -46,30 +46,4 @@ function AvatarFallback({
   );
 }
 
-function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="avatar-group"
-      className={cn("flex -space-x-2", className)}
-      {...props}
-    />
-  );
-}
-
-function AvatarGroupCount({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="avatar-group-count"
-      className={cn(
-        "relative flex shrink-0 items-center justify-center",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-export { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage };
+export { Avatar, AvatarFallback, AvatarImage };

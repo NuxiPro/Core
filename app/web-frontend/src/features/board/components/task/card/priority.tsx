@@ -77,7 +77,9 @@ export const PrioritySelect = memo(function PrioritySelect({
           type="button"
           className={cn(
             "flex items-center justify-between gap-2 rounded-xl",
-            compact ? "w-auto px-2.5 py-1.5 text-[13px]" : "w-full px-3 py-2 text-sm",
+            compact
+              ? "w-auto px-2.5 py-1.5 text-[13px]"
+              : "w-full px-3 py-2 text-sm",
             "transition-all duration-300 ease-spring",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
             "cursor-pointer",

@@ -122,7 +122,7 @@ export function ArchiveSheet({
                 className="absolute left-2.5 top-2.5 size-4 text-muted-foreground pointer-events-none"
                 aria-hidden="true"
               />
-              <select  // code hardcoded (à modifier)
+              <select // code hardcoded (à modifier)
                 value={period}
                 onChange={(e) => setPeriod(e.target.value as Period)}
                 aria-label={t("archive.periodLabel")}
@@ -173,7 +173,8 @@ export function ArchiveSheet({
                             {task.title}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {t("archive.archivedOn", {    // code hardcoded (à modifier)
+                            {t("archive.archivedOn", {
+                              // code hardcoded (à modifier)
                               date: new Date(
                                 task.archivedAt,
                               ).toLocaleDateString(i18n.language, {
@@ -212,7 +213,8 @@ export function ArchiveSheet({
                         {task.title}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {t("archive.archivedOn", {     // code hardcoded (à modifier)
+                        {t("archive.archivedOn", {
+                          // code hardcoded (à modifier)
                           date: new Date(task.archivedAt).toLocaleDateString(
                             i18n.language,
                             {

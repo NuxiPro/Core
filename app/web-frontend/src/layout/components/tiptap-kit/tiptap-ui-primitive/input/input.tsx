@@ -1,5 +1,5 @@
-import { cn } from "@/src/shared/lib/tiptap-utils"
-import "@layout/components/tiptap-kit/tiptap-ui-primitive/input/input.scss"
+import { cn } from "@/src/shared/lib/tiptap-utils";
+import "@layout/components/tiptap-kit/tiptap-ui-primitive/input/input.scss";
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
@@ -9,7 +9,7 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
       className={cn("tiptap-input", className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Input }
+export { Input };

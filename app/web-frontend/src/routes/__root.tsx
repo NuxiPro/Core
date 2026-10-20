@@ -18,7 +18,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "NuxiPro" },
+      { title: "Cloud NuxiPro" },
     ],
     links: [
       {
@@ -33,6 +33,9 @@ export const Route = createRootRoute({
 
 function RootLayout() {
   useTheme();
+  React.useEffect(() => {
+    window.dispatchEvent(new Event("app-ready"));
+  }, []);
   return (
     <div className="bg-surface-root w-screen h-screen flex overflow-hidden">
       <TooltipProvider delayDuration={0}>

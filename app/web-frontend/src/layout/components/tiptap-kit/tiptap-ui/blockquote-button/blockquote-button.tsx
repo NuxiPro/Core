@@ -1,42 +1,39 @@
-import { forwardRef, useCallback } from "react"
-
 // --- Tiptap UI ---
-import type { UseBlockquoteConfig } from "@layout/components/tiptap-kit/tiptap-ui/blockquote-button"
+import type { UseBlockquoteConfig } from "@layout/components/tiptap-kit/tiptap-ui/blockquote-button";
 import {
   BLOCKQUOTE_SHORTCUT_KEY,
   useBlockquote,
-} from "@layout/components/tiptap-kit/tiptap-ui/blockquote-button"
-
-// --- Hooks ---
-import { useTiptapEditor } from "@/src/shared/hooks/use-tiptap-editor"
-
-// --- Lib ---
-import { parseShortcutKeys } from "@/src/shared/lib/tiptap-utils"
-
+} from "@layout/components/tiptap-kit/tiptap-ui/blockquote-button";
+import { Badge } from "@layout/components/tiptap-kit/tiptap-ui-primitive/badge";
 // --- UI Primitives ---
-import type { ButtonProps } from "@layout/components/tiptap-kit/tiptap-ui-primitive/button"
-import { Button } from "@layout/components/tiptap-kit/tiptap-ui-primitive/button"
-import { Badge } from "@layout/components/tiptap-kit/tiptap-ui-primitive/badge"
+import type { ButtonProps } from "@layout/components/tiptap-kit/tiptap-ui-primitive/button";
+import { Button } from "@layout/components/tiptap-kit/tiptap-ui-primitive/button";
+import { forwardRef, useCallback } from "react";
+// --- Hooks ---
+import { useTiptapEditor } from "@/src/shared/hooks/use-tiptap-editor";
+// --- Lib ---
+import { parseShortcutKeys } from "@/src/shared/lib/tiptap-utils";
 
 export interface BlockquoteButtonProps
-  extends Omit<ButtonProps, "type">, UseBlockquoteConfig {
+  extends Omit<ButtonProps, "type">,
+    UseBlockquoteConfig {
   /**
    * Optional text to display alongside the icon.
    */
-  text?: string
+  text?: string;
   /**
    * Optional show shortcut keys in the button.
    * @default false
    */
-  showShortcut?: boolean
+  showShortcut?: boolean;
 }
 
 export function BlockquoteShortcutBadge({
   shortcutKeys = BLOCKQUOTE_SHORTCUT_KEY,
 }: {
-  shortcutKeys?: string
+  shortcutKeys?: string;
 }) {
-  return <Badge>{parseShortcutKeys({ shortcutKeys })}</Badge>
+  return <Badge>{parseShortcutKeys({ shortcutKeys })}</Badge>;
 }
 
 /**
@@ -59,9 +56,9 @@ export const BlockquoteButton = forwardRef<
       children,
       ...buttonProps
     },
-    ref
+    ref,
   ) => {
-    const { editor } = useTiptapEditor(providedEditor)
+    const { editor } = useTiptapEditor(providedEditor);
     const {
       isVisible,
       canToggle,
@@ -74,19 +71,19 @@ export const BlockquoteButton = forwardRef<
       editor,
       hideWhenUnavailable,
       onToggled,
-    })
+    });
 
     const handleClick = useCallback(
       (event: React.MouseEvent<HTMLButtonElement>) => {
-        onClick?.(event)
-        if (event.defaultPrevented) return
-        handleToggle()
+        onClick?.(event);
+        if (event.defaultPrevented) return;
+        handleToggle();
       },
-      [handleToggle, onClick]
-    )
+      [handleToggle, onClick],
+    );
 
     if (!isVisible) {
-      return null
+      return null;
     }
 
     return (
@@ -115,8 +112,8 @@ export const BlockquoteButton = forwardRef<
           </>
         )}
       </Button>
-    )
-  }
-)
+    );
+  },
+);
 
-BlockquoteButton.displayName = "BlockquoteButton"
+BlockquoteButton.displayName = "BlockquoteButton";

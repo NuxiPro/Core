@@ -216,10 +216,15 @@ export function useKanbanDnd({
     } catch (err) {
       // Feedback user : 409 position impossible -> toast léger
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes("409") || msg.includes("PositionImpossible") || msg.includes("position")) {
+      if (
+        msg.includes("409") ||
+        msg.includes("PositionImpossible") ||
+        msg.includes("position")
+      ) {
         log.warn("moveTask: position impossible", { payload, error: msg });
         // simple feedback sans dépendance toast : alert DEV only, sinon silencieux + rollback déjà fait
-        if (typeof window !== "undefined" && !import.meta.env.PROD) window.alert("Position impossible, réessayez");
+        if (typeof window !== "undefined" && !import.meta.env.PROD)
+          window.alert("Position impossible, réessayez");
       }
       log.debug("onMoveTask error", { payload, error: String(err) });
       throw err;

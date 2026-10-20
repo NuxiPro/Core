@@ -1,30 +1,34 @@
-import { forwardRef, Fragment, useMemo } from "react"
+// --- Icons ---
+import { CheckIcon } from "@layout/components/tiptap-kit/tiptap-icons/check-icon";
 
 // --- Tiptap UI Primitive ---
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@layout/components/tiptap-kit/tiptap-ui-primitive/tooltip"
-
-// --- Icons ---
-import { CheckIcon } from "@layout/components/tiptap-kit/tiptap-icons/check-icon"
+} from "@layout/components/tiptap-kit/tiptap-ui-primitive/tooltip";
+import { Fragment, forwardRef, useMemo } from "react";
 
 // --- Lib ---
-import { cn, parseShortcutKeys } from "@/src/shared/lib/tiptap-utils"
+import { cn, parseShortcutKeys } from "@/src/shared/lib/tiptap-utils";
 
-import "@layout/components/tiptap-kit/tiptap-ui-primitive/button/button-colors.scss"
-import "@layout/components/tiptap-kit/tiptap-ui-primitive/button/button.scss"
+import "@layout/components/tiptap-kit/tiptap-ui-primitive/button/button-colors.scss";
+import "@layout/components/tiptap-kit/tiptap-ui-primitive/button/button.scss";
 
 export type ButtonStyle =
-  "ghost" | "primary" | "secondary" | "tertiary" | "subtle"
-export type ButtonVariant = ButtonStyle | "check"
-export type ButtonSize = "small" | "default" | "large"
+  | "ghost"
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "subtle";
+export type ButtonVariant = ButtonStyle | "check";
+export type ButtonSize = "small" | "default" | "large";
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  showTooltip?: boolean
-  tooltip?: React.ReactNode
-  shortcutKeys?: string
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  showTooltip?: boolean;
+  tooltip?: React.ReactNode;
+  shortcutKeys?: string;
   /**
    * Visual treatment or feature variant.
    *
@@ -50,14 +54,14 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
    * </Button>
    * ```
    */
-  variant?: ButtonVariant
-  size?: ButtonSize
+  variant?: ButtonVariant;
+  size?: ButtonSize;
 }
 
 export const ShortcutDisplay: React.FC<{ shortcuts: string[] }> = ({
   shortcuts,
 }) => {
-  if (shortcuts.length === 0) return null
+  if (shortcuts.length === 0) return null;
 
   return (
     <div>
@@ -68,8 +72,8 @@ export const ShortcutDisplay: React.FC<{ shortcuts: string[] }> = ({
         </Fragment>
       ))}
     </div>
-  )
-}
+  );
+};
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -85,21 +89,21 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       "aria-checked": ariaChecked,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const isCheckVariant = variant === "check"
+    const isCheckVariant = variant === "check";
     const buttonStyle: ButtonStyle | undefined = isCheckVariant
       ? "ghost"
-      : variant
-    const buttonSize = isCheckVariant ? (size ?? "small") : size
-    const buttonRole = isCheckVariant ? (role ?? "checkbox") : role
+      : variant;
+    const buttonSize = isCheckVariant ? (size ?? "small") : size;
+    const buttonRole = isCheckVariant ? (role ?? "checkbox") : role;
     const buttonAriaChecked = isCheckVariant
       ? (ariaChecked ?? false)
-      : ariaChecked
+      : ariaChecked;
     const shortcuts = useMemo<string[]>(
       () => parseShortcutKeys({ shortcutKeys }),
-      [shortcutKeys]
-    )
+      [shortcutKeys],
+    );
     const content = (
       <>
         {children}
@@ -109,7 +113,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           </span>
         )}
       </>
-    )
+    );
 
     if (!tooltip || !showTooltip) {
       return (
@@ -126,7 +130,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         >
           {content}
         </button>
-      )
+      );
     }
 
     return (
@@ -149,9 +153,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           <ShortcutDisplay shortcuts={shortcuts} />
         </TooltipContent>
       </Tooltip>
-    )
-  }
-)
+    );
+  },
+);
 
-Button.displayName = "Button"
-
+Button.displayName = "Button";

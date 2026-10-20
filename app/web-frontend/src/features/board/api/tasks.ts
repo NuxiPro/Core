@@ -1,12 +1,13 @@
-import { COLUMN_IDS } from "@packages/shared/config/index-frontend";
 import type { ColumnId } from "@packages/shared/config/index";
+import { COLUMN_IDS } from "@packages/shared/config/index-frontend";
 import type { Task, TaskSummary } from "@packages/shared/types/task/task";
 import { handleResponse } from "@/src/shared/api/handleResponse";
 import { createLogger } from "@/src/shared/api/logger";
 import { client } from "@/src/shared/lib/client";
 
 const log = createLogger("board/moveTask");
-const UUID_V7_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_V7_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export async function getBoard(projectId: string): Promise<{
   id: string;

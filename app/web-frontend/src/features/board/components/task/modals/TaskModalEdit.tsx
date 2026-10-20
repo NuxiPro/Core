@@ -1,3 +1,4 @@
+import { LazyTipTapEditorWithSuspense } from "@layout/md-editor/lazy-tiptap-editor";
 import { COLUMNS } from "@packages/shared/config";
 import type { TaskModalEditProps } from "@packages/shared/types/components";
 import type { PriorityLabel } from "@packages/shared/types/task/priority-level";
@@ -5,15 +6,12 @@ import type { Task } from "@packages/shared/types/task/task";
 import { FileText } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-
 import { Loader } from "@/src/layout/components/animation/loading/Loader";
 import { DatePicker } from "@/src/layout/components/ui/date-picker";
 import { DialogTitle } from "@/src/layout/components/ui/dialog";
 import { CONTENT_MAX, TITLE_MAX } from "@/src/shared/lib/constants";
 import { sanitizeHtml } from "@/src/shared/utils/sanitize";
-
 import { PrioritySelect } from "../card/priority";
-import { LazyTipTapEditorWithSuspense } from "@layout/md-editor/lazy-tiptap-editor";
 import { useTaskForm } from "../hooks/useTaskForm";
 import { TaskDialogShell } from "./TaskDialogShell";
 

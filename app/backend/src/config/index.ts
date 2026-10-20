@@ -1,9 +1,5 @@
 // backend/src/config/index.ts
-export type { ColumnConfig, ColumnId } from "@shared/config";
-
 import { COLUMNS, type ColumnId } from "@shared/config";
-
-export { COLUMNS };
 
 /**
  * Converts a ColumnId (string) to a sqlId (number) for PostgreSQL.

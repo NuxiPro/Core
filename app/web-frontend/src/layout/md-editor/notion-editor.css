@@ -25,7 +25,8 @@
 /* Zone de saisie (ProseMirror) — line-height en px entiers : un ratio
    (1.6 × 14px = 22.4px) crée un sous-pixel qui fait déborder le caret. */
 .notion-editor .ProseMirror {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 14px;
   line-height: 22px;
   color: var(--foreground);
@@ -79,9 +80,15 @@
   line-height: 1.3;
 }
 
-.notion-editor h1 { font-size: 1.5rem; }
-.notion-editor h2 { font-size: 1.25rem; }
-.notion-editor h3 { font-size: 1.1rem; }
+.notion-editor h1 {
+  font-size: 1.5rem;
+}
+.notion-editor h2 {
+  font-size: 1.25rem;
+}
+.notion-editor h3 {
+  font-size: 1.1rem;
+}
 
 /* Paragraphes et listes */
 .notion-editor p {
@@ -98,9 +105,13 @@
 /* list-style explicite : le preflight Tailwind force `list-style: none`
    partout — sans ça, puce/numéro n'apparaissent pas (le "1." tapé qui
    devient une liste semble "disparaître"). */
-.notion-editor ul { list-style: disc; }
+.notion-editor ul {
+  list-style: disc;
+}
 
-.notion-editor ol { list-style: decimal; }
+.notion-editor ol {
+  list-style: decimal;
+}
 
 .notion-editor li {
   margin-bottom: 0.25rem;
@@ -166,7 +177,7 @@
   padding: 0.2em 0.4em;
   border-radius: 4px;
   font-size: 85%;
-  font-family: 'JetBrainsMono', monospace;
+  font-family: "JetBrainsMono", monospace;
 }
 .notion-editor pre code {
   background: transparent;

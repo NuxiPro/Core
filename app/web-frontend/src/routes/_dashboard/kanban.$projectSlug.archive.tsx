@@ -1,10 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
-import {
-  getArchivedTasks,
-  restoreTask,
-} from "@/src/features/archive/api";
+import { getArchivedTasks, restoreTask } from "@/src/features/archive/api";
 
 const ArchiveSheet = lazy(() =>
   import("@/src/features/archive/ArchiveSheet").then((m) => ({

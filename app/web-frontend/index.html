@@ -3,47 +3,137 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="/icon.svg"
-    />
-    <title>Cloud Nuxipro</title>
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <title>Cloud NuxiPro</title>
     <meta name="color-scheme" content="light dark" />
     <style>
+      :root {
+        --loader-accent: #0f766e; /* teal signature — unique couleur d'accent */
+      }
       html {
         background: #f6f7f9;
       }
       html.dark {
         background: #010102;
       }
+
+      /* ── Boot loader — zonas: logo flottant, glow signature, sheen matière.
+           Sortie: saut continu loader → app (scale+blur+fade, composited only). ── */
       #root-loader {
         position: fixed;
         inset: 0;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 16px;
         z-index: 9999;
         background: #f6f7f9;
         opacity: 1;
         transform: scale(1);
         filter: blur(0);
         transition:
-          opacity 400ms cubic-bezier(0.25, 0.1, 0.25, 1),
-          transform 400ms cubic-bezier(0.25, 0.1, 0.25, 1),
-          filter 400ms cubic-bezier(0.25, 0.1, 0.25, 1);
+          opacity 380ms cubic-bezier(0.16, 1, 0.3, 1),
+          transform 380ms cubic-bezier(0.16, 1, 0.3, 1),
+          filter 380ms cubic-bezier(0.16, 1, 0.3, 1);
       }
       html.dark #root-loader {
         background: #010102;
       }
       #root-loader.is-hiding {
         opacity: 0;
-        transform: scale(0.98);
-        filter: blur(4px);
+        transform: scale(0.985);
+        filter: blur(6px);
         pointer-events: none;
       }
+
+      .loader-mark {
+        position: relative;
+        width: 64px;
+        height: 64px;
+      }
+
+      /* Halo signature: un seul cycle qui s'installe, jamais en boucle */
+      .loader-glow {
+        position: absolute;
+        inset: -60%;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(15, 118, 110, 0.26) 0%,
+          rgba(15, 118, 110, 0.09) 42%,
+          transparent 70%
+        );
+        opacity: 0;
+        transform: scale(0.7);
+        animation: glowSettle 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes glowSettle {
+        0% {
+          opacity: 0;
+          transform: scale(0.7);
+        }
+        55% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        100% {
+          opacity: 0.5;
+          transform: scale(1);
+        }
+      }
+
+      /* Entrance: opacity + scale + blur en un seul ease-out expo (transform/filter composited) */
+      .loader-logo {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        opacity: 0;
+        transform: scale(0.92);
+        filter: blur(10px);
+        animation: logoIn 640ms cubic-bezier(0.16, 1, 0.3, 1) 60ms forwards;
+      }
+      @keyframes logoIn {
+        to {
+          opacity: 1;
+          transform: scale(1);
+          filter: blur(0);
+        }
+      }
+
+      /* Sheen matière: bande lumineuse monochrome, masquée à la silhouette du logo, un seul passage */
+      .loader-sheen {
+        display: none;
+      }
+      @supports (mask-image: url("/icon.svg")) {
+        .loader-sheen {
+          display: block;
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            105deg,
+            transparent 42%,
+            rgba(255, 255, 255, 0.8) 50%,
+            transparent 58%
+          );
+          background-size: 300% 100%;
+          background-repeat: no-repeat;
+          background-position: 200% 0;
+          mask-image: url("/icon.svg");
+          mask-mode: alpha;
+          mask-size: 100% 100%;
+          mask-repeat: no-repeat;
+          opacity: 1;
+          animation: sheenSweep 700ms cubic-bezier(0.4, 0, 0.2, 1) 760ms forwards;
+        }
+        @keyframes sheenSweep {
+          from {
+            background-position: 200% 0;
+          }
+          to {
+            background-position: -200% 0;
+          }
+        }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         #root-loader {
           transition: none;
@@ -52,65 +142,15 @@
           transform: none;
           filter: none;
         }
-      }
-      #root-loader .loader-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        padding: 20px 24px;
-        border-radius: 16px;
-        background: #ffffff;
-        border: 1px solid #e2e5eb;
-        box-shadow:
-          0 1px 3px rgba(17, 19, 24, 0.08),
-          0 8px 24px rgba(17, 19, 24, 0.1);
-        opacity: 0;
-        transform: scale(0.97) translateY(4px);
-        animation: loaderEnter 400ms cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-      }
-      @keyframes loaderEnter {
-        to {
+        .loader-glow,
+        .loader-sheen {
+          animation: none;
+        }
+        .loader-logo {
+          animation: none;
           opacity: 1;
-          transform: scale(1) translateY(0);
-        }
-      }
-      html.dark #root-loader .loader-card {
-        background: #0f1011;
-        border-color: #23252a;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
-      }
-      #root-loader .loader-logo {
-        width: 64px;
-        height: 64px;
-        object-fit: contain;
-      }
-      #root-loader .loader-bar {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        overflow: hidden;
-        background: transparent;
-      }
-      #root-loader .loader-bar::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: #2d6a9f;
-        animation: loading-bar 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      }
-      @keyframes loading-bar {
-        0% {
-          transform: translateX(-100%);
-        }
-        50% {
-          transform: translateX(0%);
-        }
-        100% {
-          transform: translateX(100%);
+          transform: none;
+          filter: none;
         }
       }
     </style>
@@ -127,9 +167,16 @@
 
   <body>
     <div id="root-loader" aria-hidden="true">
-      <div class="loader-bar" aria-hidden="true"></div>
-      <div class="loader-card">
-        <img src="/icon.svg" alt="" width="64" height="64" class="loader-logo" aria-hidden="true" />
+      <div class="loader-mark">
+        <div class="loader-glow"></div>
+        <img
+          src="/icon.svg"
+          alt=""
+          width="64"
+          height="64"
+          class="loader-logo"
+        />
+        <div class="loader-sheen"></div>
       </div>
     </div>
     <div id="root"></div>

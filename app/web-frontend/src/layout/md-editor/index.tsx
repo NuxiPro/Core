@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
-import { EditorContent, EditorContext, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import { Markdown } from "@tiptap/markdown";
-import { Placeholder, Selection } from "@tiptap/extensions";
+import { Highlight } from "@tiptap/extension-highlight";
 import { TaskItem, TaskList } from "@tiptap/extension-list";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { Typography } from "@tiptap/extension-typography";
-import { Highlight } from "@tiptap/extension-highlight";
+import { Placeholder, Selection } from "@tiptap/extensions";
+import { Markdown } from "@tiptap/markdown";
+import { EditorContent, EditorContext, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { type RefObject, useEffect, useRef, useState } from "react";
 
 // Palette + dark-mode des tokens --tt-* (générés par le CLI TipTap,
 // déjà compatibles avec la classe .dark de l'application).
@@ -16,6 +16,27 @@ import "@/src/layout/md-editor/styles/_variables.scss";
 import { HorizontalRule } from "@layout/components/tiptap-kit/tiptap-node/horizontal-rule-node/horizontal-rule-node-extension";
 import "@layout/components/tiptap-kit/tiptap-node/horizontal-rule-node/horizontal-rule-node.scss";
 
+// Icônes (fallback mobile surlignage / lien).
+import { ArrowLeftIcon } from "@layout/components/tiptap-kit/tiptap-icons/arrow-left-icon";
+import { HighlighterIcon } from "@layout/components/tiptap-kit/tiptap-icons/highlighter-icon";
+import { LinkIcon } from "@layout/components/tiptap-kit/tiptap-icons/link-icon";
+import { BlockquoteButton } from "@layout/components/tiptap-kit/tiptap-ui/blockquote-button";
+import { CodeBlockButton } from "@layout/components/tiptap-kit/tiptap-ui/code-block-button";
+import {
+  ColorHighlightPopover,
+  ColorHighlightPopoverButton,
+  ColorHighlightPopoverContent,
+} from "@layout/components/tiptap-kit/tiptap-ui/color-highlight-popover";
+// Toolbar — widgets.
+import { HeadingDropdownMenu } from "@layout/components/tiptap-kit/tiptap-ui/heading-dropdown-menu";
+import {
+  LinkButton,
+  LinkContent,
+  LinkPopover,
+} from "@layout/components/tiptap-kit/tiptap-ui/link-popover";
+import { ListDropdownMenu } from "@layout/components/tiptap-kit/tiptap-ui/list-dropdown-menu";
+import { MarkButton } from "@layout/components/tiptap-kit/tiptap-ui/mark-button";
+import { TextAlignButton } from "@layout/components/tiptap-kit/tiptap-ui/text-align-button";
 // Toolbar — primitives (la scss est importée par chaque composant TS).
 import { Button } from "@layout/components/tiptap-kit/tiptap-ui-primitive/button";
 import {
@@ -23,29 +44,6 @@ import {
   ToolbarGroup,
   ToolbarSeparator,
 } from "@layout/components/tiptap-kit/tiptap-ui-primitive/toolbar";
-
-// Toolbar — widgets.
-import { HeadingDropdownMenu } from "@layout/components/tiptap-kit/tiptap-ui/heading-dropdown-menu";
-import { ListDropdownMenu } from "@layout/components/tiptap-kit/tiptap-ui/list-dropdown-menu";
-import { BlockquoteButton } from "@layout/components/tiptap-kit/tiptap-ui/blockquote-button";
-import { CodeBlockButton } from "@layout/components/tiptap-kit/tiptap-ui/code-block-button";
-import {
-  ColorHighlightPopover,
-  ColorHighlightPopoverContent,
-  ColorHighlightPopoverButton,
-} from "@layout/components/tiptap-kit/tiptap-ui/color-highlight-popover";
-import {
-  LinkPopover,
-  LinkContent,
-  LinkButton,
-} from "@layout/components/tiptap-kit/tiptap-ui/link-popover";
-import { MarkButton } from "@layout/components/tiptap-kit/tiptap-ui/mark-button";
-import { TextAlignButton } from "@layout/components/tiptap-kit/tiptap-ui/text-align-button";
-
-// Icônes (fallback mobile surlignage / lien).
-import { ArrowLeftIcon } from "@layout/components/tiptap-kit/tiptap-icons/arrow-left-icon";
-import { HighlighterIcon } from "@layout/components/tiptap-kit/tiptap-icons/highlighter-icon";
-import { LinkIcon } from "@layout/components/tiptap-kit/tiptap-icons/link-icon";
 
 import { useIsBreakpoint } from "@/src/shared/hooks/use-is-breakpoint";
 

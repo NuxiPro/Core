@@ -1,9 +1,9 @@
-import { mergeProps } from "@base-ui/react/merge-props"
-import { useRender } from "@base-ui/react/use-render"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/src/shared/lib/tiptap-utils"
-import { Separator } from "@layout/components/tiptap-kit/tiptap-ui-primitive/separator"
-import "./button-group.scss"
+import { mergeProps } from "@base-ui/react/merge-props";
+import { useRender } from "@base-ui/react/use-render";
+import { Separator } from "@layout/components/tiptap-kit/tiptap-ui-primitive/separator";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/src/shared/lib/tiptap-utils";
+import "./button-group.scss";
 
 const buttonGroupVariants = cva("tiptap-button-group", {
   variants: {
@@ -15,7 +15,7 @@ const buttonGroupVariants = cva("tiptap-button-group", {
   defaultVariants: {
     orientation: "horizontal",
   },
-})
+});
 
 function ButtonGroup({
   className,
@@ -30,43 +30,10 @@ function ButtonGroup({
       className={cn(buttonGroupVariants({ orientation }), className)}
       {...props}
     />
-  )
-}
-
-function ButtonGroupText({
-  className,
-  render,
-  ...props
-}: useRender.ComponentProps<"div">) {
-  return useRender({
-    defaultTagName: "div",
-    props: mergeProps<"div">(
-      { className: cn("tiptap-button-group-text", className) },
-      props
-    ),
-    render,
-    state: { slot: "tiptap-button-group-text" },
-  })
-}
-
-function ButtonGroupSeparator({
-  className,
-  orientation = "vertical",
-  ...props
-}: React.ComponentProps<typeof Separator>) {
-  return (
-    <Separator
-      data-slot="tiptap-button-group-separator"
-      orientation={orientation}
-      className={cn("tiptap-button-group-separator", className)}
-      {...props}
-    />
-  )
+  );
 }
 
 export {
   ButtonGroup,
-  ButtonGroupSeparator,
-  ButtonGroupText,
   buttonGroupVariants,
-}
+};

@@ -1,5 +1,4 @@
-// Re-export depuis la source unique — plus de duplication
-export { createLogger, C, type SentryLike } from "@packages/shared/utils/logger";
+export { createLogger, C} from "@packages/shared/utils/logger";
 import { createLogger, C } from "@packages/shared/utils/logger";
 import type { MiddlewareHandler } from "hono";
 

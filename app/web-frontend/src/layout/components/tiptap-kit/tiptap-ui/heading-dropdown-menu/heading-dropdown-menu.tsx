@@ -1,37 +1,34 @@
-import { forwardRef, useCallback, useState } from "react"
-
 // --- Icons ---
-import { ChevronDownIcon } from "@layout/components/tiptap-kit/tiptap-icons/chevron-down-icon"
-
-// --- Hooks ---
-import { useTiptapEditor } from "@/src/shared/hooks/use-tiptap-editor"
-
+import { ChevronDownIcon } from "@layout/components/tiptap-kit/tiptap-icons/chevron-down-icon";
 // --- Tiptap UI ---
-import { HeadingButton } from "@layout/components/tiptap-kit/tiptap-ui/heading-button"
-import type { UseHeadingDropdownMenuConfig } from "@layout/components/tiptap-kit/tiptap-ui/heading-dropdown-menu"
-import { useHeadingDropdownMenu } from "@layout/components/tiptap-kit/tiptap-ui/heading-dropdown-menu"
-
+import { HeadingButton } from "@layout/components/tiptap-kit/tiptap-ui/heading-button";
+import type { UseHeadingDropdownMenuConfig } from "@layout/components/tiptap-kit/tiptap-ui/heading-dropdown-menu";
+import { useHeadingDropdownMenu } from "@layout/components/tiptap-kit/tiptap-ui/heading-dropdown-menu";
 // --- UI Primitives ---
-import type { ButtonProps } from "@layout/components/tiptap-kit/tiptap-ui-primitive/button"
-import { Button } from "@layout/components/tiptap-kit/tiptap-ui-primitive/button"
+import type { ButtonProps } from "@layout/components/tiptap-kit/tiptap-ui-primitive/button";
+import { Button } from "@layout/components/tiptap-kit/tiptap-ui-primitive/button";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuGroup,
-} from "@layout/components/tiptap-kit/tiptap-ui-primitive/dropdown-menu"
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@layout/components/tiptap-kit/tiptap-ui-primitive/dropdown-menu";
+import { forwardRef, useCallback, useState } from "react";
+// --- Hooks ---
+import { useTiptapEditor } from "@/src/shared/hooks/use-tiptap-editor";
 
 export interface HeadingDropdownMenuProps
-  extends Omit<ButtonProps, "type">, UseHeadingDropdownMenuConfig {
+  extends Omit<ButtonProps, "type">,
+    UseHeadingDropdownMenuConfig {
   /**
    * Callback for when the dropdown opens or closes
    */
-  onOpenChange?: (isOpen: boolean) => void
+  onOpenChange?: (isOpen: boolean) => void;
   /**
    * Whether the dropdown should use a modal
    */
-  modal?: boolean
+  modal?: boolean;
 }
 
 /**
@@ -53,27 +50,27 @@ export const HeadingDropdownMenu = forwardRef<
       modal = true,
       ...buttonProps
     },
-    ref
+    ref,
   ) => {
-    const { editor } = useTiptapEditor(providedEditor)
-    const [isOpen, setIsOpen] = useState<boolean>(false)
+    const { editor } = useTiptapEditor(providedEditor);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
     const { isVisible, isActive, canToggle, Icon } = useHeadingDropdownMenu({
       editor,
       levels,
       hideWhenUnavailable,
-    })
+    });
 
     const handleOpenChange = useCallback(
       (open: boolean) => {
-        if (!editor || !canToggle) return
-        setIsOpen(open)
-        onOpenChange?.(open)
+        if (!editor || !canToggle) return;
+        setIsOpen(open);
+        onOpenChange?.(open);
       },
-      [canToggle, editor, onOpenChange]
-    )
+      [canToggle, editor, onOpenChange],
+    );
 
     if (!isVisible) {
-      return null
+      return null;
     }
 
     return (
@@ -119,9 +116,8 @@ export const HeadingDropdownMenu = forwardRef<
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-    )
-  }
-)
+    );
+  },
+);
 
-HeadingDropdownMenu.displayName = "HeadingDropdownMenu"
-
+HeadingDropdownMenu.displayName = "HeadingDropdownMenu";

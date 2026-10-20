@@ -5,11 +5,7 @@ import { Skeleton } from "@/src/layout/components/ui/skeleton";
 
 type Props = ColumnHeaderProps & { onArchiveView?: (() => void) | undefined };
 
-export default function ColumnHeader({
-  cfg,
-  tasks,
-  onArchiveView,
-}: Props) {
+export default function ColumnHeader({ cfg, tasks, onArchiveView }: Props) {
   const isLoading = !tasks;
   return (
     <header className="flex items-center gap-2 flex-shrink-0 px-3 pt-3 pb-2">
