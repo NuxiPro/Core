@@ -7,9 +7,6 @@
     <title>Cloud NuxiPro</title>
     <meta name="color-scheme" content="light dark" />
     <style>
-      :root {
-        --loader-accent: #0f766e; /* teal signature — unique couleur d'accent */
-      }
       html {
         background: #f6f7f9;
       }
@@ -17,8 +14,11 @@
         background: #010102;
       }
 
-      /* ── Boot loader — zonas: logo flottant, glow signature, sheen matière.
-           Sortie: saut continu loader → app (scale+blur+fade, composited only). ── */
+      /* ── Boot loader v3 — cycle supernova synchronisé.
+           P1 burst (0-800ms) → P2 implosion (900ms) → tension (respiration,
+           boucle infinie) → P3 nova sur app-ready (flash dédié, zéro saut
+           quel que soit le timing). Timeline 100% CSS: l'animation continue
+           même sans JS. Seule la sortie dépend de JS. ── */
       #root-loader {
         position: fixed;
         inset: 0;
@@ -47,14 +47,14 @@
 
       .loader-mark {
         position: relative;
-        width: 64px;
-        height: 64px;
+        width: 68px;
+        height: 68px;
       }
 
-      /* Halo signature: un seul cycle qui s'installe, jamais en boucle */
+      /* ── Glow — burst overshoot, puis implosion, puis tension ── */
       .loader-glow {
         position: absolute;
-        inset: -60%;
+        inset: -55%;
         border-radius: 50%;
         background: radial-gradient(
           circle,
@@ -64,7 +64,10 @@
         );
         opacity: 0;
         transform: scale(0.7);
-        animation: glowSettle 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation:
+          glowSettle 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
+          glowImplode 420ms cubic-bezier(0.7, 0, 0.84, 0) 900ms forwards,
+          glowBreathe 1700ms ease-in-out 1500ms infinite alternate;
       }
       @keyframes glowSettle {
         0% {
@@ -73,64 +76,159 @@
         }
         55% {
           opacity: 1;
-          transform: scale(1);
+          transform: scale(1.22); /* burst — léger dépassement */
         }
         100% {
-          opacity: 0.5;
-          transform: scale(1);
+          opacity: 0.85;
+          transform: scale(1.05);
+        }
+      }
+      @keyframes glowImplode {
+        to {
+          opacity: 0.95;
+          transform: scale(0.38);
+        }
+      }
+      @keyframes glowBreathe {
+        from {
+          opacity: 0.75;
+          transform: scale(0.44);
+        }
+        to {
+          opacity: 0.95;
+          transform: scale(0.52);
         }
       }
 
-      /* Entrance: opacity + scale + blur en un seul ease-out expo (transform/filter composited) */
-      .loader-logo {
-        position: relative;
-        width: 64px;
-        height: 64px;
-        opacity: 0;
-        transform: scale(0.92);
-        filter: blur(10px);
-        animation: logoIn 640ms cubic-bezier(0.16, 1, 0.3, 1) 60ms forwards;
+      /* ── Anneau — se dessine (P1), se contracte et s'éteint (P2) ── */
+      .loader-ring {
+        position: absolute;
+        inset: 0;
+        width: 68px;
+        height: 68px;
+        transform: rotate(-90deg); /* départ du tracé en haut */
+        animation: ringImplode 420ms cubic-bezier(0.7, 0, 0.84, 0) 900ms
+          forwards;
       }
-      @keyframes logoIn {
+      .loader-ring circle {
+        fill: none;
+        stroke: #0f766e;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-dasharray: 100;
+        stroke-dashoffset: 100;
+        opacity: 0.9;
+        animation: ringDraw 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
+          ringGone 260ms ease-out 900ms forwards;
+      }
+      @keyframes ringDraw {
+        from {
+          stroke-dashoffset: 100;
+        }
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      @keyframes ringGone {
+        from {
+          opacity: 0.9;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+      @keyframes ringImplode {
+        from {
+          transform: rotate(-90deg) scale(1);
+        }
+        to {
+          transform: rotate(-90deg) scale(0.42);
+        }
+      }
+
+      /* ── Logo — se pose (P1), participe à l'implosion (P2), respire (tension) ── */
+      .loader-logo {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 48px;
+        height: 48px;
+        margin: -24px 0 0 -24px;
+        opacity: 0;
+        transform: scale(0.96) translateY(3px);
+        animation: logoLand 480ms cubic-bezier(0.16, 1, 0.3, 1) 100ms forwards,
+          logoImplode 420ms cubic-bezier(0.7, 0, 0.84, 0) 900ms forwards,
+          logoBreathe 1700ms ease-in-out 1500ms infinite alternate;
+      }
+      @keyframes logoLand {
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+      @keyframes logoImplode {
+        to {
+          opacity: 0.92;
+          transform: scale(0.86);
+        }
+      }
+      @keyframes logoBreathe {
+        from {
+          opacity: 0.92;
+          transform: scale(0.86);
+        }
+        to {
+          opacity: 1;
+          transform: scale(0.9);
+        }
+      }
+
+      /* ── Nova (P3, class .nova ajoutée par JS sur app-ready) —
+           flash dédié depuis le centre: indépendant de l'état du glow,
+           donc aucun saut, même si le boot est ultra rapide ── */
+      .loader-nova {
+        position: absolute;
+        inset: -60%;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(15, 118, 110, 0.5) 0%,
+          rgba(15, 118, 110, 0.14) 45%,
+          transparent 70%
+        );
+        opacity: 0;
+        transform: scale(0);
+        pointer-events: none;
+      }
+      #root-loader.nova .loader-nova {
+        animation: novaFinale 440ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes novaFinale {
+        from {
+          opacity: 0.95;
+          transform: scale(0.2);
+        }
+        to {
+          opacity: 0;
+          transform: scale(4.5);
+        }
+      }
+      /* Le logo se détend pendant que l'explosion emporte la scène */
+      #root-loader.nova .loader-logo {
+        animation: logoNova 440ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes logoNova {
+        from {
+          opacity: 0.92;
+          transform: scale(0.86);
+        }
+        45% {
+          opacity: 1;
+          transform: scale(1.02);
+        }
         to {
           opacity: 1;
           transform: scale(1);
-          filter: blur(0);
-        }
-      }
-
-      /* Sheen matière: bande lumineuse monochrome, masquée à la silhouette du logo, un seul passage */
-      .loader-sheen {
-        display: none;
-      }
-      @supports (mask-image: url("/icon.svg")) {
-        .loader-sheen {
-          display: block;
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            105deg,
-            transparent 42%,
-            rgba(255, 255, 255, 0.8) 50%,
-            transparent 58%
-          );
-          background-size: 300% 100%;
-          background-repeat: no-repeat;
-          background-position: 200% 0;
-          mask-image: url("/icon.svg");
-          mask-mode: alpha;
-          mask-size: 100% 100%;
-          mask-repeat: no-repeat;
-          opacity: 1;
-          animation: sheenSweep 700ms cubic-bezier(0.4, 0, 0.2, 1) 760ms forwards;
-        }
-        @keyframes sheenSweep {
-          from {
-            background-position: 200% 0;
-          }
-          to {
-            background-position: -200% 0;
-          }
         }
       }
 
@@ -143,14 +241,21 @@
           filter: none;
         }
         .loader-glow,
-        .loader-sheen {
-          animation: none;
-        }
+        .loader-ring,
+        .loader-ring circle,
         .loader-logo {
           animation: none;
+        }
+        .loader-glow {
+          opacity: 0;
+        }
+        .loader-ring circle {
+          stroke-dashoffset: 0;
+          opacity: 0.9;
+        }
+        .loader-logo {
           opacity: 1;
           transform: none;
-          filter: none;
         }
       }
     </style>
@@ -169,14 +274,17 @@
     <div id="root-loader" aria-hidden="true">
       <div class="loader-mark">
         <div class="loader-glow"></div>
+        <svg class="loader-ring" viewBox="0 0 68 68" aria-hidden="true">
+          <circle cx="34" cy="34" r="32" pathLength="100" />
+        </svg>
         <img
           src="/icon.svg"
           alt=""
-          width="64"
-          height="64"
+          width="48"
+          height="48"
           class="loader-logo"
         />
-        <div class="loader-sheen"></div>
+        <div class="loader-nova"></div>
       </div>
     </div>
     <div id="root"></div>

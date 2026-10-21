@@ -28,7 +28,7 @@ export interface CodeBlockButtonProps
   showShortcut?: boolean;
 }
 
-export function CodeBlockShortcutBadge({
+function CodeBlockShortcutBadge({
   shortcutKeys = CODE_BLOCK_SHORTCUT_KEY,
 }: {
   shortcutKeys?: string;

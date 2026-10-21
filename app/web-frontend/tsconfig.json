@@ -22,13 +22,13 @@
     "jsx": "react-jsx",
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "skipLibCheck": true, // Indispensable
+    "skipLibCheck": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
     "exactOptionalPropertyTypes": true
   },
 
-  "include": [".", "src", "../../local/dump"],
-  "exclude": ["node_modules", "dist", "local", ".wrangler", ".tanstack", "../../local/dump"]
+  "include": [".", "src"],
+  "exclude": ["node_modules", "dist", "local", ".wrangler", ".tanstack", "local"]
 }

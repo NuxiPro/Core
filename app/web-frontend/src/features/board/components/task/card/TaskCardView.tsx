@@ -95,12 +95,11 @@ const TaskCardView = memo(function TaskCardView({
   isOverlay = false,
   activeTaskId = null,
 }: ExtendedTaskCardProps) {
-  const { handleCardClick, handleDelete, onPointerDownCapture } =
-    useTaskCardActions({
-      task,
-      onDelete,
-      onOpenDetail,
-    });
+  const { handleCardClick, handleDelete } = useTaskCardActions({
+    task,
+    onDelete,
+    onOpenDetail,
+  });
   const { over } = useDndContext();
   const isOver = !isOverlay && over?.id === task.id;
   const { attributes, listeners, setNodeRef, transform } = useSortable({
@@ -153,38 +152,42 @@ const TaskCardView = memo(function TaskCardView({
       data-task-card={!isOverlay}
       data-task-card-overlay={isOverlay}
       {...overlay.spread}
-      onPointerDownCapture={onPointerDownCapture}
       onKeyDown={handleKeyDown}
-      onClick={handleCardClick}
       role="button"
       tabIndex={isOverlay ? -1 : 0}
       aria-dropeffect={isOver ? "move" : undefined}
       className={cardClassName(isOver, isSelected, isOverlay, glowClass)}
     >
-      {isOver && (
-        <div
-          className="absolute -top-1.5 left-3 right-3 h-0.5 bg-primary rounded-full shadow-[0_1px_4px_rgba(94,106,210,0.4)] pointer-events-none"
-          aria-hidden
-        />
-      )}
-      <div className="flex items-start gap-2">
-        <h3 className="text-sm font-semibold tracking-tight text-foreground transition-colors duration-[300ms] ease-spring line-clamp-2 leading-snug flex-1 min-w-0 cursor-grab">
-          {task.title || "Untitled"}
-        </h3>
-        {!isOverlay && (
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={handleDelete}
-            onPointerDown={(e) => e.stopPropagation()}
-            className="shrink-0 text-text-muted-hard hover:text-red-400 transition-all duration-[300ms] ease-spring rounded-md w-5 h-5 opacity-0 group-hover/card:opacity-100 focus-visible:opacity-100"
-            aria-label="Supprimer la tâche"
-          >
-            <Trash width={10} height={10} strokeWidth={2} />
-          </Button>
+      {/* Clic sur une surface séparée des listeners drag (pattern Kaneo) :
+          le wrapper porte le drag, le contenu porte le clic. */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: le wrapper parent est déjà role="button" avec gestion clavier (onKeyDown), le clic enfant en est la souris-surface dédiée au drag */}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: même justification — surface de clic enfant d'un bouton accessible, pas un contrôle indépendant */}
+      <div onClick={handleCardClick}>
+        {isOver && (
+          <div
+            className="absolute -top-1.5 left-3 right-3 h-0.5 bg-primary rounded-full shadow-[0_1px_4px_rgba(94,106,210,0.4)] pointer-events-none"
+            aria-hidden
+          />
         )}
+        <div className="flex items-start gap-2">
+          <h3 className="text-sm font-semibold tracking-tight text-foreground transition-colors duration-[300ms] ease-spring line-clamp-2 leading-snug flex-1 min-w-0 cursor-grab">
+            {task.title || "Untitled"}
+          </h3>
+          {!isOverlay && (
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={handleDelete}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="shrink-0 text-text-muted-hard hover:text-red-400 transition-all duration-[300ms] ease-spring rounded-md w-5 h-5 opacity-0 group-hover/card:opacity-100 focus-visible:opacity-100"
+              aria-label="Supprimer la tâche"
+            >
+              <Trash width={10} height={10} strokeWidth={2} />
+            </Button>
+          )}
+        </div>
+        <TaskCardMeta task={task} priorityKey={priorityKey} />
       </div>
-      <TaskCardMeta task={task} priorityKey={priorityKey} />
     </div>
   );
 });

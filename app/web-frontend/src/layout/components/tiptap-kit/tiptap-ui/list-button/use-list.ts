@@ -29,7 +29,7 @@ export interface UseListConfig {
   /**
    * The Tiptap editor instance.
    */
-  editor?: Editor | null;
+  editor?: Editor | null | undefined;
   /**
    * The type of list to toggle.
    */
@@ -38,11 +38,11 @@ export interface UseListConfig {
    * Whether the button should hide when list is not available.
    * @default false
    */
-  hideWhenUnavailable?: boolean;
+  hideWhenUnavailable?: boolean | undefined;
   /**
    * Callback function called after a successful toggle.
    */
-  onToggled?: () => void;
+  onToggled?: (() => void) | undefined;
 }
 
 export const listIcons = {
@@ -51,7 +51,7 @@ export const listIcons = {
   taskList: ListTodoIcon,
 };
 
-export const listLabels: Record<ListType, string> = {
+const listLabels: Record<ListType, string> = {
   bulletList: "Bullet List",
   orderedList: "Ordered List",
   taskList: "Task List",
@@ -140,7 +140,7 @@ export function isListActive(editor: Editor | null, type: ListType): boolean {
 /**
  * Toggles list in the editor
  */
-export function toggleList(editor: Editor | null, type: ListType): boolean {
+function toggleList(editor: Editor | null, type: ListType): boolean {
   if (!editor || !editor.isEditable) return false;
   if (!canToggleList(editor, type)) return false;
 
@@ -239,7 +239,7 @@ export function toggleList(editor: Editor | null, type: ListType): boolean {
 /**
  * Determines if the list button should be shown
  */
-export function shouldShowButton(props: {
+function shouldShowButton(props: {
   editor: Editor | null;
   type: ListType;
   hideWhenUnavailable: boolean;

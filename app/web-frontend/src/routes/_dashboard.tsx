@@ -1,5 +1,4 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { Scale } from "lucide-react";
 import { useEffect } from "react";
 import { useSyncLanguage } from "@/src/shared/hooks/useSyncLanguage";
 import { resolveSession } from "@/src/shared/lib/auth-guard";

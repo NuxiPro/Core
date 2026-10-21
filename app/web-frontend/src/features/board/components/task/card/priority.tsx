@@ -27,7 +27,7 @@ import {
 import { cn } from "@/src/shared/utils/utils";
 
 // ─── Icônes ────────────────────────────────────────────────────────────────
-export const PRIORITY_ICONS: Record<
+const PRIORITY_ICONS: Record<
   PriorityLabel,
   React.ComponentType<{ className?: string; strokeWidth?: number }>
 > = {

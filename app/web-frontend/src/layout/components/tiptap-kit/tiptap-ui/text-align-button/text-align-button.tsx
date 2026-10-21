@@ -40,7 +40,7 @@ export interface TextAlignButtonProps
   icon?: React.MemoExoticComponent<IconComponent> | React.FC<IconProps>;
 }
 
-export function TextAlignShortcutBadge({
+function TextAlignShortcutBadge({
   align,
   shortcutKeys = TEXT_ALIGN_SHORTCUT_KEYS[align],
 }: {

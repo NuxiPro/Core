@@ -142,7 +142,7 @@ export function ArchiveSheet({
           </div>
         </div>
 
-        <div
+        <section
           ref={scrollRef}
           aria-label={t("archive.title")}
           className="flex-1 overflow-y-auto p-5 overscroll-contain"
@@ -257,7 +257,7 @@ export function ArchiveSheet({
               </p>
             </div>
           )}
-        </div>
+        </section>
       </SheetContent>
     </Sheet>
   );

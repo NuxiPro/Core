@@ -14,11 +14,6 @@ export function cn(...inputs: ClassValue[]) {
 
 import { slugify } from "@packages/shared/utils/slug";
 
-export {
-  createSlug,
-  generateProjectSlug,
-  isSlugAvailable,
-} from "@packages/shared/utils/slug";
 export { slugify };
 
 /**
@@ -26,20 +21,8 @@ export { slugify };
  * "Marketing Q3" → "marketing-q3" (pas de -a671)
  * Les doublons sont gérés côté serveur avec -2, -3 (lisible non-tech)
  */
-export function projectSlug(name: string, _id?: string): string {
+function projectSlug(name: string, _id?: string): string {
   return slugify(name);
-}
-
-/**
- * Extrait le slug lisible (compat : ancien slug "marketing-q3-a671" → "marketing-q3")
- */
-export function slugToId(slug: string): string {
-  // Compat ancien format avec suffixe id : on retire le dernier segment si 4 chars hex
-  const parts = slug.split("-");
-  const last = parts[parts.length - 1];
-  if (/^[a-f0-9]{4}$/i.test(last) && parts.length > 1)
-    return parts.slice(0, -1).join("-");
-  return slug;
 }
 
 /**

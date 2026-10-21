@@ -28,15 +28,3 @@ export async function createWorkspace(
     "workspaces/create",
   );
 }
-
-export async function getWorkspace(id: string): Promise<Workspace> {
-  const response = await client.api.v1.workspaces[":id"].$get({
-    param: { id },
-  });
-
-  return await handleResponse<Workspace>(
-    response,
-    "Workspace non trouvé",
-    "workspaces/get",
-  );
-}

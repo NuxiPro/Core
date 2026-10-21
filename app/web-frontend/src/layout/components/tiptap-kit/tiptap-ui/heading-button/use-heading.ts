@@ -31,7 +31,7 @@ export interface UseHeadingConfig {
   /**
    * The Tiptap editor instance.
    */
-  editor?: Editor | null;
+  editor?: Editor | null | undefined;
   /**
    * The heading level.
    */
@@ -40,11 +40,11 @@ export interface UseHeadingConfig {
    * Whether the button should hide when heading is not available.
    * @default false
    */
-  hideWhenUnavailable?: boolean;
+  hideWhenUnavailable?: boolean | undefined;
   /**
    * Callback function called after a successful heading toggle.
    */
-  onToggled?: () => void;
+  onToggled?: (() => void) | undefined;
 }
 
 export const headingIcons = {
@@ -128,7 +128,7 @@ export function isHeadingActive(
 /**
  * Toggles heading in the editor
  */
-export function toggleHeading(
+function toggleHeading(
   editor: Editor | null,
   level: Level | Level[],
 ): boolean {

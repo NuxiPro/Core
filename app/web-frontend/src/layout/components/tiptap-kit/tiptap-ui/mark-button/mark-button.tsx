@@ -33,7 +33,7 @@ export interface MarkButtonProps
   showShortcut?: boolean;
 }
 
-export function MarkShortcutBadge({
+function MarkShortcutBadge({
   type,
   shortcutKeys = MARK_SHORTCUT_KEYS[type],
 }: {

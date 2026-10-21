@@ -22,7 +22,7 @@ export interface UseTextAlignConfig {
   /**
    * The Tiptap editor instance.
    */
-  editor?: Editor | null;
+  editor?: Editor | null | undefined;
   /**
    * The text alignment to apply.
    */
@@ -31,11 +31,11 @@ export interface UseTextAlignConfig {
    * Whether the button should hide when alignment is not available.
    * @default false
    */
-  hideWhenUnavailable?: boolean;
+  hideWhenUnavailable?: boolean | undefined;
   /**
    * Callback function called after a successful alignment change.
    */
-  onAligned?: () => void;
+  onAligned?: (() => void) | undefined;
 }
 
 export const TEXT_ALIGN_SHORTCUT_KEYS: Record<TextAlign, string> = {
@@ -45,14 +45,14 @@ export const TEXT_ALIGN_SHORTCUT_KEYS: Record<TextAlign, string> = {
   justify: "mod+shift+j",
 };
 
-export const textAlignIcons = {
+const textAlignIcons = {
   left: AlignLeftIcon,
   center: AlignCenterIcon,
   right: AlignRightIcon,
   justify: AlignJustifyIcon,
 };
 
-export const textAlignLabels: Record<TextAlign, string> = {
+const textAlignLabels: Record<TextAlign, string> = {
   left: "Align left",
   center: "Align center",
   right: "Align right",
@@ -62,7 +62,7 @@ export const textAlignLabels: Record<TextAlign, string> = {
 /**
  * Checks if text alignment can be performed in the current editor state
  */
-export function canSetTextAlign(
+function canSetTextAlign(
   editor: Editor | null,
   align: TextAlign,
 ): boolean {
@@ -80,7 +80,7 @@ export function canSetTextAlign(
   }
 }
 
-export function hasSetTextAlign(
+function hasSetTextAlign(
   commands: ChainedCommands,
 ): commands is ChainedCommands & {
   setTextAlign: (align: TextAlign) => ChainedCommands;
@@ -91,7 +91,7 @@ export function hasSetTextAlign(
 /**
  * Checks if the text alignment is currently active
  */
-export function isTextAlignActive(
+function isTextAlignActive(
   editor: Editor | null,
   align: TextAlign,
 ): boolean {
@@ -102,7 +102,7 @@ export function isTextAlignActive(
 /**
  * Sets text alignment in the editor
  */
-export function setTextAlign(editor: Editor | null, align: TextAlign): boolean {
+function setTextAlign(editor: Editor | null, align: TextAlign): boolean {
   if (!editor || editor.isDestroyed || !editor.isEditable) return false;
   if (!canSetTextAlign(editor, align)) return false;
 
@@ -121,7 +121,7 @@ export function setTextAlign(editor: Editor | null, align: TextAlign): boolean {
 /**
  * Determines if the text align button should be shown
  */
-export function shouldShowButton(props: {
+function shouldShowButton(props: {
   editor: Editor | null;
   hideWhenUnavailable: boolean;
   align: TextAlign;

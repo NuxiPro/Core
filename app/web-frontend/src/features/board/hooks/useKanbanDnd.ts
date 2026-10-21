@@ -3,9 +3,10 @@ import {
   type DragEndEvent,
   type DragStartEvent,
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
   pointerWithin,
   rectIntersection,
+  TouchSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -68,6 +69,22 @@ function targetCol(
   return undefined;
 }
 
+// Feedback erreur POST-move : 409 → toast léger (dev only : alert).
+function logMoveError(err: unknown, payload: unknown) {
+  const msg = err instanceof Error ? err.message : String(err);
+  const is409 =
+    msg.includes("409") ||
+    msg.includes("PositionImpossible") ||
+    msg.includes("position");
+  if (is409) {
+    log.warn("moveTask: position impossible", { payload, error: msg });
+    // simple feedback sans dépendance toast : alert DEV only, sinon silencieux + rollback déjà fait
+    if (typeof window !== "undefined" && !import.meta.env.PROD)
+      window.alert("Position impossible, réessayez");
+  }
+  log.debug("onMoveTask error", { payload, error: String(err) });
+}
+
 export function useKanbanDnd({
   tasksByColumn,
   onMoveTask,
@@ -84,10 +101,14 @@ export function useKanbanDnd({
   const lastMoveAt = useRef(0); // throttle 300ms sans re-render
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      // Click = ouvre le détail ; appui maintenu + mouvement = drag.
-      // Le délai laisse le clic passer, la tolérance garde le drag précis.
-      activationConstraint: { delay: 180, tolerance: 6 },
+    // Séparation souris / tactile (pattern Kaneo) :
+    // - souris : drag à 8px de mouvement → un clic simple déclenche JAMAIS le drag
+    // - tactile : délai 250ms pour laisser le tap passer, tolérance 10px de glissement
+    useSensor(MouseSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 250, tolerance: 10 },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
@@ -214,19 +235,7 @@ export function useKanbanDnd({
       await onMoveTask(payload);
       log.debug("onMoveTask success", payload);
     } catch (err) {
-      // Feedback user : 409 position impossible -> toast léger
-      const msg = err instanceof Error ? err.message : String(err);
-      if (
-        msg.includes("409") ||
-        msg.includes("PositionImpossible") ||
-        msg.includes("position")
-      ) {
-        log.warn("moveTask: position impossible", { payload, error: msg });
-        // simple feedback sans dépendance toast : alert DEV only, sinon silencieux + rollback déjà fait
-        if (typeof window !== "undefined" && !import.meta.env.PROD)
-          window.alert("Position impossible, réessayez");
-      }
-      log.debug("onMoveTask error", { payload, error: String(err) });
+      logMoveError(err, payload);
       throw err;
     }
   };

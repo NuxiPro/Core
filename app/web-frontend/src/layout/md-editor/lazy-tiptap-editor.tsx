@@ -7,7 +7,7 @@ const MarkdownEditor = lazy(() => import("@/src/layout/md-editor"));
 
 export type { EditorHandle };
 
-export function EditorFallback() {
+function EditorFallback() {
   return (
     <div className="flex items-center justify-center min-h-[180px] text-muted-foreground text-sm">
       Chargement de l'éditeur...

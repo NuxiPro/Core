@@ -31,7 +31,7 @@ export interface ColorHighlightButtonProps
   showShortcut?: boolean;
 }
 
-export function ColorHighlightShortcutBadge({
+function ColorHighlightShortcutBadge({
   shortcutKeys = COLOR_HIGHLIGHT_SHORTCUT_KEY,
 }: {
   shortcutKeys?: string;

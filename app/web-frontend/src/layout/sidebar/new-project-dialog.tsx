@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/src/layout/components/ui/dialog";
+
 // slug stocké en DB utilisé directement (plus de projectSlug recalculé)
 
 type NewProjectDialogProps = {

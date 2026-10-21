@@ -32,7 +32,7 @@ import { useTiptapEditor } from "@/src/shared/hooks/use-tiptap-editor";
 
 import "./link-popover.scss";
 
-export interface LinkMainProps {
+interface LinkMainProps {
   /**
    * The URL to set for the link.
    */

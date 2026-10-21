@@ -3,8 +3,8 @@ import type { Transaction } from "@tiptap/pm/state";
 import {
   AllSelection,
   NodeSelection,
-  Selection,
   TextSelection,
+  type Selection,
 } from "@tiptap/pm/state";
 import { CellSelection, cellAround } from "@tiptap/pm/tables";
 import {
@@ -14,9 +14,7 @@ import {
 } from "@tiptap/react";
 import { type ClassValue, clsx } from "clsx";
 
-export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-
-export const MAC_SYMBOLS: Record<string, string> = {
+const MAC_SYMBOLS: Record<string, string> = {
   mod: "⌘",
   command: "⌘",
   meta: "⌘",
@@ -32,18 +30,6 @@ export const MAC_SYMBOLS: Record<string, string> = {
   capslock: "⇪",
 } as const;
 
-export const SR_ONLY = {
-  position: "absolute",
-  width: "1px",
-  height: "1px",
-  padding: 0,
-  margin: "-1px",
-  overflow: "hidden",
-  clip: "rect(0, 0, 0, 0)",
-  whiteSpace: "nowrap",
-  borderWidth: 0,
-} as const;
-
 export function cn(...inputs: ClassValue[]): string {
   return clsx(inputs);
 }
@@ -52,7 +38,7 @@ export function cn(...inputs: ClassValue[]): string {
  * Determines if the current platform is macOS
  * @returns boolean indicating if the current platform is Mac
  */
-export function isMac(): boolean {
+function isMac(): boolean {
   return (
     typeof navigator !== "undefined" &&
     navigator.platform.toLowerCase().includes("mac")
@@ -66,7 +52,7 @@ export function isMac(): boolean {
  * @param capitalize - Whether to capitalize the key (default: true)
  * @returns Formatted shortcut key symbol
  */
-export const formatShortcutKey = (
+const formatShortcutKey = (
   key: string,
   isMac: boolean,
   capitalize: boolean = true,
@@ -128,38 +114,6 @@ export const isNodeInSchema = (
   if (!editor?.schema) return false;
   return editor.schema.spec.nodes.get(nodeName) !== undefined;
 };
-
-/**
- * Moves the focus to the next node in the editor
- * @param editor - The editor instance
- * @returns boolean indicating if the focus was moved
- */
-export function focusNextNode(editor: Editor) {
-  const { state, view } = editor;
-  const { doc, selection } = state;
-
-  const nextSel = Selection.findFrom(selection.$to, 1, true);
-  if (nextSel) {
-    view.dispatch(state.tr.setSelection(nextSel).scrollIntoView());
-    return true;
-  }
-
-  const paragraphType = state.schema.nodes.paragraph;
-  if (!paragraphType) {
-    console.warn("No paragraph node type found in schema.");
-    return false;
-  }
-
-  const end = doc.content.size;
-  const para = paragraphType.create();
-  let tr = state.tr.insert(end, para);
-
-  // Place the selection inside the new paragraph
-  const $inside = tr.doc.resolve(end + 1);
-  tr = tr.setSelection(TextSelection.near($inside)).scrollIntoView();
-  view.dispatch(tr);
-  return true;
-}
 
 /**
  * Checks if a value is a valid number (not null, undefined, or NaN)
@@ -227,7 +181,7 @@ export function isExtensionAvailable(
  * @param position The position in the document to find the node
  * @returns The node at the specified position, or null if not found
  */
-export function findNodeAtPosition(editor: Editor, position: number) {
+function findNodeAtPosition(editor: Editor, position: number) {
   try {
     const node = editor.state.doc.nodeAt(position);
     if (!node) {
@@ -378,42 +332,6 @@ export function selectionWithinConvertibleTypes(
   return false;
 }
 
-/**
- * Handles image upload with progress tracking and abort capability
- * @param file The file to upload
- * @param onProgress Optional callback for tracking upload progress
- * @param abortSignal Optional AbortSignal for cancelling the upload
- * @returns Promise resolving to the URL of the uploaded image
- */
-export const handleImageUpload = async (
-  file: File,
-  onProgress?: (event: { progress: number }) => void,
-  abortSignal?: AbortSignal,
-): Promise<string> => {
-  // Validate file
-  if (!file) {
-    throw new Error("No file provided");
-  }
-
-  if (file.size > MAX_FILE_SIZE) {
-    throw new Error(
-      `File size exceeds maximum allowed (${MAX_FILE_SIZE / (1024 * 1024)}MB)`,
-    );
-  }
-
-  // For demo/testing: Simulate upload progress. In production, replace the following code
-  // with your own upload implementation.
-  for (let progress = 0; progress <= 100; progress += 10) {
-    if (abortSignal?.aborted) {
-      throw new Error("Upload cancelled");
-    }
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    onProgress?.({ progress });
-  }
-
-  return "/images/tiptap-ui-placeholder-image.jpg";
-};
-
 type ProtocolOptions = {
   /**
    * The protocol scheme to be registered.
@@ -437,7 +355,7 @@ const ATTR_WHITESPACE =
   // eslint-disable-next-line no-control-regex
   /[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g;
 
-export function isAllowedUri(
+function isAllowedUri(
   uri: string | undefined,
   protocols?: ProtocolConfig,
 ) {
@@ -542,107 +460,6 @@ export function updateNodesAttr<A extends string = string, V = unknown>(
   }
 
   return changed;
-}
-
-/**
- * Selects the entire content of the current block node if the selection is empty.
- * If the selection is not empty, it does nothing.
- * @param editor The Tiptap editor instance
- */
-export function selectCurrentBlockContent(editor: Editor) {
-  const { selection, doc } = editor.state;
-
-  if (!selection.empty) return;
-
-  const $pos = selection.$from;
-  let blockNode = null;
-  let blockPos = -1;
-
-  for (let depth = $pos.depth; depth >= 0; depth--) {
-    const node = $pos.node(depth);
-    const pos = $pos.start(depth);
-
-    if (node.isBlock && node.textContent.trim()) {
-      blockNode = node;
-      blockPos = pos;
-      break;
-    }
-  }
-
-  if (blockNode && blockPos >= 0) {
-    const from = blockPos;
-    const to = blockPos + blockNode.nodeSize - 2; // -2 to exclude the closing tag
-
-    if (from < to) {
-      const $from = doc.resolve(from);
-      const $to = doc.resolve(to);
-      const newSelection = TextSelection.between($from, $to, 1);
-
-      if (newSelection && !selection.eq(newSelection)) {
-        editor.view.dispatch(editor.state.tr.setSelection(newSelection));
-      }
-    }
-  }
-}
-
-/**
- * Retrieves all nodes of specified types from the current selection.
- * @param selection The current editor selection
- * @param allowedNodeTypes An array of node type names to look for (e.g., ["image", "table"])
- * @returns An array of objects containing the node and its position
- */
-export function getSelectedNodesOfType(
-  selection: Selection,
-  allowedNodeTypes: string[],
-): NodeWithPos[] {
-  const results: NodeWithPos[] = [];
-  const allowed = new Set(allowedNodeTypes);
-
-  if (selection instanceof CellSelection) {
-    selection.forEachCell((node: PMNode, pos: number) => {
-      if (allowed.has(node.type.name)) {
-        results.push({ node, pos });
-      }
-    });
-    return results;
-  }
-
-  if (selection instanceof NodeSelection) {
-    const { node, from: pos } = selection;
-    if (node && allowed.has(node.type.name)) {
-      results.push({ node, pos });
-    }
-    return results;
-  }
-
-  const { $anchor } = selection;
-  const cell = cellAround($anchor);
-
-  if (cell) {
-    const cellNode = selection.$anchor.doc.nodeAt(cell.pos);
-    if (cellNode && allowed.has(cellNode.type.name)) {
-      results.push({ node: cellNode, pos: cell.pos });
-      return results;
-    }
-  }
-
-  // Fallback: find parent nodes of allowed types
-  const parentNode = findParentNodeClosestToPos($anchor, (node) =>
-    allowed.has(node.type.name),
-  );
-
-  if (parentNode) {
-    results.push({ node: parentNode.node, pos: parentNode.pos });
-  }
-
-  return results;
-}
-
-/**
- * Clamps a value between min and max bounds
- */
-export function clamp(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(value, max));
 }
 
 export function getSelectedBlockNodes(editor: Editor): PMNode[] {

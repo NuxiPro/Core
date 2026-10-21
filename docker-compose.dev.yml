@@ -7,22 +7,14 @@ services:
       POSTGRES_PASSWORD: dev
       POSTGRES_DB: dev
     ports:
-      - "127.0.0.1:5432:5432" # 1. Sécurité : restreint l'accès à ta machine locale uniquement
-    healthcheck: # 2. Utile si ton backend attend que la BDD soit vraiment prête
+      - "127.0.0.1:5432:5432"
+    healthcheck:
       test: ["CMD-SHELL", "pg_isready -U dev -d dev"]
       interval: 5s
       timeout: 5s
       retries: 5
     volumes:
-      - nexipro_pg_data:/var/lib/postgresql/data
-
-  adminer:
-    image: adminer
-    container_name: nuxipro-adminer
-    ports:
-      - "127.0.0.1:9090:8080"
-    depends_on: # 3. Démarre Adminer après le conteneur BDD
-      - db
+      - nuxipro_pg_data:/var/lib/postgresql/data
 
 volumes:
-  nexipro_pg_data:
+  nuxipro_pg_data:

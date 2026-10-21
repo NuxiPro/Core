@@ -19,13 +19,19 @@ export function useOptimisticMutation<TData, TVars>(
   return useMutation({
     mutationFn,
     onMutate: async (vars) => {
-      await qc.cancelQueries({ queryKey: key });
       const previous = qc.getQueryData<BoardData>(key);
       const extra = opts?.contextExtra?.(vars) ?? {};
+      // Optimistic apply 100% sync: flush dans le même batch React que le
+      // cleanup du drag (setActiveTask(null) dans onDragEnd). Un await
+      // cancelQueries avant le splice crée un gap async où la carte revient
+      // une frame à son ancienne position (le "flash" au drop).
       const ctx = { previous, extra } as Ctx;
       qc.setQueryData<BoardData>(key, (old) =>
         old ? optimisticUpdate(vars, old, ctx) : old,
       );
+      // Annule les refetch in-flight APRÈS application, sans await : sinon
+      // le paint optimiste serait retardé.
+      qc.cancelQueries({ queryKey: key }).catch(() => {});
       return ctx;
     },
     onError: (_e, _v, ctx) => {

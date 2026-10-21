@@ -15,14 +15,14 @@ import { cn, parseShortcutKeys } from "@/src/shared/lib/tiptap-utils";
 import "@layout/components/tiptap-kit/tiptap-ui-primitive/button/button-colors.scss";
 import "@layout/components/tiptap-kit/tiptap-ui-primitive/button/button.scss";
 
-export type ButtonStyle =
+type ButtonStyle =
   | "ghost"
   | "primary"
   | "secondary"
   | "tertiary"
   | "subtle";
-export type ButtonVariant = ButtonStyle | "check";
-export type ButtonSize = "small" | "default" | "large";
+type ButtonVariant = ButtonStyle | "check";
+type ButtonSize = "small" | "default" | "large";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -58,7 +58,7 @@ export interface ButtonProps
   size?: ButtonSize;
 }
 
-export const ShortcutDisplay: React.FC<{ shortcuts: string[] }> = ({
+const ShortcutDisplay: React.FC<{ shortcuts: string[] }> = ({
   shortcuts,
 }) => {
   if (shortcuts.length === 0) return null;

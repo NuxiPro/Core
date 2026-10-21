@@ -2,7 +2,7 @@
 // 1-2 : message poli. 3+ : ferme (accès temporairement restreint).
 // La durée est toujours affichée.
 
-export const RATE_LIMIT_FIRM_AFTER = 3;
+const RATE_LIMIT_FIRM_AFTER = 3;
 
 const STRIKE_KEY = "rl-strikes";
 const STRIKE_WINDOW_MS = 5 * 60_000;
