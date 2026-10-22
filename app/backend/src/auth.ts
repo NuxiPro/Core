@@ -1,4 +1,4 @@
-import { sendEmail } from "@backend/utils/helpers/email/loops";
+import { sendEmail } from "@backend/utils/email/loops";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth} from "better-auth";
 import { db } from "./drizzle/connection/index";
@@ -18,19 +18,8 @@ export const auth = betterAuth({
       name: {
         type: "string",
         required: false,
-        defaultValue: "User",
       },
       role: { type: "string", defaultValue: "user", input: false},
-    },
-  },
-  databaseHooks: {
-    user: {
-      create: {
-        // Magic-link sign-up inserts name: "" — backfill the default here.
-        before: async (user) => ({
-          data: { ...user, name: user.name?.trim() ? user.name : "User" },
-        }),
-      },
     },
   },
   baseURL: process.env.BETTER_AUTH_URL,
@@ -76,11 +65,8 @@ export const auth = betterAuth({
   },
   advanced: {
     ipAddress: {
-      ipAddressHeaders: [
-        "cf-connecting-ip", // Cloudflare (prod)
-        "x-forwarded-for", // Proxy/Nginx (fallback)
-        "x-real-ip", // Nginx direct (fallback)
-      ],
+      ipAddressHeaders: [],
+      trustedProxies: [],
     },
   },
   socialProviders: {

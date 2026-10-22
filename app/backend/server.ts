@@ -1,6 +1,6 @@
 import { pool } from "./src/drizzle/connection/index";
 import app from "./src/index";
-import CronCenter from "./src/lib/CronCenter";
+import { CronCenter } from "./src/lib/CronCenter";
 import { createLogger } from "../../packages/shared/utils/logger";
 import Bun from "bun";
 
