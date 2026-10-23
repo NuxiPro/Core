@@ -9,6 +9,21 @@ interface RequestOptions {
     body?: unknown;
 }
 
+export interface TransactionalEmailEvent {
+  to: string;
+  template: string;
+  data?: Record<string, unknown>;
+}
+
+const token = process.env.PLUNK_SECRET_KEY;
+const template = process.env.PLUNK_MAGIC_LINK_TEMPLATE_ID;
+
+if (!token) throw new Error("Plunk: PLUNK_SECRET_KEY manquant");
+if (!template) throw new Error("Plunk: PLUNK_MAGIC_LINK_TEMPLATE_ID manquant");
+
+export const PLUNK_TOKEN: string = token;
+export const PLUNK_TEMPLATE_ID: string = template;
+
 export async function apiRequest<T>({ baseUrl, endpoint, method, token, body }: RequestOptions): Promise<T> {
     const res = await fetch(`${baseUrl}${endpoint}`, {
         method,

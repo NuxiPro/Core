@@ -1,4 +1,4 @@
-import { sendEmail } from "@backend/utils/email/loops";
+import { sendEmail } from "@backend/utils/PlunkEmail/magic-link";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth} from "better-auth";
 import { db } from "./drizzle/connection/index";
@@ -40,7 +40,7 @@ export const auth = betterAuth({
       // Magic links are valid 15 minutes only.
       expiresIn: 900,
       storeToken: "hashed",
-      sendMagicLink: async ({ email, token, url }) => {
+      sendMagicLink: async ({ email, url }) => {
         if (isDev) {
           console.log(`[dev] magic link for ${email}: ${url}`);
           return;
