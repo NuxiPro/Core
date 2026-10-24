@@ -8,7 +8,7 @@
 | List | `GET /workspaces` | GET | List the user's workspaces |
 | Detail | `GET /workspaces/:id` | GET | Workspace detail |
 | Update | `PATCH /workspaces/:id` | PATCH | Rename the workspace |
-| Delete | `DELETE /workspaces/:id` | DELETE | Delete the workspace + projects (cascade) |
+| Delete | `DELETE /workspaces/:id` | DELETE | Delete the workspace + projects (cascade) + Anti suppression du worspace principal pour éviter de n'avoir aucun workspacep pour l'user |
 
 ## Editable fields
 
@@ -39,7 +39,7 @@ Workspace
 | Route | File | Status |
 |---|---|---|
 | `POST /newWorkspace` | `CreateWorkspace.ts` | [X] Done |
-| `GET /` | `list.ts` | [ ] To do |
+| `GET /` | `list.ts` | [X] To do |
 | `GET /:id` | `getWorkspace.ts` | [ ] To do |
 | `PATCH /:id` | `updateWorkspace.ts` | [ ] To do |
 | `DELETE /:id` | `deleteWorkspace.ts` | [ ] To do |

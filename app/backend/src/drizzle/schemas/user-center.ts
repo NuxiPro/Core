@@ -8,6 +8,7 @@ export const userPreference = pgTable("user_preference", {
     .references(() => user.id, { onDelete: "cascade" }),
   theme: text('theme').notNull().default('system'),
   emailNotifications: boolean("email_notifications").default(true).notNull(),
+  lang: text("lang").notNull().default("fr"),
   timezone: text("timezone").default("UTC").notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" })
     .defaultNow()

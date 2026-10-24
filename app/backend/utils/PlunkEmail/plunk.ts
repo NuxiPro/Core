@@ -1,4 +1,3 @@
-// ./plunk.ts
 import { TransactionalEmailEvent, apiRequest, PLUNK_TOKEN, PLUNK_TEMPLATE_ID } from './httpClientPlunk';
 
 const BASE_URL = 'https://next-api.useplunk.com';
@@ -21,6 +20,16 @@ export const plunk = {
       endpoint: '/v1/send',
       method: 'POST',
       token: PLUNK_TOKEN,
-      body: { to, template: PLUNK_TEMPLATE_ID, data: { url } } satisfies TransactionalEmailEvent,
+      body: {
+        to, template: PLUNK_TEMPLATE_ID,
+        event: "auth.magic_link",
+        data: {
+          lang: "",  // Bosser sur la gestion des lang stocker côter serveur
+          url: {
+            value: url,
+            persistent: false
+          },
+        }
+      } satisfies TransactionalEmailEvent,
     }),
 };

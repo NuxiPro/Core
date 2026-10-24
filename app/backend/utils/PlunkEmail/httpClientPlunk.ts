@@ -1,4 +1,3 @@
-// ./httpClientPlunk.ts
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 interface RequestOptions {
@@ -11,7 +10,9 @@ interface RequestOptions {
 
 export interface TransactionalEmailEvent {
   to: string;
+  event: string;
   template: string;
+  subscribed?: boolean;
   data?: Record<string, unknown>;
 }
 

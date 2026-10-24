@@ -50,6 +50,6 @@ z.object({
 | 1 | `getProject.ts` | [ ] To do |
 | 2 | `updateProject.ts` | [ ] To do |
 | 3 | `deleteProject.ts` | [X] To do |
-| 4 | `index.ts` | [ ] To modify |
+| 4 | `index.ts` | [X] To modify |
 
 getProject.ts and updateProject.ts are only for the project settings
