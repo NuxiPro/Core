@@ -50,6 +50,7 @@
     "hono": "^4.13.13",
     "i18next": "^26.5.0",
     "i18next-browser-languagedetector": "^8.2.1",
+    "i18next-http-backend": "^4.0.5",
     "lucide-react": "^1.59.0",
     "radix-ui": "^1.8.1",
     "react": "^19.3.1",

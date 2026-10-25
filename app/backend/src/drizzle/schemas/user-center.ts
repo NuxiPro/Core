@@ -3,11 +3,11 @@ import { user } from "./auth-schema";
 
 export const userPreference = pgTable("user_preference", {
   id: uuid("id").defaultRandom().primaryKey(),
-  user: text("user_id")
+  userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   theme: text('theme').notNull().default('system'),
-  emailNotifications: boolean("email_notifications").default(true).notNull(),
+  emailNotifications: boolean("email_notifications").default(false).notNull(),
   lang: text("lang").notNull().default("fr"),
   timezone: text("timezone").default("UTC").notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" })

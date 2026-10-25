@@ -1,8 +1,3 @@
-Use this: it is an indicator that helps users log back in (last connection)
-import { lastLoginMethod } from "better-auth/plugins"
-
----
-
 **Redis (Later)**
 
 // import { Redis } from "@upstash/redis";

@@ -77,6 +77,7 @@
         "hono": "^4.13.13",
         "i18next": "^26.5.0",
         "i18next-browser-languagedetector": "^8.2.1",
+        "i18next-http-backend": "^4.0.5",
         "lucide-react": "^1.59.0",
         "radix-ui": "^1.8.1",
         "react": "^19.3.1",
@@ -1151,6 +1152,8 @@
     "i18next": ["i18next@26.5.0", "", { "peerDependencies": { "typescript": "^5 || ^6 || ^7" }, "optionalPeers": ["typescript"] }, "sha512-OwFFD3ER/BSWsv40teDtkhG7fwgncd7cq1CX7el02IENW9ZiwfWLnMjsQGD/q3SExrxp0+QxwUqXL8F9BKu5+w=="],
 
     "i18next-browser-languagedetector": ["i18next-browser-languagedetector@8.2.1", "", { "dependencies": { "@babel/runtime": "^7.23.2" } }, "sha512-bZg8+4bdmaOiApD7N7BPT9W8MLZG+nPTOFlLiJiT8uzKXFjhxw4v2ierCXOwB5sFDMtuA5G4kgYZ0AznZxQ/cw=="],
+
+    "i18next-http-backend": ["i18next-http-backend@4.0.5", "", {}, "sha512-0uXq24ZAVFwbA0MGija0AZYBcs8iA+wbC//UiDyZwPC3/wZfyD20LgGxvjMOqf9o3/pDJ05ZLIlB4U3+AdA9AQ=="],
 
     "iconv-lite": ["iconv-lite@0.7.3", "", { "dependencies": { "safer-buffer": ">= 2.1.2 < 3.0.0" } }, "sha512-IKXpvIzjnC9XTAUbVBcMfGS0EPaIXtW6v+zr+RRp+hqULEpo0owZax6wyRwPOJbWbzjYspQwusTsfVr0ifh4uQ=="],
 

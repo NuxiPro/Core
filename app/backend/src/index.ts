@@ -11,6 +11,7 @@ import { securityAlert } from "./lib/security-alert";
 import { httpLogger } from "./logique/logging/logger";
 import { projectsModule } from "./routes/projects";
 import { workspacesModule } from "./routes/workspace";
+import { csrf } from "hono/csrf";
 
 const allowedOrigin = process.env.FRONTEND_URL_ALLOWED;
 if (!allowedOrigin) {
@@ -84,8 +85,11 @@ const app = new OpenAPIHono<AppEnv>({
       maxAge: 86400,
     }),
   )
-  .use("*", compress())
   .use("*", secureHeaders())
+  .use("*", csrf({
+    origin : allowedOrigin,
+  }))
+  .use("*", compress())
   // In production, hide Zod error details
   .onError((err, c) => {
     if (err.message?.includes("ZodError")) {

@@ -26,7 +26,7 @@ export const user = ac.newRole({
   task: ["create","read","update", "delete"],
   archive: ["create", "read","update", "delete"],
   billing: ["create", "read", "update", "delete"],
-  user: ["read"],
+  user: [],
 });
 
 // Unpaid balance or quota exceeded: account is now read-only
@@ -36,7 +36,7 @@ export const restricted = ac.newRole({
   task: ["read", "delete"],
   archive: ["read", "delete"],
   billing: ["read", "update"],
-  user: ["read"],
+  user: [],
 });
 
 export const roles_center = {
