@@ -43,6 +43,20 @@
       "when": 1792847648956,
       "tag": "0005_moaning_bloodstrike",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793039381363,
+      "tag": "0006_bent_freak",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793039984134,
+      "tag": "0007_futuristic_clea",
+      "breakpoints": true
     }
   ]
 }

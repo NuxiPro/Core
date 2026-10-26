@@ -3,6 +3,7 @@
     "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "resolveJsonModule": true,
     "target": "ESNext",
     "ignoreDeprecations": "5.0",
 

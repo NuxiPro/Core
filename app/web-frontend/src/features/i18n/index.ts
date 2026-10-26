@@ -1,18 +1,20 @@
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
-import Backend from "i18next-http-backend";
-import type { HttpBackendOptions } from 'i18next-http-backend';
+import en from "./locales/en.json";
+import fr from "./locales/fr.json";
 
+// Translations ship with the bundle: they trade a runtime fetch (which used to
+// hit the SPA fallback and return HTML) for zero requests and no raw-key flash.
 i18n
-  .use(Backend)
   .use(LanguageDetector)
   .use(initReactI18next)
-  .init<HttpBackendOptions>({
+  .init({
     fallbackLng: "en",
     interpolation: { escapeValue: false },
-    backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
+    resources: {
+      en: { translation: en },
+      fr: { translation: fr },
     },
     detection: {
       order: ["localStorage", "navigator"],

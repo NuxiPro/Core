@@ -1,0 +1,1 @@
+ALTER TABLE "user_preference" ALTER COLUMN "language" SET DEFAULT 'en';

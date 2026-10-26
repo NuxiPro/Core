@@ -20,8 +20,11 @@ import { MagicLinkSent } from "./MagicLinkSent";
 
 const log = createLogger("auth/login");
 
+const SOCIAL_BUTTON =
+  "w-full h-12 bg-[#0f1011] text-base text-[#f7f8f8] hover:bg-[#141516] border border-[#23252a] font-medium relative active:scale-[0.98] transition-[background-color,transform] duration-200 ease-out";
+
 const INPUT =
-  "h-11 bg-[#0f1011] border-0 text-[#f7f8f8] placeholder:text-[#8a8f98] focus-visible:ring-1 focus-visible:ring-primary";
+  "h-12 text-base bg-[#0f1011] border border-[#23252a] text-[#f7f8f8] placeholder:text-[#8a8f98] focus-visible:ring-1 focus-visible:ring-white/40 focus-visible:border-transparent transition-[border-color,box-shadow] duration-200";
 
 export default function LoginForm() {
   const { t } = useTranslation();
@@ -76,59 +79,33 @@ export default function LoginForm() {
       )}
 
       <div className="flex items-center justify-center h-full px-4">
-        <div className="w-full max-w-[340px] space-y-8">
-          <BrandLogo />
+        <div className="w-full max-w-[400px] space-y-7">
+          <BrandLogo className="justify-start [&>img]:size-12" />
 
-          <h1 className="text-xl font-semibold text-white text-center">
-            {t("auth.logInTo")} {t("brand.name")}
-          </h1>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold tracking-tight text-white">
+              {t("auth.welcomeTo")} {t("brand.name")}
+            </h1>
+            <p className="text-base text-[#8a8f98]">
+              {t("auth.logInOrCreateHint")}
+            </p>
+          </div>
 
-          <div className="space-y-3">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full h-11 bg-white text-black hover:bg-zinc-200 border-0 font-medium relative transition-all duration-[420ms] ease-out"
-              onClick={() => handleSocial("google")}
-            >
-              <GoogleIcon className="size-4" />
-              {t("auth.continueWithGoogle")}
-              {lastUsed === "google" && (
-                <LastUsedBadge label={t("auth.lastUsed")} />
-              )}
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full h-11 bg-[#0f1011] text-[#f7f8f8] hover:bg-[#141516] border border-[#23252a] font-medium relative transition-all duration-[420ms] ease-out"
-              onClick={() => handleSocial("github")}
-            >
-              <GitHubIcon className="size-4" />
-              {t("auth.continueWithGitHub")}
-              {lastUsed === "github" && (
-                <LastUsedBadge label={t("auth.lastUsed")} />
-              )}
-            </Button>
-
-            <div className="relative py-2">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[#23252a]" />
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="bg-[#010102] px-2 text-[#62666d]">
-                  {t("auth.or")}
-                </span>
-              </div>
-            </div>
-
+          <div className="space-y-4">
             {showSent ? (
               <MagicLinkSent />
             ) : (
               <form
                 onSubmit={handleSubmit(onSubmit)}
-                className={`space-y-3 origin-center transition-all duration-500 ease-in ${sent ? "opacity-0 scale-90" : "opacity-100 scale-100"}`}
+                className={`space-y-4 origin-center transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none ${sent ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
               >
                 <RateLimitBanner />
+                <label
+                  htmlFor="email"
+                  className="block text-base font-medium text-[#f7f8f8]"
+                >
+                  {t("auth.emailAddress")}
+                </label>
                 <Input
                   id="email"
                   type="email"
@@ -138,21 +115,21 @@ export default function LoginForm() {
                   {...register("email")}
                 />
                 {errors.email && (
-                  <p className="text-xs font-medium text-red-400">
+                  <p className="text-sm font-medium text-red-400">
                     {errors.email.message}
                   </p>
                 )}
                 {errors.root && (
-                  <p className="text-xs font-medium text-red-400 text-center">
+                  <p className="text-sm font-medium text-red-400 text-center">
                     {errors.root.message}
                   </p>
                 )}
                 <Button
                   type="submit"
-                  className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary-hover border-0 font-medium relative shadow-[0_1px_6px_rgba(15,118,110,0.35)] transition-all duration-[420ms] ease-out"
+                  className="w-full h-12 bg-white text-base text-black hover:bg-zinc-200 border-0 font-medium relative active:scale-[0.98] transition-[background-color,transform] duration-200 ease-out"
                   disabled={isSubmitting}
                 >
-                  {t("auth.signInWithEmail")}
+                  {t("auth.continueWithEmail")}
                   {lastUsed &&
                     lastUsed !== "google" &&
                     lastUsed !== "github" && (
@@ -161,10 +138,49 @@ export default function LoginForm() {
                 </Button>
               </form>
             )}
+
+            <div className="relative py-2">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[#23252a]" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-[#010102] px-2 text-[#8a8f98]">
+                  {t("auth.or")}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                className={SOCIAL_BUTTON}
+                onClick={() => handleSocial("google")}
+              >
+                <GoogleIcon className="size-4" />
+                Google
+                {lastUsed === "google" && (
+                  <LastUsedBadge label={t("auth.lastUsed")} />
+                )}
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                className={SOCIAL_BUTTON}
+                onClick={() => handleSocial("github")}
+              >
+                <GitHubIcon className="size-4" />
+                GitHub
+                {lastUsed === "github" && (
+                  <LastUsedBadge label={t("auth.lastUsed")} />
+                )}
+              </Button>
+            </div>
           </div>
 
           {!showSent && (
-            <p className="text-sm text-[#8a8f98] text-center">
+            <p className="text-base text-[#8a8f98]">
               {t("auth.magicLinkHint")}
             </p>
           )}

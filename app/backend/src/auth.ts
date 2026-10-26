@@ -6,6 +6,7 @@ import * as schema from "./drizzle/schemas/index";
 import { createLogger } from "./logique/logging/logger";
 import { admin, lastLoginMethod, magicLink } from "better-auth/plugins";
 import { RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS } from "./lib/rate-limit-config";
+import { seedAccountDefaults } from "./logique/InitUserAccount/seed";
 const log = createLogger("auth");
 
 // Local dev: print magic links in the terminal, no email tool needed.
@@ -14,6 +15,17 @@ const isDev = process.env.NODE_ENV !== "production";
 
 export const auth = betterAuth({
   user: {
+    create: {
+      after: async (user: { id: string; email: string }) => {
+        try {
+          await seedAccountDefaults(user);
+        } catch (err) {
+          // Garde-fou n°2 : un seed raté ne bloque JAMAIS la connexion.
+          // L'idempotence permet le re-seed au prochain passage authentifié.
+          log.error("[UserInit] Account seeding failed", err);
+        }
+      },
+    },
     additionalFields: {
       name: {
         type: "string",
@@ -34,6 +46,9 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
     callbackURL: "/onboarding",
     sendOnSignUp: true,
+  },
+  account: {
+    encryptOAuthTokens: true,
   },
   plugins: [
     magicLink({
