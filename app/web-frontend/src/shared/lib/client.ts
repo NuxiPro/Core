@@ -9,10 +9,14 @@ import {
 import { hc } from "hono/client";
 import { reportRateLimited } from "@/src/layout/components/animation/rate-limit-policy";
 import { handleAuthError } from "./auth-guard";
+import i18n from "@/src/features/i18n";
+
 
 const log = createLogger("client");
 const API_URL = import.meta.env.BACKEND_API_URL as string;
 const AUTH_URL = import.meta.env.BACKEND_AUTH_URL as string;
+const LANG = i18n.language?.startsWith("fr") ? "fr" : "en";
+
 
 if (import.meta.env.DEV) {
   for (const [name, url] of [
@@ -44,6 +48,9 @@ type AuthClientWithMagicLink = AuthClient<{
 export const authClient = createAuthClient({
   baseURL: AUTH_URL,
   plugins: [magicLinkClient(), lastLoginMethodClient()],
+  fetchOptions: {
+    headers: { "X-User-Language": LANG }
+  }
 }) as AuthClientWithMagicLink;
 
 const fetcher = async (
@@ -80,5 +87,5 @@ const fetcher = async (
 
 export const client = hc<AppType>(API_URL || "/", {
   fetch: fetcher,
-  init: { credentials: "include" },
-} as never);
+  init: { credentials: "include", headers: { "X-User-Language": LANG }  },
+} as const);

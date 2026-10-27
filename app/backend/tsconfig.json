@@ -9,8 +9,8 @@
     "lib": ["ESNext"],
     "types": ["bun"],
 
-    /* Resolution des chemins (Alias) */
-    "baseUrl": ".",
+    /* Resolution des chemins (Alias) — TS7 : les chemins sont résolus
+       relativement au fichier tsconfig, plus besoin de baseUrl */
     "paths": {
       "@backend/*": ["./*"],
       "@packages/*": ["../../packages/*"],
@@ -28,6 +28,6 @@
     "forceConsistentCasingInFileNames": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["src/**/*", "../../packages/**/*"],
+  "include": ["src/**/*", "../../packages/**/*", "local/InitUserAccount/03-ensure-starter-tasks.ts"],
   "exclude": ["node_modules", "./local", "dist"]
 }

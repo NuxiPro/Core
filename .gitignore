@@ -36,3 +36,4 @@ local/
 .wrangler
 strategie-init-account-user/
 stratégie.md
+.agent/

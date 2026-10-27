@@ -74,7 +74,7 @@ const app = new OpenAPIHono<AppEnv>({
     cors({
       origin: allowedOrigin,
       allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-      allowHeaders: ["Content-Type", "Authorization"],
+      allowHeaders: ["Content-Type", "Authorization", "X-User-Language"],
       exposeHeaders: [
         "X-RateLimit-Limit",
         "X-RateLimit-Remaining",

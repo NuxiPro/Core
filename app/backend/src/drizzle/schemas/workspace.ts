@@ -15,7 +15,7 @@ import { user } from "./auth-schema";
  * We store this space dedicated to the user
  */
 export const WorkspacesTable = pgTable("workspace", {
-  id: uuid("id").primaryKey(),
+  id: uuid("id").primaryKey().notNull(),
   name: varchar("name", { length: 30 }).notNull(),
   userId: text("user_id")
     .notNull()
@@ -29,7 +29,7 @@ export const WorkspacesTable = pgTable("workspace", {
 export const projectsTable = pgTable(
   "projects",
   {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().notNull(),
     name: varchar("name", { length: 30 }).notNull(),
     description: varchar("description", { length: 200 }),
     slug: varchar("slug", { length: 55 }).notNull(),
@@ -59,7 +59,7 @@ export const projectsTable = pgTable(
 export const cardsTable = pgTable(
   "cards",
   {
-    id: uuid("id").primaryKey(), // ID generated as UUID v7 by your Hono backend
+    id: uuid("id").primaryKey().notNull(), // ID generated as UUID v7 by your Hono backend
     userId: text("user_id") // Identifies the task creator (preparation for multi-user)
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }), // If the user deletes their account, their tasks go with it!
@@ -104,7 +104,7 @@ export const cardsTable = pgTable(
 export const archivedCardsTable = pgTable(
   "archived_cards",
   {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().notNull(),
     taskId: uuid("task_id").notNull(), // Original UUID of the card in cardsTable
     userId: text("user_id")
       .notNull()

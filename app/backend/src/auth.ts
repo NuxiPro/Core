@@ -7,6 +7,9 @@ import { createLogger } from "./logique/logging/logger";
 import { admin, lastLoginMethod, magicLink } from "better-auth/plugins";
 import { RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS } from "./lib/rate-limit-config";
 import { seedAccountDefaults } from "./logique/InitUserAccount/seed";
+import { getUserLanguage, stashSignUpLanguage } from "./logique/InitUserAccount/user-language";
+import { toLang } from "./logique/InitUserAccount/01-ensure-default-settings";
+
 const log = createLogger("auth");
 
 // Local dev: print magic links in the terminal, no email tool needed.
@@ -55,15 +58,27 @@ export const auth = betterAuth({
       // Magic links are valid 15 minutes only.
       expiresIn: 900,
       storeToken: "hashed",
-      sendMagicLink: async ({ email, url }) => {
-        if (isDev) {
-          console.log(`[dev] magic link for ${email}: ${url}`);
+      sendMagicLink: async ({ email, url }, ctx) => {
+        // 1. Header de la requête (aucune dépendance base → testable unitairement)
+        const headerLang = toLang(
+          ctx?.request?.headers?.get("x-user-language") ?? null,
+        );
+
+        // 2. Langue déjà persistée (1er envoi → null → on retombe sur le header)
+        const lang = (await getUserLanguage(email)) ?? headerLang;
+
+        // 3. 1er envoi : on stoke la langue pour que le seed puisse la relire
+        if (!ctx?.context) return;
+        const existing = await ctx.context.internalAdapter.findUserByEmail(email);
+        if (!existing) await stashSignUpLanguage(email, lang, ctx.context.internalAdapter);
+
+        // 4. Rien d'autre ne change — la callback isDev et le fallback de lang restent
+        if (process.env.NODE_ENV === "development") {
+          log.info(`[Magic Link] ${url}`); // eslint-disable-line no-console
           return;
         }
-        void sendEmail(email, url).catch((err: string) => {
-          log.error(`Failed to send magic link to ${email}`, err);
-        });
-      }
+        await sendEmail(email, url, lang);
+      },
     }),
     admin(),
     lastLoginMethod(),

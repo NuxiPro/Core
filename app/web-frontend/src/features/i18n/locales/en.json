@@ -136,6 +136,10 @@
       "oauthAccount": "OAuth account",
       "oauthAccountDesc": "Your account is managed by an external provider (Google, GitHub...). Password management is not available here.",
       "accountSecurity": "Account security",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "changePassword": "Change password",
       "twoFactorAuth": "Two-factor authentication (2FA)",
       "twoFactorAuthDesc": "Add an extra layer of security to your account with two-factor authentication.",
       "activeSessions": "Active sessions",
@@ -182,6 +186,7 @@
   "errors": {
     "unknown": "unknown",
     "incorrectEmail": "Incorrect email",
+    "incorrectEmailOrPassword": "Incorrect email",
     "registrationError": "An error occurred during registration.",
     "noWorkspaceAvailable": "No workspace available",
     "rateLimitedPolite": "You're going a bit fast. Try again in {{duration}}.",

@@ -1,6 +1,11 @@
-import { TransactionalEmailEvent, apiRequest, PLUNK_TOKEN, PLUNK_TEMPLATE_ID } from './httpClientPlunk';
+import {
+  apiRequest,
+  PLUNK_TEMPLATE_ID,
+  PLUNK_TOKEN,
+  type TransactionalEmailEvent,
+} from "./httpClientPlunk";
 
-const BASE_URL = 'https://next-api.useplunk.com';
+const BASE_URL = "https://next-api.useplunk.com";
 
 // --- SERVICE PLUNK ---
 export const plunk = {
@@ -8,28 +13,29 @@ export const plunk = {
   sendTransactional: (data: TransactionalEmailEvent) =>
     apiRequest({
       baseUrl: BASE_URL,
-      endpoint: '/v1/send',
-      method: 'POST',
+      endpoint: "/v1/send",
+      method: "POST",
       token: PLUNK_TOKEN,
       body: data,
     }),
 
-  sendMagicLink: (to: string, url: string) =>
+  sendMagicLink: (to: string, url: string, lang: string = "en") =>
     apiRequest({
       baseUrl: BASE_URL,
-      endpoint: '/v1/send',
-      method: 'POST',
+      endpoint: "/v1/send",
+      method: "POST",
       token: PLUNK_TOKEN,
       body: {
-        to, template: PLUNK_TEMPLATE_ID,
+        to,
+        template: PLUNK_TEMPLATE_ID,
         event: "auth.magic_link",
+        lang,
         data: {
-          lang: "",  // Bosser sur la gestion des lang stocker côter serveur
           url: {
             value: url,
-            persistent: false
+            persistent: false,
           },
-        }
+        },
       } satisfies TransactionalEmailEvent,
     }),
 };
