@@ -18,7 +18,7 @@ export async function StepDefaultSettings(user: {
     .insert(userPreference)
     .values({
       userId: user.id,
-      language: toLang(user.language), // amorce : "fr" | "en" — fallback "fr"
+      language: toLang(user.language), // amorce : "fr" | "en" — fallback "en"
     })
     .onConflictDoNothing();
 }

@@ -34,6 +34,4 @@ local/
 .opencode
 .opencode.json
 .wrangler
-strategie-init-account-user/
-stratégie.md
 .agent/
