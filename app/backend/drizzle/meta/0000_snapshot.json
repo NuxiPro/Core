@@ -1,5 +1,5 @@
 {
-  "id": "8fbca8b2-f859-4605-829c-1dbf88e8e3f5",
+  "id": "010d56ff-8b98-4d9b-a1ed-a3446233c1ef",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -178,6 +178,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "impersonated_by": {
+          "name": "impersonated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -240,8 +246,7 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'User'"
+          "notNull": false
         },
         "email": {
           "name": "email",
@@ -262,13 +267,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "role": {
-          "name": "role",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'workspaceOwner'"
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -282,6 +280,32 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'user'"
+        },
+        "banned": {
+          "name": "banned",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "ban_reason": {
+          "name": "ban_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ban_expires": {
+          "name": "ban_expires",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -625,6 +649,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'a0'"
+        },
+        "due_date": {
+          "name": "due_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -973,8 +1003,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.user_preference": {
-      "name": "user_preference",
+    "public.user_setting": {
+      "name": "user_setting",
       "schema": "",
       "columns": {
         "id": {
@@ -992,7 +1022,8 @@
         },
         "theme": {
           "name": "theme",
-          "type": "text",
+          "type": "theme",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
           "default": "'system'"
@@ -1002,14 +1033,15 @@
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
-          "default": true
+          "default": false
         },
-        "timezone": {
-          "name": "timezone",
-          "type": "text",
+        "language": {
+          "name": "language",
+          "type": "lang",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'UTC'"
+          "default": "'en'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -1021,9 +1053,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "user_preference_user_id_user_id_fk": {
-          "name": "user_preference_user_id_user_id_fk",
-          "tableFrom": "user_preference",
+        "user_setting_user_id_user_id_fk": {
+          "name": "user_setting_user_id_user_id_fk",
+          "tableFrom": "user_setting",
           "tableTo": "user",
           "columnsFrom": [
             "user_id"
@@ -1042,7 +1074,25 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.lang": {
+      "name": "lang",
+      "schema": "public",
+      "values": [
+        "fr",
+        "en"
+      ]
+    },
+    "public.theme": {
+      "name": "theme",
+      "schema": "public",
+      "values": [
+        "light",
+        "dark",
+        "system"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},

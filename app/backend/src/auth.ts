@@ -1,27 +1,48 @@
 import { sendEmail } from "@backend/utils/PlunkEmail/magic-link";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
-import { betterAuth} from "better-auth";
+import { betterAuth } from "better-auth";
+import { admin, lastLoginMethod, magicLink } from "better-auth/plugins";
 import { db } from "./drizzle/connection/index";
 import * as schema from "./drizzle/schemas/index";
-import { createLogger } from "./logique/logging/logger";
-import { admin, lastLoginMethod, magicLink } from "better-auth/plugins";
 import { RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS } from "./lib/rate-limit-config";
-import { seedAccountDefaults } from "./logique/InitUserAccount/seed";
-import { getUserLanguage, stashSignUpLanguage } from "./logique/InitUserAccount/user-language";
 import { toLang } from "./logique/InitUserAccount/01-ensure-default-settings";
+import { seedAccountDefaults } from "./logique/InitUserAccount/seed";
+import {
+  consumeStashedLanguage,
+  getUserLanguage,
+  stashSignUpLanguage,
+} from "./logique/InitUserAccount/user-language";
+import { createLogger } from "./logique/logging/logger";
 
 const log = createLogger("auth");
-
-// Local dev: print magic links in the terminal, no email tool needed.
-// Prod (!isDev): send via the email helper (loops.ts, being migrated to Plunk).
-const isDev = process.env.NODE_ENV !== "production";
 
 export const auth = betterAuth({
   user: {
     create: {
-      after: async (user: { id: string; email: string }) => {
+      after: async (user: { id: string; email: string }, hookCtx?: unknown) => {
         try {
-          await seedAccountDefaults(user);
+          // Le header n'EST PAS dispo ici (clic sur le lien = navigation
+          // navigateur → doc 08 §1). On relit le stash posé par
+          // sendMagicLink ; sinon default "en".
+          const ctx = hookCtx as
+            | {
+                context?: {
+                  internalAdapter: Parameters<typeof consumeStashedLanguage>[2];
+                };
+              }
+            | undefined;
+
+          await seedAccountDefaults({
+            id: user.id,
+            email: user.email,
+            language: ctx?.context
+              ? await consumeStashedLanguage(
+                  user.email,
+                  toLang(null),
+                  ctx.context.internalAdapter,
+                )
+              : toLang(null),
+          });
         } catch (err) {
           // Garde-fou n°2 : un seed raté ne bloque JAMAIS la connexion.
           // L'idempotence permet le re-seed au prochain passage authentifié.
@@ -34,7 +55,7 @@ export const auth = betterAuth({
         type: "string",
         required: false,
       },
-      role: { type: "string", defaultValue: "user", input: false},
+      role: { type: "string", defaultValue: "user", input: false },
     },
   },
   baseURL: process.env.BETTER_AUTH_URL,
@@ -63,18 +84,18 @@ export const auth = betterAuth({
         const headerLang = toLang(
           ctx?.request?.headers?.get("x-user-language") ?? null,
         );
-
         // 2. Langue déjà persistée (1er envoi → null → on retombe sur le header)
         const lang = (await getUserLanguage(email)) ?? headerLang;
 
         // 3. 1er envoi : on stoke la langue pour que le seed puisse la relire
         if (!ctx?.context) return;
-        const existing = await ctx.context.internalAdapter.findUserByEmail(email);
-        if (!existing) await stashSignUpLanguage(email, lang, ctx.context.internalAdapter);
+        const existing =
+          await ctx.context.internalAdapter.findUserByEmail(email);
+        if (!existing)
+          await stashSignUpLanguage(email, lang, ctx.context.internalAdapter);
 
-        // 4. Rien d'autre ne change — la callback isDev et le fallback de lang restent
         if (process.env.NODE_ENV === "development") {
-          log.info(`[Magic Link] ${url}`); // eslint-disable-line no-console
+          log.info(`[Magic Link] ${url}`);
           return;
         }
         await sendEmail(email, url, lang);

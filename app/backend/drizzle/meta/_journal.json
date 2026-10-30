@@ -5,57 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1790535901451,
-      "tag": "0000_violet_power_pack",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1791314016033,
-      "tag": "0001_futuristic_thena",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1791314016034,
-      "tag": "0002_curly_mantis",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1792004679775,
-      "tag": "0003_lowly_moira_mactaggert",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1792701492250,
-      "tag": "0004_lethal_tenebrous",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1792847648956,
-      "tag": "0005_moaning_bloodstrike",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1793039381363,
-      "tag": "0006_bent_freak",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1793039984134,
-      "tag": "0007_futuristic_clea",
+      "when": 1793390719099,
+      "tag": "0000_crazy_tyger_tiger",
       "breakpoints": true
     }
   ]

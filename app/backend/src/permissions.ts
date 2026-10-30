@@ -1,12 +1,13 @@
 import { createAccessControl } from "better-auth/plugins/access";
 
 const statement = {
-  project: ["create", "read", "update", "delete", "manage"],
-  workspace: ["create", "read", "update", "delete", "manage"],
-  task: ["create", "read", "update", "delete", "manage"],
-  archive: ["create", "read", "update", "delete", "manage"],
+  project: ["create", "read", "update", "delete"],
+  workspace: ["create", "read", "update", "delete"],
+  task: ["create", "read", "update", "delete"],
+  archive: ["create", "read", "update", "delete"],
   user: ["create", "read", "update", "delete", "manage"],
-  billing: ["create", "read", "update", "delete", "manage"],
+  billing: ["create", "read", "update", "delete"],
+  setting: ["read", "update", "delete"], // Par défaut l'utilisateurs ou l'admin ne créer jamais les setting
 } as const;
 
 export const ac = createAccessControl(statement);
@@ -17,6 +18,7 @@ export const admin = ac.newRole({
   task: ["create","read","update", "delete"],
   archive: ["create", "read","update", "delete"],
   billing: ["create", "read", "update", "delete"],
+  setting: ["read", "update", "delete"],
   user: ["manage"],
 });
 
@@ -26,6 +28,7 @@ export const user = ac.newRole({
   task: ["create","read","update", "delete"],
   archive: ["create", "read","update", "delete"],
   billing: ["create", "read", "update", "delete"],
+  setting: ["read", "update", "delete"],
   user: [],
 });
 
@@ -36,6 +39,7 @@ export const restricted = ac.newRole({
   task: ["read", "delete"],
   archive: ["read", "delete"],
   billing: ["read", "update"],
+  setting: ["read", "update", "delete"],
   user: [],
 });
 

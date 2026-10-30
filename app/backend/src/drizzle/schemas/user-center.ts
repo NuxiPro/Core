@@ -4,7 +4,7 @@ import { user } from "./auth-schema";
 export const langEnum = pgEnum("lang", ["fr", "en"]);
 export const themeEnum = pgEnum("theme", ["light", "dark", "system"]);
 
-export const userPreference = pgTable("user_preference", {
+export const userSetting = pgTable("user_setting", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: text("user_id")
     .notNull()
@@ -12,7 +12,6 @@ export const userPreference = pgTable("user_preference", {
   theme: themeEnum('theme').default('system').notNull(),
   emailNotifications: boolean("email_notifications").default(false).notNull(),
   language: langEnum("language").notNull().default("en"),
-  timezone: text("timezone").default("UTC").notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" })
     .defaultNow()
     .$onUpdate(() => new Date())

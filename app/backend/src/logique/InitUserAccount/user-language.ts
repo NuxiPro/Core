@@ -1,8 +1,8 @@
-import { eq } from "drizzle-orm";
 import { db } from "@backend/src/drizzle/connection";
-import { userPreference } from "../../drizzle/schemas/user-center";
 import { user } from "@backend/src/drizzle/schemas";
-import { toLang, Lang } from "./01-ensure-default-settings";
+import { eq } from "drizzle-orm";
+import { userSetting } from "../../drizzle/schemas/user-center";
+import { type Lang, toLang } from "./01-ensure-default-settings";
 
 /**
  * Langue déjà connue pour cet e-mail, ou `null` si :
@@ -13,15 +13,15 @@ import { toLang, Lang } from "./01-ensure-default-settings";
  */
 export async function getUserLanguage(email: string): Promise<Lang | null> {
   const rows = await db
-    .select({ language: userPreference.language })
-    .from(userPreference)
-    .innerJoin(user, eq(userPreference.userId, user.id))
+    .select({ language: userSetting.language })
+    .from(userSetting)
+    .innerJoin(user, eq(userSetting.userId, user.id))
     .where(eq(user.email, email))
     .limit(1);
 
   const lang = rows[0]?.language;
   return lang ? toLang(lang) : null;
-};
+}
 
 const STASH_PREFIX = "lang:";
 
@@ -29,13 +29,20 @@ const STASH_PREFIX = "lang:";
 export async function stashSignUpLanguage(
   email: string,
   lang: Lang,
-  internalAdapter: { createVerificationValue: (v: { identifier: string; value: string; expiresAt: Date }) => Promise<unknown> },
+  internalAdapter: {
+    createVerificationValue: (v: {
+      identifier: string;
+      value: string;
+      expiresAt: Date;
+    }) => Promise<unknown>;
+  },
 ): Promise<void> {
-  await internalAdapter.createVerificationValue({
+  const payload = {
     identifier: `${STASH_PREFIX}${email}`,
     value: lang,
     expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 min
-  });
+  };
+  await internalAdapter.createVerificationValue(payload);
 }
 
 /** Lit + consomme le stash au seed. Retourne la langue du header, sinon `fallback`. */
@@ -43,7 +50,9 @@ export async function consumeStashedLanguage(
   email: string,
   fallback: Lang,
   internalAdapter: {
-    findVerificationValue: (v: { identifier: string }) => Promise<{ identifier: string, value: string } | null>;
+    findVerificationValue: (v: {
+      identifier: string;
+    }) => Promise<{ identifier: string; value: string } | null>;
     deleteVerificationValue: (v: string) => Promise<unknown>;
   },
 ): Promise<Lang> {

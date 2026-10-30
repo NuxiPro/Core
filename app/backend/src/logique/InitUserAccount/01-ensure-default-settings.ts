@@ -1,5 +1,5 @@
 import { db } from "@backend/src/drizzle/connection";
-import { userPreference } from "@backend/src/drizzle/schemas";
+import { userSetting } from "@backend/src/drizzle/schemas";
 
 const ALLOWED_LANGS = ["fr", "en"] as const;
 export type Lang = (typeof ALLOWED_LANGS)[number];
@@ -15,7 +15,7 @@ export async function StepDefaultSettings(user: {
   language?: string;
 }) {
   await db
-    .insert(userPreference)
+    .insert(userSetting)
     .values({
       userId: user.id,
       language: toLang(user.language), // amorce : "fr" | "en" — fallback "en"
