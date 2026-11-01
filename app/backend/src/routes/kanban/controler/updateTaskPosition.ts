@@ -1,26 +1,27 @@
-import { requirePermission } from "@backend/src/lib/auth-middleware";
-import { createOpenAPIHono } from "@backend/src/lib/openapi";
 import {
   MoveTask,
   PositionImpossibleError,
 } from "@backend/src/logique/column/indexactionTaskV2";
 import { createLogger } from "@backend/src/logique/logging/logger";
-import type { z } from "@hono/zod-openapi";
+import type { AppEnv } from "@backend/src/types/app-env";
+import type { RouteHandler } from "@hono/zod-openapi";
 import { updateTaskPositionRoute } from "../task.router";
-import type { UpdatePositionBody } from "../task.shemas";
 
 const log = createLogger("kanban/updateTaskPosition");
 
-const app = createOpenAPIHono();
-app.use(requirePermission({ task: ["update"] }));
-app.openapi(updateTaskPositionRoute, async (c) => {
+/**
+ * Handler du contrôleur — pattern kaneo : le contrôleur exporte une fonction,
+ * l'instance est créée une seule fois par le module (kanban/index.ts).
+ */
+export const updateTaskPositionHandler: RouteHandler<
+  typeof updateTaskPositionRoute,
+  AppEnv
+> = async (c) => {
   const user = c.get("user");
 
   try {
     const { id } = c.req.valid("param");
-    const { colId, overTaskId, insertBefore } = c.req.valid("json") as z.infer<
-      typeof UpdatePositionBody
-    >;
+    const { colId, overTaskId, insertBefore } = c.req.valid("json");
 
     const newPosition = await MoveTask(
       id,
@@ -50,6 +51,4 @@ app.openapi(updateTaskPositionRoute, async (c) => {
     log.error("[PATCH /updateTaskPosition] error", err);
     return c.json({ message: "Internal server error" }, 500);
   }
-});
-
-export default app;
+};

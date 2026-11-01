@@ -1,4 +1,4 @@
-import { Lang, StepDefaultSettings } from "./01-ensure-default-settings";
+import { StepDefaultSettings, type Lang } from "./01-ensure-default-settings";
 
 export async function seedAccountDefaults(user: { id: string; email: string, language?: Lang }) {
   // Étape settings — aucune dépendance au workspace, donc lancée dans

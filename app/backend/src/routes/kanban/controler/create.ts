@@ -4,24 +4,23 @@ import {
   cardsTable,
   projectsTable,
 } from "@backend/src/drizzle/schemas/workspace";
-import { requirePermission } from "@backend/src/lib/auth-middleware";
-import { createOpenAPIHono } from "@backend/src/lib/openapi";
+import type { RouteHandler } from "@hono/zod-openapi";
+import type { AppEnv } from "@backend/src/types/app-env";
 import { buildTask } from "@backend/src/logique/column/task";
-import type { z } from "@hono/zod-openapi";
 import { createLogger } from "@packages/shared/utils/logger";
 import { and, desc, eq } from "drizzle-orm";
 import { createTaskRoute } from "../task.router";
-import type { CreateTaskInput } from "../task.shemas";
 
 const log = createLogger("kanban/create");
 
-const app = createOpenAPIHono();
-app.use(requirePermission({ task: ["create"] }));
-
-const createTaskApp = app.openapi(createTaskRoute, async (c) => {
+/**
+ * Handler du contrôleur — pattern kaneo : le contrôleur exporte une fonction,
+ * l'instance est créée une seule fois par le module (kanban/index.ts).
+ */
+export const createTaskHandler: RouteHandler<typeof createTaskRoute, AppEnv> = async (c) => {
   const user = c.get("user");
   const projectId = c.req.param("projectId");
-  const data = c.req.valid("json") as z.infer<typeof CreateTaskInput>;
+  const data = c.req.valid("json");
 
   try {
     // Retry on unique conflict: concurrent creates can read the same
@@ -112,5 +111,4 @@ const createTaskApp = app.openapi(createTaskRoute, async (c) => {
     });
     return c.json({ message: "Internal server error" }, 500);
   }
-});
-export default createTaskApp;
+};

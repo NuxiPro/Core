@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { requirePermission } from "@backend/src/lib/auth-middleware";
 import {
   createProjetInput,
   ProjetReponse,
@@ -11,7 +12,7 @@ import {
 export const createProjetRoute = createRoute({
   method: "post",
   path: "/newProjects",
-  description: "Creates a new project",
+  middleware: [requirePermission({ project: ["create"] })],
   request: {
     body: {
       content: {
@@ -61,7 +62,7 @@ export const createProjetRoute = createRoute({
 export const DeletedProjectRoute = createRoute({
   method: "delete",
   path: "/deletedProject/{id}",
-  description: "Deletes an entire project",
+  middleware: [requirePermission({ project: ["delete"] })],
   request: {
     params: DeletedProject,
   },
@@ -106,7 +107,7 @@ export const DeletedProjectRoute = createRoute({
 export const getBoardRoute = createRoute({
   method: "get",
   path: "/{projectId}/board",
-  description: "Returns the project and all its tasks in a single request.",
+  middleware: [requirePermission({ project: ["read"] })],
   request: {
     params: z.object({
       projectId: z.uuid({ version: "v7" }),
@@ -140,7 +141,7 @@ export const getBoardRoute = createRoute({
 export const listProjectsRoute = createRoute({
   method: "get",
   path: "/",
-  description: "Lists all projects of the authenticated user",
+  middleware: [requirePermission({ project: ["read"] })],
   responses: {
     200: {
       description: "Project list",

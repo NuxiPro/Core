@@ -17,12 +17,12 @@
 import { getColIdFromSqlId } from "@backend/src/config";
 import { db } from "@backend/src/drizzle/connection/index";
 import { cardsTable } from "@backend/src/drizzle/schemas/workspace";
-import { createOpenAPIHono } from "@backend/src/lib/openapi";
+import type { RouteHandler } from "@hono/zod-openapi";
+import type { AppEnv } from "@backend/src/types/app-env";
 import { getDbDateStr } from "@backend/utils/dateHelpers";
 import { and, eq } from "drizzle-orm";
 import { createLogger } from "@packages/shared/utils/logger";
 import { getTasksRoute, getTaskDetailRoute } from "../task.router";
-import { requirePermission } from "@backend/src/lib/auth-middleware";
 
 const log = createLogger("kanban/get-task");
 
@@ -111,115 +111,110 @@ export async function getTaskById(id: string, userId: string) {
 }
 
 // ─── Handlers ───────────────────────────────────────────────────────
+// Pattern kaneo : les handlers sont de simples fonctions exportées,
+// l'instance est créée une seule fois par le module (kanban/index.ts).
 
-const app = createOpenAPIHono();
-app.use(requirePermission({ task: ["read"] }));
+/**
+ * GET /getTask — Lightweight list
+ * Selects only: id, title, quadrant (= colId), createdAt
+ * Does not carry: description, updatedAt
+ */
+export const getTasksHandler: RouteHandler<typeof getTasksRoute, AppEnv> = async (c) => {
+  const user = c.get("user");
 
-  /**
-   * GET /getTask — Lightweight list
-   * Selects only: id, title, quadrant (= colId), createdAt
-   * Does not carry: description, updatedAt
-   */
-  app.openapi(getTasksRoute, async (c) => {
-    const user = c.get("user");
+  const { projectId, limit, offset } = c.req.valid("query");
 
-    const { projectId, limit, offset } = c.req.valid("query");
+  try {
+    const rows = await db
+      .select({
+        id: cardsTable.id,
+        title: cardsTable.title,
+        quadrant: cardsTable.quadrant,
+        dueDate: cardsTable.dueDate,
+        positionString: cardsTable.positionString,
+        createdAt: cardsTable.createdAt,
+      })
+      .from(cardsTable)
+      .where(
+        and(
+          eq(cardsTable.userId, user.id),
+          eq(cardsTable.projectId, projectId),
+        ),
+      )
+      .orderBy(cardsTable.positionString)
+      .limit(limit)
+      .offset(offset);
 
-    try {
-      const rows = await db
-        .select({
-          id: cardsTable.id,
-          title: cardsTable.title,
-          quadrant: cardsTable.quadrant,
-          dueDate: cardsTable.dueDate,
-          positionString: cardsTable.positionString,
-          createdAt: cardsTable.createdAt,
-        })
-        .from(cardsTable)
-        .where(
-          and(
-            eq(cardsTable.userId, user.id),
-            eq(cardsTable.projectId, projectId),
-          ),
-        )
-        .orderBy(cardsTable.positionString)
-        .limit(limit)
-        .offset(offset);
+    const tasks = rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      colId: getColIdFromSqlId(row.quadrant),
+      positionString: row.positionString,
+      dueDate: row.dueDate instanceof Date ? row.dueDate.toISOString() : null,
+      createdAt:
+        row.createdAt instanceof Date
+          ? row.createdAt.toISOString()
+          : getDbDateStr(),
+    }));
 
-      const tasks = rows.map((row) => ({
-        id: row.id,
-        title: row.title,
-        colId: getColIdFromSqlId(row.quadrant),
-        positionString: row.positionString,
-        dueDate: row.dueDate instanceof Date ? row.dueDate.toISOString() : null,
-        createdAt:
-          row.createdAt instanceof Date
-            ? row.createdAt.toISOString()
-            : getDbDateStr(),
-      }));
+    return c.json(tasks, 200);
+  } catch (err) {
+    log.error("[GET /getTask] DB error", err);
+    return c.json({ message: "Internal server error" }, 500);
+  }
+};
 
-      return c.json(tasks, 200);
-    } catch (err) {
-      log.error("[GET /getTask] DB error", err);
-      return c.json({ message: "Internal server error" }, 500);
+/**
+ * GET /getTask/{id} — Full detail
+ * Selects all fields needed by the edit form.
+ */
+export const getTaskDetailHandler: RouteHandler<typeof getTaskDetailRoute, AppEnv> = async (c) => {
+  const user = c.get("user");
+
+  const { id } = c.req.valid("param");
+
+  try {
+    const rows = await db
+      .select({
+        id: cardsTable.id,
+        title: cardsTable.title,
+        description: cardsTable.description,
+        dueDate: cardsTable.dueDate,
+        quadrant: cardsTable.quadrant,
+        positionString: cardsTable.positionString,
+        priorityLabel: cardsTable.priorityLabel,
+        createdAt: cardsTable.createdAt,
+        updatedAt: cardsTable.updatedAt,
+      })
+      .from(cardsTable)
+      .where(and(eq(cardsTable.id, id), eq(cardsTable.userId, user.id)))
+      .limit(1);
+
+    const row = rows[0];
+
+    if (!row) {
+      return c.json({ message: "Task not found" }, 404);
     }
-  })
 
-  /**
-   * GET /getTask/:id — Full detail
-   * Selects all fields needed by the edit form.
-   */
-  app.openapi(getTaskDetailRoute, async (c) => {
-    const user = c.get("user");
+    const task = {
+      id: row.id,
+      title: row.title,
+      description: row.description ?? "",
+      colId: getColIdFromSqlId(row.quadrant),
+      priority: row.priorityLabel ?? "none",
+      dueDate: row.dueDate instanceof Date ? row.dueDate.toISOString() : null,
+      positionString: row.positionString,
+      createdAt:
+        row.createdAt instanceof Date
+          ? row.createdAt.toISOString()
+          : getDbDateStr(),
+      updatedAt:
+        row.updatedAt instanceof Date ? row.updatedAt.toISOString() : undefined,
+    };
 
-    const { id } = c.req.valid("param");
-
-    try {
-      const rows = await db
-        .select({
-          id: cardsTable.id,
-          title: cardsTable.title,
-          description: cardsTable.description,
-          dueDate: cardsTable.dueDate,
-          quadrant: cardsTable.quadrant,
-          positionString: cardsTable.positionString,
-          priorityLabel: cardsTable.priorityLabel,
-          createdAt: cardsTable.createdAt,
-          updatedAt: cardsTable.updatedAt,
-        })
-        .from(cardsTable)
-        .where(and(eq(cardsTable.id, id), eq(cardsTable.userId, user.id)))
-        .limit(1);
-
-      const row = rows[0];
-
-      if (!row) {
-        return c.json({ message: "Task not found" }, 404);
-      }
-
-      const task = {
-        id: row.id,
-        title: row.title,
-        description: row.description ?? "",
-        colId: getColIdFromSqlId(row.quadrant),
-        priority: row.priorityLabel ?? "none",
-        dueDate: row.dueDate instanceof Date ? row.dueDate.toISOString() : null,
-        positionString: row.positionString,
-        createdAt:
-          row.createdAt instanceof Date
-            ? row.createdAt.toISOString()
-            : getDbDateStr(),
-        updatedAt:
-          row.updatedAt instanceof Date
-            ? row.updatedAt.toISOString()
-            : undefined,
-      };
-
-      return c.json(task, 200);
-    } catch (err) {
-      log.error("[GET /getTask/:id] DB error", err);
-      return c.json({ message: "Internal server error" }, 500);
-    }
-  });
-
-export default app;
+    return c.json(task, 200);
+  } catch (err) {
+    log.error("[GET /getTask/:id] DB error", err);
+    return c.json({ message: "Internal server error" }, 500);
+  }
+};

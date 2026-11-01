@@ -1,17 +1,18 @@
 import { db } from "@backend/src/drizzle/connection/index";
 import { cardsTable } from "@backend/src/drizzle/schemas/workspace";
-import { createOpenAPIHono } from "@backend/src/lib/openapi";
+import type { RouteHandler } from "@hono/zod-openapi";
+import type { AppEnv } from "@backend/src/types/app-env";
 import { and, eq } from "drizzle-orm";
 import { createLogger } from "@packages/shared/utils/logger";
 import { deletedTaskRoute } from "../task.router";
-import { requirePermission } from "@backend/src/lib/auth-middleware";
 
 const log = createLogger("kanban/delete-task");
 
-const app = createOpenAPIHono();
-
-app.use(requirePermission({ task: ["delete"] })); // Permission checking
-const deletedTask = app.openapi(deletedTaskRoute, async (c) => {
+/**
+ * Handler du contrôleur — pattern kaneo : le contrôleur exporte une fonction,
+ * l'instance est créée une seule fois par le module (kanban/index.ts).
+ */
+export const deletedTaskHandler: RouteHandler<typeof deletedTaskRoute, AppEnv> = async (c) => {
   // Authentication check
   const user = c.get("user");
   try {
@@ -32,6 +33,4 @@ const deletedTask = app.openapi(deletedTaskRoute, async (c) => {
     log.error("[DELETE /deletedTask] Failed to delete task", err);
     return c.json({ message: "Internal server error" }, 500);
   }
-});
-
-export default deletedTask;
+};

@@ -10,8 +10,12 @@ import { apiRateLimit } from "./lib/api-rate-limit";
 import { securityAlert } from "./lib/security-alert";
 import { httpLogger } from "./logique/logging/logger";
 import { projectsModule } from "./routes/projects";
-import { workspacesModule } from "./routes/workspace";
+import { workspaceModule } from "./routes/workspace";
 import { csrf } from "hono/csrf";
+import { settingModule } from "./routes/setting";
+import type { AppEnv } from "./types/app-env";
+
+export type { AppEnv };
 
 const allowedOrigin = process.env.FRONTEND_URL_ALLOWED;
 if (!allowedOrigin) {
@@ -26,13 +30,6 @@ const authRedirect = (path: string, withError: boolean) => (c: Context) => {
   const target = `${frontendUrl}${path}`;
   return c.redirect(error ? `${target}?error=${error}` : target);
 };
-
-export interface AppEnv {
-  Variables: {
-    user: typeof auth.$Infer.Session.user;
-    session: typeof auth.$Infer.Session.session;
-  };
-}
 
 export const authGuard = createMiddleware<AppEnv>(async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
@@ -87,7 +84,7 @@ const app = new OpenAPIHono<AppEnv>({
   )
   .use("*", secureHeaders())
   .use("*", csrf({
-    origin : allowedOrigin,
+    origin: allowedOrigin,
   }))
   .use("*", compress())
   // In production, hide Zod error details
@@ -97,11 +94,14 @@ const app = new OpenAPIHono<AppEnv>({
     }
     return c.json({ error: "Internal error" }, 500);
   })
-  // Session auth — centralized guard on business routes
+  // Session auth — centralized guard on business route
+  .use("/setting/*", authGuard)
   .use("/kanban/*", authGuard)
   .use("/projects/*", authGuard)
   .use("/workspaces/*", authGuard)
+
   // Per-user quota on business routes (after guard: user is known)
+  .use("/setting/*", apiRateLimit())
   .use("/kanban/*", apiRateLimit())
   .use("/projects/*", apiRateLimit())
   .use("/workspaces/*", apiRateLimit())
@@ -125,7 +125,8 @@ const app = new OpenAPIHono<AppEnv>({
   // 7. Business routes
   .route("/kanban", kanbanModule)
   .route("/projects", projectsModule)
-  .route("/workspaces", workspacesModule);
+  .route("/workspaces", workspaceModule)
+  .route("/setting", settingModule);
 
 export type AppType = typeof app;
 export default app;

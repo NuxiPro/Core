@@ -1,4 +1,4 @@
-import type { AppEnv } from "@backend/src";
+import type { AppEnv } from "@backend/src/types/app-env";
 import { OpenAPIHono } from "@hono/zod-openapi";
 
 export function createOpenAPIHono(): OpenAPIHono<AppEnv> {

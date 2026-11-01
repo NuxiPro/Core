@@ -1,10 +1,11 @@
-import { createRoute,z } from "@hono/zod-openapi";
+import { createRoute, z } from "@hono/zod-openapi";
+import { requirePermission } from "@backend/src/lib/auth-middleware";
 import { createWorkspaceSchema, WorkspaceReponse } from "./worspace.shemas";
 
 export const createWorkspaceRoute = createRoute({
   method: "post",
   path: "/NewWorkspace",
-  description: "Creates a workspace",
+  middleware: [requirePermission({ workspace: ["create"] })],
   request: {
     body: {
       content: {
@@ -46,7 +47,7 @@ export const createWorkspaceRoute = createRoute({
 export const getWorkspaceRoute = createRoute({
   method: "get",
   path: "/{id}",
-  description: "Returns workspace details",
+  middleware: [requirePermission({ workspace: ["read"] })],
   request: {
     params: z.object({
       id: z.uuid({ version: "v7" }),
@@ -92,7 +93,7 @@ export const getWorkspaceRoute = createRoute({
 export const listWorkspacesRoute = createRoute({
   method: "get",
   path: "/",
-  description: "Lists all workspaces of the authenticated user",
+  middleware: [requirePermission({ workspace: ["read"] })],
   responses: {
     200: {
       description: "Workspace list",

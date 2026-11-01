@@ -1,18 +1,20 @@
 import { db } from "@backend/src/drizzle/connection";
 import { projectsTable, WorkspacesTable } from "@backend/src/drizzle/schemas";
-import { createOpenAPIHono } from "@backend/src/lib/openapi";
 import { createLogger } from "@backend/src/logique/logging/logger";
 import { uuid } from "@backend/utils/uuid";
 import { createSlug } from "@packages/shared/utils/slug";
 import { and, eq } from "drizzle-orm";
 import { createProjetRoute } from "../projects.router";
-import { requirePermission } from "@backend/src/lib/auth-middleware";
+import type { RouteHandler } from "@hono/zod-openapi";
+import type { AppEnv } from "@backend/src/types/app-env";
 
 const log = createLogger("projects/newProjects");
 
-const app = createOpenAPIHono();
-app.use(requirePermission({ project: ["create"] }));
-app.openapi(createProjetRoute, async (c) => {
+/**
+ * Handler du contrôleur — pattern kaneo : le contrôleur exporte une fonction,
+ * l'instance est créée une seule fois par le module (projects/index.ts).
+ */
+export const createProjectHandler: RouteHandler<typeof createProjetRoute, AppEnv> = async (c) => {
   const user = c.get("user");
   try {
     const data = c.req.valid("json");
@@ -44,7 +46,7 @@ app.openapi(createProjetRoute, async (c) => {
           name: data.name,
           description: data.description,
           workspaceId: data.workspaceId,
-          slug: slug,
+          slug,
           userId: user.id,
         })
         .returning();
@@ -61,6 +63,4 @@ app.openapi(createProjetRoute, async (c) => {
     log.error("Failed to create project", err);
     return c.json({ message: "Internal server error" }, 500);
   }
-});
-
-export default app;
+};

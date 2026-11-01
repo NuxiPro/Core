@@ -1,7 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import {
   BadgeCheck,
-  ChevronDown,
   CreditCard,
   LogOut,
   Moon,
@@ -68,19 +67,17 @@ export function NavUser({
           >
             <div className="relative shrink-0">
               <Avatar className="h-9 w-9 rounded-full">
-                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarImage src={user.avatar} alt={user.name ?? user.email ?? ""} />
                 <AvatarFallback className="rounded-full bg-secondary">
                   <User className="size-4 text-sidebar-foreground" />
                 </AvatarFallback>
               </Avatar>
-              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-sidebar" />
+              <div className="flex flex-col items-start min-w-0 flex-1 overflow-hidden">
+                <span className="text-[13px] font-semibold leading-tight text-sidebar-foreground truncate block w-full">
+                  {user.name?.trim() ?? user.email}
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col items-start min-w-0 flex-1 overflow-hidden">
-              <span className="text-[13px] font-semibold leading-tight text-sidebar-foreground truncate block w-full">
-                {user.name}
-              </span>
-            </div>
-            <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -91,14 +88,14 @@ export function NavUser({
         >
           <div className="flex items-center gap-3 px-3 py-2.5">
             <Avatar className="h-10 w-10 rounded-full shrink-0">
-              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarImage src={user.avatar} alt={user.name ?? user.email ?? ""} />
               <AvatarFallback className="rounded-full bg-secondary">
                 <User className="size-4 text-sidebar-foreground" />
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-sidebar-foreground truncate">
-                {user.name}
+                {user.name?.trim() ?? user.email}
               </p>
               <p className="text-xs text-muted-foreground truncate mt-0.5">
                 {user.email}

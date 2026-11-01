@@ -1,13 +1,27 @@
-import { OpenAPIHono } from "@hono/zod-openapi";
-import createTask from "./controler/create";
-import deletedTask from "./controler/deleted-Task";
-import updateTaskPosition from "./controler/updateTaskPosition";
-import getTask from "./controler/get-task";
-import updateTask from "./controler/update-Task";
+import { createOpenAPIHono } from "@backend/src/lib/openapi";
+import { createTaskHandler } from "./controler/create";
+import { deletedTaskHandler } from "./controler/deleted-Task";
+import { getTasksHandler, getTaskDetailHandler } from "./controler/get-task";
+import { updateTaskHandler } from "./controler/update-Task";
+import { updateTaskPositionHandler } from "./controler/updateTaskPosition";
+import {
+  createTaskRoute,
+  deletedTaskRoute,
+  getTaskDetailRoute,
+  getTasksRoute,
+  updateTaskPositionRoute,
+  updateTaskRoute,
+} from "./task.router";
 
-export const kanbanModule = new OpenAPIHono()
-  .route("/", createTask)
-  .route("/", deletedTask)
-  .route("/", updateTask)
-  .route("/", getTask)
-  .route("/", updateTaskPosition);
+/**
+ * Module kanban — pattern kaneo : une seule instance OpenAPIHono,
+ * le middleware vit dans les définitions de route (createRoute({ middleware })),
+ * les contrôleurs s'enregistrent via .openapi() (pas de sous-app .route()).
+ */
+export const kanbanModule = createOpenAPIHono()
+  .openapi(createTaskRoute, createTaskHandler)
+  .openapi(deletedTaskRoute, deletedTaskHandler)
+  .openapi(updateTaskRoute, updateTaskHandler)
+  .openapi(getTasksRoute, getTasksHandler)
+  .openapi(getTaskDetailRoute, getTaskDetailHandler)
+  .openapi(updateTaskPositionRoute, updateTaskPositionHandler);

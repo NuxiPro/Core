@@ -1,27 +1,23 @@
 import { getColIdFromSqlId } from "@backend/src/config";
 import { db } from "@backend/src/drizzle/connection/index";
 import { cardsTable } from "@backend/src/drizzle/schemas/workspace";
-import { createOpenAPIHono } from "@backend/src/lib/openapi";
+import type { RouteHandler } from "@hono/zod-openapi";
+import type { AppEnv } from "@backend/src/types/app-env";
 import { and, eq } from "drizzle-orm";
-import { z } from "@hono/zod-openapi";
-import { createLogger } from "@packages/shared/utils/logger";
-import { UpdateTaskBody } from "../task.shemas";
 import { updateTaskRoute } from "../task.router";
-import { requirePermission } from "@backend/src/lib/auth-middleware";
-
+import { createLogger } from "@packages/shared/utils/logger";
 const log = createLogger("kanban/update-task");
 
-export type UpdateTaskBodyType = z.infer<typeof UpdateTaskBody>;
-
-const app = createOpenAPIHono();
-
-app.use(requirePermission({ task : ["update"] }))
-app.openapi(updateTaskRoute, async (c) => {
+/**
+ * Handler du contrôleur — pattern kaneo : le contrôleur exporte une fonction,
+ * l'instance est créée une seule fois par le module (kanban/index.ts).
+ */
+export const updateTaskHandler: RouteHandler<typeof updateTaskRoute, AppEnv> = async (c) => {
   const user = c.get("user");
 
   try {
     const { id } = c.req.valid("param");
-    const updates = c.req.valid("json") as UpdateTaskBodyType;
+    const updates = c.req.valid("json");
 
     // Safety: if the body is empty, do nothing
     if (Object.keys(updates).length === 0) {
@@ -89,6 +85,4 @@ app.openapi(updateTaskRoute, async (c) => {
     log.error("[PATCH /updateTask] DB error", err);
     return c.json({ message: "Internal server error" }, 500);
   }
-});
-
-export default app;
+};

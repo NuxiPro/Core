@@ -67,9 +67,8 @@ cp app/backend/.env.example app/backend/.env
 # 1b. frontend env (own folder only, never the parent dir)
 # put BACKEND_API_URL + BACKEND_AUTH_URL in app/web-frontend/.env
 
-# 2. local DB + Adminer (PostgreSQL 17, localhost only)
+# 2. local DB (PostgreSQL 17, localhost only)
 docker compose -f docker-compose.dev.yml up -d
-# Adminer UI: http://localhost:9090 (server: db, user: dev, password: dev, database: dev)
 ```
 
 Fill in `app/backend/.env` (minimum to run):

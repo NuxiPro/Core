@@ -57,7 +57,16 @@ const fetcher = async (
   input: RequestInfo | URL,
   init?: RequestInit,
 ): Promise<Response> => {
-  const res = await fetch(input as RequestInfo, init);
+  // Ensure the language header is always sent (merged with any caller‑provided headers)
+  const languageHeader = { "X-User-Language": LANG };
+  const mergedInit: RequestInit = {
+    ...init,
+    headers: {
+      ...(init?.headers instanceof Headers ? Object.fromEntries(init.headers.entries()) : init?.headers ?? {}),
+      ...languageHeader,
+    },
+  };
+  const res = await fetch(input as RequestInfo, mergedInit);
   const url =
     typeof input === "string"
       ? input
@@ -87,5 +96,5 @@ const fetcher = async (
 
 export const client = hc<AppType>(API_URL || "/", {
   fetch: fetcher,
-  init: { credentials: "include", headers: { "X-User-Language": LANG }  },
+  init: { credentials: "include" },
 } as const);

@@ -1,4 +1,5 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { requirePermission } from "@backend/src/lib/auth-middleware";
 import {
   CreateTaskInput,
   CreateTaskResponse,
@@ -20,7 +21,9 @@ const AuthErrorResponse = z.union([
 
 const ForbiddenResponse = z.object({ error: z.string() });
 
-const jsonContent = (schema: z.ZodType) => ({
+// Générique : le type exact du schéma remonte à zod-openapi, donc
+// c.req.valid("json") est correctement inféré côté handler (pas de cast manuel).
+const jsonContent = <T extends z.ZodType>(schema: T) => ({
   "application/json": { schema },
 });
 
@@ -29,6 +32,7 @@ export const createTaskRoute = createRoute({
   path: "/{projectId}/newTask",
   description:
     "Creates a task in the specified project after validating the request payload.",
+  middleware: [requirePermission({ task: ["create"] })],
   request: {
     params: z.object({
       projectId: z.uuid({ version: "v7" }),
@@ -65,6 +69,7 @@ export const deletedTaskRoute = createRoute({
   method: "delete",
   path: "/deletedTask/{id}",
   description: "Deletes a task by ID if it belongs to the authenticated user.",
+  middleware: [requirePermission({ task: ["delete"] })],
   request: {
     params: DeletedTask,
   },
@@ -96,6 +101,7 @@ export const getTaskDetailRoute = createRoute({
   method: "get",
   path: "/getTask/{id}",
   description: "Returns the full details of a task by ID.",
+  middleware: [requirePermission({ task: ["read"] })],
   request: {
     params: z.object({
       id: z.uuid({ version: "v7" }),
@@ -129,6 +135,7 @@ export const getTasksRoute = createRoute({
   method: "get",
   path: "/getTask",
   description: "Returns a paginated summary list of tasks for a project.",
+  middleware: [requirePermission({ task: ["read"] })],
   request: {
     query: z.object({
       projectId: z.uuid({ version: "v7" }),
@@ -160,6 +167,7 @@ export const updateTaskRoute = createRoute({
   method: "patch",
   path: "/updateTask/{id}",
   description: "Updates a task by ID if it belongs to the authenticated user.",
+  middleware: [requirePermission({ task: ["update"] })],
   request: {
     params: TaskIdParam,
     body: {
@@ -213,6 +221,7 @@ export const updateTaskPositionRoute = createRoute({
   method: "patch",
   path: "/updateTaskPosition/{id}",
   description: "Moves a task to a new position using fractional indexing.",
+  middleware: [requirePermission({ task: ["update"] })],
   request: {
     params: TaskPositionParam,
     body: {

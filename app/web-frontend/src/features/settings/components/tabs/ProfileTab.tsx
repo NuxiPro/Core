@@ -12,8 +12,6 @@ import { Separator } from "@/src/layout/components/ui/separator";
 interface ProfileTabProps {
   user: { name: string; email: string; avatar: string } | null;
   isOAuth: boolean;
-  name: string;
-  setName: (v: string) => void;
   email: string;
   setEmail: (v: string) => void;
   isSaving: boolean;
@@ -23,33 +21,37 @@ interface ProfileTabProps {
 export function ProfileTab({
   user,
   isOAuth,
-  name,
-  setName,
   email,
   setEmail,
   isSaving,
   onSave,
 }: ProfileTabProps) {
   const { t } = useTranslation();
+
+  const displayName = user?.name ?? t("settings.profile.user");
+  const nameInitials = (user?.name ?? user?.email ?? "?")
+    .toUpperCase()
+    .charAt(0);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Avatar size="lg" className="rounded-full">
           <AvatarImage
             src={user?.avatar}
-            alt={user?.name}
+            alt={displayName}
             className="rounded-full"
           />
           <AvatarFallback className="rounded-full bg-muted text-lg font-medium">
-            {user?.name?.charAt(0)?.toUpperCase() || "?"}
+            {nameInitials}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <p className="text-base font-medium text-foreground">
-            {user?.name || t("settings.profile.user")}
+            {displayName}
           </p>
           <p className="text-sm text-muted-foreground">
-            {user?.email || "email@example.com"}
+            {user?.email ?? "email@example.com"}
           </p>
           <div className="mt-1.5">
             <Badge variant="secondary" className="text-[10px]">
@@ -69,22 +71,6 @@ export function ProfileTab({
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <label
-              htmlFor="profile-name"
-              className="text-sm font-medium text-foreground"
-            >
-              {t("settings.profile.name")}
-            </label>
-            <div className="w-64 shrink-0">
-              <Input
-                id="profile-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-          </div>
-
           <div className="flex items-center justify-between gap-4">
             <label
               htmlFor="profile-email"

@@ -1,21 +1,17 @@
 import { db } from "@backend/src/drizzle/connection";
 import { WorkspacesTable } from "@backend/src/drizzle/schemas";
-import { createOpenAPIHono } from "@backend/src/lib/openapi";
+import { createWorkspaceRoute } from "../workspace.router";
 import { createLogger } from "@backend/src/logique/logging/logger";
 import { uuid } from "@backend/utils/uuid";
-import { requirePermission } from "@backend/src/lib/auth-middleware";
-import { createWorkspaceRoute } from "../workspace.router";
+import type { RouteHandler } from "@hono/zod-openapi";
+import type { AppEnv } from "@backend/src/types/app-env";
 
 const log = createLogger("workspace/create");
 
-
-const app = createOpenAPIHono();
-app.use(requirePermission({ workspace: ["create"] }));
-app.openapi(createWorkspaceRoute, async (c) => {
+export const createWorkspaceHandler: RouteHandler<typeof createWorkspaceRoute, AppEnv> = async (c) => {
   const user = c.get("user");
   try {
     const data = c.req.valid("json");
-
     const [newWorkspace] = await db
       .insert(WorkspacesTable)
       .values({
@@ -25,12 +21,9 @@ app.openapi(createWorkspaceRoute, async (c) => {
         createdAt: new Date(),
       })
       .returning();
-
     return c.json(newWorkspace, 201);
   } catch (err) {
     log.error("Failed to create workspace", err);
     return c.json({ message: "Internal server error" }, 500);
   }
-});
-
-export default app;
+};

@@ -1,9 +1,13 @@
-import { OpenAPIHono } from "@hono/zod-openapi";
-import createWorkspace from "./controler/CreateWorkspace";
-import getWorkspace from "./controler/getWorkspace";
-import listWorkspaces from "./controler/list-workspace";
+import { createOpenAPIHono } from "@backend/src/lib/openapi";
+import { createWorkspaceRoute, getWorkspaceRoute, listWorkspacesRoute } from "./workspace.router";
+import { createWorkspaceHandler } from "./controler/CreateWorkspace";
+import { getWorkspaceHandler } from "./controler/getWorkspace";
+import { listWorkspacesHandler } from "./controler/list-workspace";
 
-export const workspacesModule = new OpenAPIHono()
-  .route("/", listWorkspaces)
-  .route("/", createWorkspace)
-  .route("/", getWorkspace);
+/**
+ * Module workspace — pattern kaneo : une seule instance OpenAPIHono.
+ */
+export const workspaceModule = createOpenAPIHono()
+  .openapi(createWorkspaceRoute, createWorkspaceHandler)
+  .openapi(getWorkspaceRoute, getWorkspaceHandler)
+  .openapi(listWorkspacesRoute, listWorkspacesHandler);

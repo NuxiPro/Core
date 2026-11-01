@@ -42,7 +42,6 @@
     "lastUsed": "Dernier utilisé",
     "magicLinkHint": "On vous envoie un lien de connexion par email : cliquez dessus pour entrer.",
     "checkInbox": "Vérifiez votre boîte mail.",
-
     "verifyEmailTitle": "Vérifiez votre adresse email",
     "verifyEmailDescription": "Nous avons envoyé un lien de vérification à cette adresse. Cliquez sur le lien pour activer votre compte.",
     "verifyEmailCheckSpam": "Vous ne voyez pas l'email ? Vérifiez vos spams ou courriers indésirables.",
@@ -99,11 +98,8 @@
       "projectNamePlaceholder": "Mon projet",
       "descriptionLabel": "Description",
       "descriptionPlaceholder": "Description du projet...",
-      "languageRegion": "Langue & Région",
       "preferences": "Préférences",
       "language": "Langue",
-      "timezone": "Fuseau horaire",
-      "appearance": "Apparence",
       "theme": "Thème",
       "light": "Clair",
       "dark": "Sombre",
@@ -143,7 +139,8 @@
       "currentSession": "Session actuelle",
       "currentSessionDesc": "Chrome • Linux • Maintenant",
       "active": "Actif",
-      "disconnectAll": "Déconnecter toutes les sessions"
+      "disconnectAll": "Déconnecter toutes les sessions",
+      "emailAccountDesc": "Votre compte est sécurisé par mot de passe email."
     },
     "integrations": {
       "label": "Intégrations",

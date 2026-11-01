@@ -1,35 +1,23 @@
 import { useTranslation } from "react-i18next";
 import i18n from "@/src/features/i18n";
 import { Button } from "@/src/layout/components/ui/button";
-import { Input } from "@/src/layout/components/ui/input";
 import { Separator } from "@/src/layout/components/ui/separator";
 import { useTheme } from "@/src/shared/hooks/useTheme";
 
 interface GeneralTabProps {
-  projectName: string;
-  setProjectName: (v: string) => void;
-  projectDescription: string;
-  setProjectDescription: (v: string) => void;
   language: string;
   setLanguage: (v: string) => void;
-  timezone: string;
-  setTimezone: (v: string) => void;
   emailNotifications: boolean;
   setEmailNotifications: (v: boolean) => void;
   isSaving: boolean;
   isDirty: boolean;
+  /** Branché sur `client.setting.getSettings.$patch` quand la route existera (08 §3.2). */
   onSave: () => void;
 }
 
 export function GeneralTab({
-  projectName,
-  setProjectName,
-  projectDescription,
-  setProjectDescription,
   language,
   setLanguage,
-  timezone,
-  setTimezone,
   emailNotifications,
   setEmailNotifications,
   isSaving,
@@ -41,67 +29,9 @@ export function GeneralTab({
 
   return (
     <div className="space-y-6">
-      {/* Project */}
-      <div className="space-y-4">
-        <div>
-          <h4 className="text-sm font-semibold text-foreground">
-            {t("settings.general.project")}
-          </h4>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {t("settings.general.information")}
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="min-w-0">
-              <label
-                htmlFor="project-name"
-                className="text-sm font-medium text-foreground"
-              >
-                {t("settings.general.projectName")}
-              </label>
-            </div>
-            <div className="w-64 shrink-0">
-              <Input
-                id="project-name"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                placeholder={t("settings.general.projectNamePlaceholder")}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between gap-4">
-            <div className="min-w-0">
-              <label
-                htmlFor="project-desc"
-                className="text-sm font-medium text-foreground"
-              >
-                {t("settings.general.descriptionLabel")}
-              </label>
-            </div>
-            <div className="w-64 shrink-0">
-              <textarea
-                id="project-desc"
-                value={projectDescription}
-                onChange={(e) => setProjectDescription(e.target.value)}
-                className="w-full h-16 rounded-lg border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
-                placeholder={t("settings.general.descriptionPlaceholder")}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <Separator />
-
       {/* Language & Region */}
       <div className="space-y-4">
         <div>
-          <h4 className="text-sm font-semibold text-foreground">
-            {t("settings.general.languageRegion")}
-          </h4>
           <p className="text-xs text-muted-foreground mt-0.5">
             {t("settings.general.preferences")}
           </p>
@@ -130,29 +60,6 @@ export function GeneralTab({
               </select>
             </div>
           </div>
-
-          <div className="flex items-center justify-between gap-4">
-            <label
-              htmlFor="timezone"
-              className="text-sm font-medium text-foreground"
-            >
-              {t("settings.general.timezone")}
-            </label>
-            <div className="w-48 shrink-0">
-              <select
-                id="timezone"
-                value={timezone}
-                onChange={(e) => setTimezone(e.target.value)}
-                className="w-full h-9 rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <option value="Europe/Paris">Europe/Paris (UTC+1)</option>
-                <option value="UTC">UTC</option>
-                <option value="America/New_York">
-                  America/New_York (UTC-5)
-                </option>
-              </select>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -160,15 +67,6 @@ export function GeneralTab({
 
       {/* Appearance */}
       <div className="space-y-4">
-        <div>
-          <h4 className="text-sm font-semibold text-foreground">
-            {t("settings.general.appearance")}
-          </h4>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {t("settings.general.theme")}
-          </p>
-        </div>
-
         <div className="flex items-center justify-between gap-4">
           <span className="text-sm font-medium text-foreground">
             {t("settings.general.theme")}
@@ -221,7 +119,7 @@ export function GeneralTab({
           <h4 className="text-sm font-semibold text-foreground">
             {t("settings.general.notifications")}
           </h4>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-xs text-muted-foreground">
             {t("settings.general.channels")}
           </p>
         </div>
@@ -249,7 +147,7 @@ export function GeneralTab({
 
       <Separator />
 
-      {/* Save */}
+      {/* Save — branché sur le PATCH quand la route existera (08 §3.2) */}
       <div className="flex items-center justify-end">
         <Button onClick={onSave} disabled={isSaving || !isDirty}>
           {isSaving ? t("settings.saving") : t("settings.save")}
