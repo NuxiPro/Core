@@ -104,12 +104,12 @@
       "light": "Clair",
       "dark": "Sombre",
       "system": "Système",
-      "notifications": "Notifications",
-      "channels": "Canaux",
       "emailNotifications": "Notifications par email",
       "emailNotificationsDesc": "Recevoir les alertes par email",
       "slackNotifications": "Notifications Slack",
-      "slackNotificationsDesc": "Envoyer vers un canal Slack"
+      "slackNotificationsDesc": "Envoyer vers un canal Slack",
+      "languageDesc": "Langue de l'interface, appliquée immédiatement.",
+      "themeDesc": "Thème clair ou sombre, appliqué en temps réel."
     },
     "profile": {
       "label": "Profil",
@@ -121,7 +121,8 @@
       "dangerZone": "Zone de danger",
       "deleteAccount": "Supprimer le compte",
       "deleteAccountDesc": "Cette action est irréversible. Toutes vos données seront supprimées.",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "emailDesc": "Adresse utilisée pour la connexion et les notifications."
     },
     "security": {
       "label": "Sécurité",
@@ -154,7 +155,24 @@
       "connected": "Connecté",
       "connect": "Connecter"
     },
-    "soon": "Bientôt"
+    "soon": "Bientôt",
+    "tabs": {
+      "general": "Général",
+      "account": "Compte & Sécurité",
+      "archiving": "Archivage & Auto"
+    },
+    "archiving": {
+      "label": "Archivage & Auto",
+      "description": "Rétention automatique des tâches terminées (« Done »).",
+      "autoArchive": "Archivage automatique",
+      "autoArchiveDesc": "Déplace automatiquement les tâches « Done » vers les archives.",
+      "delay": "Délai avant archivage",
+      "delayDesc": "Durée de conservation des tâches terminées avant archivage.",
+      "delay7": "Après 7 jours",
+      "delay30": "Après 30 jours",
+      "delay90": "Après 90 jours",
+      "retentionNote": "Vos tâches terminées sont conservées de manière sécurisée et restent recherchables dans la zone d'archivage globale."
+    }
   },
   "sidebar": {
     "upgradeToPro": "Passer à Pro",

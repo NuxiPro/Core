@@ -48,6 +48,7 @@ export function NavUser({
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
   const [accountOpen, setAccountOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useTranslation();
 
   const handleSignOut = async () => {
@@ -59,11 +60,11 @@ export function NavUser({
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="w-full flex items-center gap-3 p-2.5 border border-black/10 dark:border-border rounded-md transition-all duration-200 cursor-pointer group hover:bg-sidebar-accent hover:shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] dark:hover:shadow-none bg-black/[0.04]"
+            className="w-full flex items-center gap-3 p-2.5 border border-black/10 dark:border-border rounded-md cursor-pointer group hover:bg-sidebar-accent hover:shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] dark:hover:shadow-none bg-black/[0.04] transition-[transform,background-color,box-shadow] duration-100 ease-out active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:transition-none"
           >
             <div className="relative shrink-0">
               <Avatar className="h-9 w-9 rounded-full">
@@ -72,12 +73,27 @@ export function NavUser({
                   <User className="size-4 text-sidebar-foreground" />
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col items-start min-w-0 flex-1 overflow-hidden">
-                <span className="text-[13px] font-semibold leading-tight text-sidebar-foreground truncate block w-full">
-                  {user.name?.trim() ?? user.email}
-                </span>
-              </div>
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-sidebar" />
             </div>
+            <div className="flex flex-col items-start min-w-0 flex-1 overflow-hidden">
+              <span className="text-[13px] font-semibold leading-tight text-sidebar-foreground truncate block w-full">
+                {user.name?.trim() ? user.name.trim() : user.email}
+              </span>
+            </div>
+            {/* Chevron droit/gauche — rotation douce type "spring" Apple */}
+            <svg
+              className={`size-4 text-muted-foreground shrink-0 will-change-transform transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0 ${menuOpen ? "rotate-180" : ""}`}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <title>{menuOpen ? "Fermer" : "Ouvrir"}</title>
+              <path d="m9 18 6-6-6-6" />
+            </svg>
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -95,11 +111,13 @@ export function NavUser({
             </Avatar>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-sidebar-foreground truncate">
-                {user.name?.trim() ?? user.email}
+                {user.name?.trim() ? user.name.trim() : user.email}
               </p>
-              <p className="text-xs text-muted-foreground truncate mt-0.5">
-                {user.email}
-              </p>
+              {user.name?.trim() ? (
+                <p className="text-xs text-muted-foreground truncate mt-0.5">
+                  {user.email}
+                </p>
+              ) : null}
             </div>
           </div>
           <DropdownMenuSeparator className="bg-border/40" />

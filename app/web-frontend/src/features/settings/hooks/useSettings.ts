@@ -11,6 +11,12 @@ import { authClient } from "@/src/shared/lib/client";
 const PATCH_PENDING_MSG =
   "Applied locally — persistance serveur à venir (route PATCH)";
 
+/**
+ * État réactif des paramètres : amorcé depuis le serveur (requête unique,
+ * cache TanStack), édité localement en temps réel.
+ * - Langue, thème, notifications, archivage → application directe (pas de Save).
+ * - E-mail → validation manuelle via le footer sticky de la modale.
+ */
 export function useSettings(open: boolean) {
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -39,7 +45,6 @@ export function useSettings(open: boolean) {
   // État local éditable, amorcé depuis la DB
   const [language, setLanguageLocal] = useState<string>("fr");
   const [emailNotifications, setEmailNotifications] = useState(true);
-  const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
 
   useEffect(() => {
@@ -55,18 +60,9 @@ export function useSettings(open: boolean) {
     i18n.changeLanguage(v);
   };
 
-  const isGeneralDirty = useMemo(
-    () =>
-      settings
-        ? language !== settings.language ||
-          emailNotifications !== settings.emailNotifications
-        : false,
-    [language, emailNotifications, settings],
-  );
   const isProfileDirty = useMemo(
-    () =>
-      user ? name !== (user.name || "") || email !== (user.email || "") : false,
-    [name, email, user],
+    () => (user ? email !== (user.email || "") : false),
+    [email, user],
   );
 
   const isOAuth = useMemo(() => {
@@ -76,12 +72,6 @@ export function useSettings(open: boolean) {
     )?.providerId;
     return !!providerId && providerId !== "credential";
   }, []);
-
-  // TODO (08 §3.2) : remplacer par client.setting.getSettings.$patch({ json })
-  const handleSaveGeneral = () =>
-    handle(async () => {
-      setSaveMessage(PATCH_PENDING_MSG);
-    });
 
   // TODO: migration vers la route authClient (updateUser) — cf. doc 06 section 07
   const handleSaveProfile = () =>
@@ -94,17 +84,13 @@ export function useSettings(open: boolean) {
     isOAuth,
     isSaving,
     saveMessage,
-    isGeneralDirty,
     isProfileDirty,
-    name,
-    setName,
     email,
     setEmail,
     language,
     setLanguage,
     emailNotifications,
     setEmailNotifications,
-    handleSaveGeneral,
     handleSaveProfile,
   };
 }

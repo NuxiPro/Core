@@ -4,99 +4,105 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/src/layout/components/ui/avatar";
-import { Badge } from "@/src/layout/components/ui/badge";
-import { Button } from "@/src/layout/components/ui/button";
-import { Input } from "@/src/layout/components/ui/input";
-import { Separator } from "@/src/layout/components/ui/separator";
 
 interface ProfileTabProps {
   user: { name: string; email: string; avatar: string } | null;
   isOAuth: boolean;
   email: string;
   setEmail: (v: string) => void;
-  isSaving: boolean;
-  onSave: () => void;
 }
 
-export function ProfileTab({
-  user,
-  isOAuth,
-  email,
-  setEmail,
-  isSaving,
-  onSave,
-}: ProfileTabProps) {
+/**
+ * Onglet « Compte & Sécurité » — identité + e-mail (validation manuelle via
+ * le footer sticky de la modale) + statut de sécurité (lecture seule).
+ */
+export function ProfileTab({ user, isOAuth, email, setEmail }: ProfileTabProps) {
   const { t } = useTranslation();
 
-  const displayName = user?.name ?? t("settings.profile.user");
-  const nameInitials = (user?.name ?? user?.email ?? "?")
-    .toUpperCase()
-    .charAt(0);
+  // Données serveur uniquement — aucun placeholder inventé.
+  const displayName = user?.name?.trim() || user?.email || "";
+  const nameInitials = displayName ? displayName.toUpperCase().charAt(0) : "?";
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Avatar size="lg" className="rounded-full">
-          <AvatarImage
-            src={user?.avatar}
-            alt={displayName}
-            className="rounded-full"
-          />
-          <AvatarFallback className="rounded-full bg-muted text-lg font-medium">
-            {nameInitials}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1">
-          <p className="text-base font-medium text-foreground">
-            {displayName}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {user?.email ?? "email@example.com"}
-          </p>
-          <div className="mt-1.5">
-            <Badge variant="secondary" className="text-[10px]">
+    <div className="space-y-4">
+      {/* Carte Compte — identité */}
+      <section
+        className="bg-[var(--surface-card)] border border-[var(--border)] rounded-xl p-4 space-y-4"
+        aria-label={t("settings.profile.label")}
+      >
+        <div className="flex items-center gap-4 py-3 first:pt-0 last:pb-0">
+          <Avatar className="h-10 w-10 rounded-full shrink-0">
+            <AvatarImage
+              src={user?.avatar}
+              alt={displayName}
+              className="rounded-full"
+            />
+            <AvatarFallback className="rounded-full bg-[var(--surface-hover)] text-[var(--text-primary)] text-sm font-medium">
+              {nameInitials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 space-y-0.5">
+            <p className="text-sm font-medium text-[var(--text-primary)] truncate">
+              {displayName}
+            </p>
+            <p className="text-xs text-[var(--text-label)] truncate">{user?.email}</p>
+            <span className="inline-block text-[11px] text-[var(--text-muted-hard)] font-mono">
               {isOAuth ? "OAuth" : "Email"}
-            </Badge>
+            </span>
           </div>
         </div>
-      </div>
+      </section>
 
-      <Separator />
-
-      <div className="space-y-4">
-        <div>
-          <h4 className="text-sm font-semibold text-foreground">
-            {t("settings.profile.personalInfo")}
-          </h4>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-4">
+      {/* Carte Informations — e-mail */}
+      <section
+        className="bg-[var(--surface-card)] border border-[var(--border)] rounded-xl p-4 space-y-4"
+        aria-label={t("settings.profile.personalInfo")}
+      >
+        <div className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+          <div className="space-y-0.5 pr-4">
             <label
               htmlFor="profile-email"
-              className="text-sm font-medium text-foreground"
+              className="text-sm font-medium text-[var(--text-primary)]"
             >
               {t("settings.profile.email")}
             </label>
-            <div className="w-64 shrink-0">
-              <Input
-                id="profile-email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                type="email"
-              />
-            </div>
+            <p className="text-xs text-[var(--text-label)]">
+              {t("settings.profile.emailDesc")}
+            </p>
+          </div>
+          <input
+            id="profile-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="shrink-0 w-64 bg-[var(--dialog-input-bg)] border border-[var(--dialog-input-border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 hover:border-[var(--border-subtle)] transition-colors"
+          />
+        </div>
+      </section>
+
+      {/* Carte Sécurité — statut du compte (lecture seule) */}
+      <section
+        className="bg-[var(--surface-card)] border border-[var(--border)] rounded-xl p-4 space-y-4"
+        aria-label={t("settings.security.accountSecurity")}
+      >
+        <div className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+          <div className="space-y-0.5 pr-4">
+            <h4 className="text-sm font-medium text-[var(--text-primary)]">
+              {t("settings.security.accountSecurity")}
+            </h4>
+            {isOAuth ? (
+              <p className="text-xs text-[var(--text-label)]">
+                {t("settings.security.oauthAccount")} —{" "}
+                {t("settings.security.oauthAccountDesc")}
+              </p>
+            ) : (
+              <p className="text-xs text-[var(--text-label)]">
+                {t("settings.security.emailAccountDesc")}
+              </p>
+            )}
           </div>
         </div>
-      </div>
-
-      <Separator />
-
-      <div className="flex items-center justify-end">
-        <Button onClick={onSave} disabled={isSaving}>
-          {isSaving ? t("settings.saving") : t("settings.save")}
-        </Button>
-      </div>
+      </section>
     </div>
   );
 }

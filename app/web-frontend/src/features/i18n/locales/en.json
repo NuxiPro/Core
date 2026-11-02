@@ -107,12 +107,12 @@
       "light": "Light",
       "dark": "Dark",
       "system": "System",
-      "notifications": "Notifications",
-      "channels": "Channels",
       "emailNotifications": "Email notifications",
       "emailNotificationsDesc": "Receive alerts by email",
       "slackNotifications": "Slack notifications",
-      "slackNotificationsDesc": "Send to a Slack channel"
+      "slackNotificationsDesc": "Send to a Slack channel",
+      "languageDesc": "Interface language, applied instantly.",
+      "themeDesc": "Light or dark theme, applied in real time."
     },
     "profile": {
       "label": "Profile",
@@ -124,7 +124,8 @@
       "dangerZone": "Danger zone",
       "deleteAccount": "Delete account",
       "deleteAccountDesc": "This action is irreversible. All your data will be deleted.",
-      "delete": "Delete"
+      "delete": "Delete",
+      "emailDesc": "Address used for sign-in and notifications."
     },
     "security": {
       "label": "Security",
@@ -157,7 +158,24 @@
       "connected": "Connected",
       "connect": "Connect"
     },
-    "soon": "Soon"
+    "soon": "Soon",
+    "tabs": {
+      "general": "General",
+      "account": "Account & Security",
+      "archiving": "Archiving & Auto"
+    },
+    "archiving": {
+      "label": "Archiving & Auto",
+      "description": "Automatic retention of completed tasks.",
+      "autoArchive": "Auto-archiving",
+      "autoArchiveDesc": "Automatically moves completed tasks to the archive.",
+      "delay": "Delay before archiving",
+      "delayDesc": "How long completed tasks are kept before being archived.",
+      "delay7": "After 7 days",
+      "delay30": "After 30 days",
+      "delay90": "After 90 days",
+      "retentionNote": "Completed tasks are kept securely and remain searchable in the global archive area."
+    }
   },
   "sidebar": {
     "upgradeToPro": "Upgrade to Pro",
