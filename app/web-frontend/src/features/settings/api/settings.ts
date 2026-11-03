@@ -1,17 +1,81 @@
+import { z } from "zod";
 import { handleResponse } from "@/src/shared/api/handleResponse";
 import { client } from "@/src/shared/lib/client";
 
 /**
  * Réglages utilisateur — miroir de `GetSetting` (setting.shemas.ts backend).
- * Source de vérité du type : la route OpenAPI, via `client.api.v1.setting.getSettings`.
+ * Type explicite (pas de dérivation depuis getSettings : circularité TS).
  */
-export const getSettings = async () => {
-  const res = await client.api.v1.setting.getSettings.$get();
-  return handleResponse<{
-    theme: "light" | "dark" | "system";
-    emailNotifications: boolean;
-    language: "fr" | "en";
-  }>(res, "Impossible de récupérer les réglages", "setting/get");
+export type UserSettings = {
+  theme: "light" | "dark" | "system";
+  emailNotifications: boolean;
+  language: "fr" | "en";
 };
 
-export type UserSettings = Awaited<ReturnType<typeof getSettings>>;
+/** Défauts = colonnes default du backend (`user_setting`). */
+const DEFAULT_SETTINGS: UserSettings = {
+  theme: "system",
+  emailNotifications: false,
+  language: "en",
+};
+
+/** GET /getSettings */
+export const getSettings = async (): Promise<UserSettings> => {
+  const res = await client.api.v1.setting.getSettings.$get();
+  // Body vide éventuel → UserSettings | null (null = benin, pas de log)
+  const parsed = await handleResponse<UserSettings | null>(
+    res,
+    "Impossible de récupérer les réglages",
+    "setting/get",
+    SettingsSchema,
+  );
+  return parsed ?? DEFAULT_SETTINGS;
+};
+
+/** PATCH /patchSettings */
+export const patchSettings = async (patch: UserSettingsPatch): Promise<null> => {
+  // Sanitize : ce qui part sur le réseau est strictement limité aux clés connues
+  const clean = SettingsPatchSchema.parse(patch);
+  const res = await client.api.v1.setting.patchSettings.$patch({ json: clean });
+  // La réponse du PATCH n'est pas consumée : le cache est re-synchronisé
+  // par invalidation (un seul GET dans le sillage du PATCH).
+  return handleResponse<null>(
+    res,
+    "Impossible de mettre à jour les réglages",
+    "setting/patch",
+  );
+};
+
+/** Langues supportées — miroir de `GetSetting` backend (setting.shemas.ts). */
+export const LANGUAGES = ["fr", "en"] as const;
+export type Language = (typeof LANGUAGES)[number];
+
+/** Garde de type pour restreindre une chaîne non typée (DOM, i18n) à `Language`. */
+export const isLanguage = (v: string): v is Language =>
+  LANGUAGES.includes(v as Language);
+
+/** Thèmes supportés — miroir de `GetSetting` backend ("system" suit l'OS). */
+export const THEMES = ["light", "dark", "system"] as const;
+export type Theme = (typeof THEMES)[number];
+export const isTheme = (v: string): v is Theme => THEMES.includes(v as Theme);
+export type UserSettingsPatch = Partial<UserSettings>;
+
+/**
+ * Schémas de la frontière réseau — les enums dérivent de LANGUAGES/THEMES
+ * (chaque champ ajouté au backend se propage compilateur inclut).
+ * Réponse : `strictObject` — clé inconnue = rejetée, pas de donnée fantôme.
+ * Patch : `.partial()` de zod = strip des clés inconnues → payload whitelisté.
+ */
+const SettingsSchema = z.strictObject({
+  theme: z.enum(THEMES),
+  emailNotifications: z.boolean(),
+  language: z.enum(LANGUAGES),
+});
+
+const SettingsPatchSchema = z
+  .object({
+    theme: z.enum(THEMES),
+    emailNotifications: z.boolean(),
+    language: z.enum(LANGUAGES),
+  })
+  .partial();

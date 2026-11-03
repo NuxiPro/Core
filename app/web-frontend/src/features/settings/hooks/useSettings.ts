@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/src/features/i18n";
-import { useGeneralSettings } from "@/src/features/settings/hooks/useSettingsApi";
+import {
+  useGeneralSettings,
+  useUpdateSettings,
+} from "@/src/features/settings/hooks/useSettingsApi";
 import { useAsyncHandler } from "@/src/shared/hooks/useAsyncHandler";
 import { useAuth } from "@/src/shared/hooks/useAuth";
 import { authClient } from "@/src/shared/lib/client";
+import type { Language, UserSettingsPatch } from "@/src/features/settings/api/settings";
 
 // TEMP (08 §3.2) — la persistance server arrivée avec la route PATCH; en attendant,
 // le Save applique les changements localement et le dit honnêtement.
@@ -42,8 +46,18 @@ export function useSettings(open: boolean) {
   // Données serveur — requête unique partagée par tous les onglets
   const { settings } = useGeneralSettings(open);
 
+  // Persistance des réglages : PATCH + invalidation du cache → un GET de re-sync
+  const updateSettings = useUpdateSettings();
+  const saveSettings = useCallback(
+    (patch: UserSettingsPatch) =>
+      handle(async () => {
+        await updateSettings.mutateAsync(patch);
+      }),
+    [handle, updateSettings],
+  );
+
   // État local éditable, amorcé depuis la DB
-  const [language, setLanguageLocal] = useState<string>("fr");
+  const [language, setLanguageLocal] = useState<Language>("fr");
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [email, setEmail] = useState(user?.email || "");
 
@@ -54,10 +68,17 @@ export function useSettings(open: boolean) {
     }
   }, [settings]);
 
-  // La langue s'applique immédiatement (i18n) — la persistance viendra avec PATCH
-  const setLanguage = (v: string) => {
+  // La langue s'applique immédiatement (i18n) puis persiste côté serveur
+  const setLanguage = (v: Language) => {
     setLanguageLocal(v);
     i18n.changeLanguage(v);
+    saveSettings({ language: v });
+  };
+
+  // Le toggle e-mail persiste immédiatement (pas de Save, cohérent avec langue/thème)
+  const setEmailNotificationsPersisted = (v: boolean) => {
+    setEmailNotifications(v);
+    saveSettings({ emailNotifications: v });
   };
 
   const isProfileDirty = useMemo(
@@ -90,7 +111,7 @@ export function useSettings(open: boolean) {
     language,
     setLanguage,
     emailNotifications,
-    setEmailNotifications,
+    setEmailNotifications: setEmailNotificationsPersisted,
     handleSaveProfile,
   };
 }

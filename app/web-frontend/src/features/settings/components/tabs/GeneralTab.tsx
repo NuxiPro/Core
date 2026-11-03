@@ -1,9 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/src/shared/hooks/useTheme";
+import { isLanguage, type Language } from "@/src/features/settings/api/settings";
 
 interface GeneralTabProps {
   language: string;
-  setLanguage: (v: string) => void;
+  setLanguage: (v: Language) => void;
   emailNotifications: boolean;
   setEmailNotifications: (v: boolean) => void;
 }
@@ -18,7 +19,7 @@ export function GeneralTab({
   emailNotifications,
   setEmailNotifications,
 }: GeneralTabProps) {
-  const { theme, toggle } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -41,7 +42,7 @@ export function GeneralTab({
           <select
             aria-labelledby="settings-language-label"
             value={language}
-            onChange={(e) => setLanguage(e.target.value)}
+            onChange={(e) => isLanguage(e.target.value) && setLanguage(e.target.value)}
             className="shrink-0 w-48 bg-[var(--dialog-input-bg)] border border-[var(--dialog-input-border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 hover:border-[var(--border-subtle)] transition-colors"
           >
             <option value="fr">{t("common.french")}</option>
@@ -59,41 +60,35 @@ export function GeneralTab({
               {t("settings.general.themeDesc")}
             </p>
           </div>
-          <div className="shrink-0 grid grid-cols-2 gap-2 w-48">
-            <button
-              type="button"
-              onClick={toggle}
-              className={`relative p-2 rounded-lg border transition-colors duration-150 text-left ${
-                theme === "light"
-                  ? "border-emerald-500 bg-emerald-500/5"
-                  : "border-[var(--border)] hover:border-[var(--border-subtle)]"
-              }`}
-            >
-              <div className="w-full h-7 rounded bg-zinc-100 border border-zinc-300 mb-1.5" />
-              <p className="text-xs font-medium text-[var(--text-primary)]">
-                {t("settings.general.light")}
-              </p>
-              {theme === "light" && (
-                <div className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-emerald-500" />
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={toggle}
-              className={`relative p-2 rounded-lg border transition-colors duration-150 text-left ${
-                theme === "dark"
-                  ? "border-emerald-500 bg-emerald-500/5"
-                  : "border-[var(--border)] hover:border-[var(--border-subtle)]"
-              }`}
-            >
-              <div className="w-full h-7 rounded bg-zinc-950 border border-zinc-800 mb-1.5" />
-              <p className="text-xs font-medium text-[var(--text-primary)]">
-                {t("settings.general.dark")}
-              </p>
-              {theme === "dark" && (
-                <div className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-emerald-500" />
-              )}
-            </button>
+          <div className="shrink-0 grid grid-cols-3 gap-2 w-64">
+            {(["light", "dark", "system"] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setTheme(value)}
+                className={`relative p-2 rounded-lg border transition-colors duration-150 text-left ${
+                  theme === value
+                    ? "border-emerald-500 bg-emerald-500/5"
+                    : "border-[var(--border)] hover:border-[var(--border-subtle)]"
+                }`}
+              >
+                <div
+                  className={
+                    value === "light"
+                      ? "w-full h-7 rounded bg-zinc-100 border border-zinc-300 mb-1.5"
+                      : value === "dark"
+                        ? "w-full h-7 rounded bg-zinc-950 border border-zinc-800 mb-1.5"
+                        : "w-full h-7 rounded bg-gradient-to-r from-zinc-100 to-zinc-950 border border-zinc-600 mb-1.5"
+                  }
+                />
+                <p className="text-xs font-medium text-[var(--text-primary)]">
+                  {t(`settings.general.${value}`)}
+                </p>
+                {theme === value && (
+                  <div className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-emerald-500" />
+                )}
+              </button>
+            ))}
           </div>
         </div>
       </section>

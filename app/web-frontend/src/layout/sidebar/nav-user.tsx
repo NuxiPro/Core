@@ -45,7 +45,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  const { theme, toggle } = useTheme();
+  const { isDark, toggle } = useTheme();
   const navigate = useNavigate();
   const [accountOpen, setAccountOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -126,12 +126,12 @@ export function NavUser({
               onClick={toggle}
               className="text-sidebar-foreground"
             >
-              {theme === "dark" ? (
+              {isDark ? (
                 <Sun className="mr-2.5 h-4 w-4" />
               ) : (
                 <Moon className="mr-2.5 h-4 w-4" />
               )}
-              {theme === "dark"
+              {isDark
                 ? t("sidebar.lightMode")
                 : t("sidebar.darkMode")}
             </DropdownMenuItem>

@@ -1,21 +1,19 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import i18n from "@/src/features/i18n";
-import { getSettings } from "@/src/features/settings/api";
+import { settingsQueryBase } from "@/src/features/settings/hooks/useSettingsApi";
+import type { UserSettings } from "@/src/features/settings/api";
 
 /**
  * Synchronise la langue de l'app avec les réglages DB.
- * Partage l'entrée de cache unique `["settings"]` (payload-fat, §3.2 doc 08).
+ * Partage l'entrée de cache unique `["settings"]` — ET les options de query
+ * (`settingsQueryBase`) pour que l'ordre de montage des observers soit sans
+ * conséquence (sinon : war des options, refetch non déterministes).
  */
 export function useSyncLanguage() {
   const { data: language } = useQuery({
-    queryKey: ["settings"],
-    queryFn: getSettings,
-    select: (s) => s.language,
-    staleTime: 10 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    refetchOnMount: false,
-    placeholderData: keepPreviousData,
+    ...settingsQueryBase,
+    select: (s: UserSettings) => s.language,
   });
 
   useEffect(() => {

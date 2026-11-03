@@ -1,7 +1,6 @@
 import type { RouteHandler } from "@hono/zod-openapi";
 import { userSetting } from "@backend/src/drizzle/schemas";
 import { db } from "@backend/src/drizzle/connection";
-import { requirePermission } from "@backend/src/lib/auth-middleware";
 import { createLogger } from "@packages/shared/utils/logger";
 import type { getSettingRoute } from "../setting.router";
 import { eq } from "drizzle-orm";
