@@ -26,7 +26,6 @@ pool
     if (err instanceof Error) {
       log.error("DB connection FAIL", { message: err.message });
     } else {
-      // Si c'est un format bizarre (un string ou autre), on le convertit proprement
       log.error("DB connection FAIL", { message: String(err) });
     }
   });

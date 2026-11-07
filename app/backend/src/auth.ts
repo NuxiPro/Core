@@ -17,45 +17,47 @@ import { createLogger } from "./logique/logging/logger";
 const log = createLogger("auth");
 
 export const auth = betterAuth({
-  user: {
-    create: {
-      after: async (user: { id: string; email: string }, hookCtx?: unknown) => {
-        try {
-          // Le header n'EST PAS dispo ici (clic sur le lien = navigation
-          // navigateur → doc 08 §1). On relit le stash posé par
-          // sendMagicLink ; sinon default "en".
-          const ctx = hookCtx as
-            | {
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user: { id: string; email: string }, hookCtx?: unknown) => {
+          try {
+            // Le header n'EST PAS dispo ici (clic sur le lien = navigation
+            // navigateur → doc 08 §1). On relit le stash posé par
+            // sendMagicLink ; sinon default "en".
+            const ctx = hookCtx as
+              | {
                 context?: {
                   internalAdapter: Parameters<typeof consumeStashedLanguage>[2];
                 };
               }
-            | undefined;
+              | undefined;
 
-          await seedAccountDefaults({
-            id: user.id,
-            email: user.email,
-            language: ctx?.context
-              ? await consumeStashedLanguage(
+            await seedAccountDefaults({
+              id: user.id,
+              email: user.email,
+              language: ctx?.context
+                ? await consumeStashedLanguage(
                   user.email,
                   toLang(null),
                   ctx.context.internalAdapter,
                 )
-              : toLang(null),
-          });
-        } catch (err) {
-          // Garde-fou n°2 : un seed raté ne bloque JAMAIS la connexion.
-          // L'idempotence permet le re-seed au prochain passage authentifié.
-          log.error("[UserInit] Account seeding failed", err);
-        }
+                : toLang(null),
+            });
+          } catch (err) {
+            // Garde-fou n°2 : un seed raté ne bloque JAMAIS la connexion.
+            // L'idempotence permet le re-seed au prochain passage authentifié.
+            log.error("[UserInit] Account seeding failed", err);
+          }
+        },
       },
-    },
-    additionalFields: {
-      name: {
-        type: "string",
-        required: false,
+      additionalFields: {
+        name: {
+          type: "string",
+          required: false,
+        },
+        role: { type: "string", defaultValue: "user", input: false },
       },
-      role: { type: "string", defaultValue: "user", input: false },
     },
   },
   baseURL: process.env.BETTER_AUTH_URL,
@@ -84,6 +86,7 @@ export const auth = betterAuth({
         const headerLang = toLang(
           ctx?.request?.headers?.get("x-user-language") ?? null,
         );
+        log.debug(`[Debug Lang] header received : ${headerLang}`);
         // 2. Langue déjà persistée (1er envoi → null → on retombe sur le header)
         const lang = (await getUserLanguage(email)) ?? headerLang;
 

@@ -5,11 +5,11 @@ services:
     environment:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
-      POSTGRES_DB: dev
+      POSTGRES_DB: nuxipro
     ports:
       - "127.0.0.1:5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dev -d dev"]
+      test: ["CMD-SHELL", "pg_isready -U dev -d nuxipro"]
       interval: 5s
       timeout: 5s
       retries: 5

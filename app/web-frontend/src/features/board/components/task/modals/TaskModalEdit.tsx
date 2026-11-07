@@ -1,4 +1,4 @@
-import { LazyTipTapEditorWithSuspense } from "@layout/md-editor/lazy-tiptap-editor";
+import { LazyTipTapEditorWithSuspense } from "../md-editor/lazy-tiptap-editor";
 import { COLUMNS } from "@packages/shared/config";
 import type { TaskModalEditProps } from "@packages/shared/types/components";
 import type { PriorityLabel } from "@packages/shared/types/task/priority-level";

@@ -10,7 +10,7 @@ import { type RefObject, useEffect, useRef, useState } from "react";
 
 // Palette + dark-mode des tokens --tt-* (générés par le CLI TipTap,
 // déjà compatibles avec la classe .dark de l'application).
-import "@/src/layout/md-editor/styles/_variables.scss";
+import "./styles/_variables.scss";
 
 // Le node custom HorizontalRule (punchline: hr dans un wrapper stylable).
 import { HorizontalRule } from "@layout/components/tiptap-kit/tiptap-node/horizontal-rule-node/horizontal-rule-node-extension";
