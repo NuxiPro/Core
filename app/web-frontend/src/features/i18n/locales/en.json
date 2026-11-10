@@ -14,6 +14,17 @@
     "name": "NuxiPro",
     "tagline": "Sovereignty and simplicity."
   },
+  "onboarding": {
+    "welcomeTitle": "Welcome to NuxiPro",
+    "welcomeDescription": "The minimalist alternative that helps you every day",
+    "start": "Get started",
+    "workspaceTitle": "Create your workspace",
+    "workspaceDescription": "One workspace, one goal. You can add more later.",
+    "workspacePlaceholder": "E.g. My team, Marketing Q3...",
+    "creating": "Creating...",
+    "creatingWorkspace": "Creating your workspace {{name}}...",
+    "welcomeAboard": "Welcome aboard."
+  },
   "auth": {
     "continueWithGoogle": "Continue with Google",
     "continueWithGitHub": "Continue with GitHub",

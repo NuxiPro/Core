@@ -90,12 +90,22 @@ export const auth = betterAuth({
         // 2. Langue déjà persistée (1er envoi → null → on retombe sur le header)
         const lang = (await getUserLanguage(email)) ?? headerLang;
 
-        // 3. 1er envoi : on stoke la langue pour que le seed puisse la relire
-        if (!ctx?.context) return;
+        // 3. Store the first language so account creation can restore it.
+        if (!ctx?.context) {
+          log.error("Cannot persist signup language: auth context is missing");
+          throw new Error("Missing auth context");
+        }
+
         const existing =
           await ctx.context.internalAdapter.findUserByEmail(email);
-        if (!existing)
+        log.debug("Magic link language resolved", {
+          language: lang,
+          existingUser: Boolean(existing),
+        });
+
+        if (!existing) {
           await stashSignUpLanguage(email, lang, ctx.context.internalAdapter);
+        }
 
         if (process.env.NODE_ENV === "development") {
           log.info(`[Magic Link] ${url}`);

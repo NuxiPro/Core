@@ -14,6 +14,17 @@
     "name": "NuxiPro",
     "tagline": "Souveraineté et simplicité."
   },
+  "onboarding": {
+    "welcomeTitle": "Bienvenue sur NuxiPro",
+    "welcomeDescription": "L'alternative minimaliste qui vous aide au quotidien",
+    "start": "Commencer",
+    "workspaceTitle": "Créez votre espace",
+    "workspaceDescription": "Un workspace, un objectif. Vous pourrez en ajouter d'autres plus tard.",
+    "workspacePlaceholder": "Ex : Mon équipe, Marketing Q3...",
+    "creating": "Création...",
+    "creatingWorkspace": "Création de votre espace {{name}}...",
+    "welcomeAboard": "Bienvenue à bord."
+  },
   "auth": {
     "continueWithGoogle": "Continuer avec Google",
     "continueWithGitHub": "Continuer avec GitHub",

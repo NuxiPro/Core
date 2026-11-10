@@ -3,6 +3,7 @@ import {
   BadgeCheck,
   CreditCard,
   LogOut,
+  Monitor,
   Moon,
   Sparkles,
   Sun,
@@ -45,11 +46,14 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  const { isDark, toggle } = useTheme();
+  const { isDark, setTheme, theme } = useTheme();
   const navigate = useNavigate();
   const [accountOpen, setAccountOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useTranslation();
+
+  const nextTheme = theme === "system" ? "light" : theme === "light" ? "dark" : "system";
+  const ThemeIcon = theme === "system" ? Monitor : isDark ? Sun : Moon;
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -123,24 +127,11 @@ export function NavUser({
           <DropdownMenuSeparator className="bg-border/40" />
           <DropdownMenuGroup>
             <DropdownMenuItem
-              onClick={toggle}
+              onClick={() => setTheme(nextTheme)}
               className="text-sidebar-foreground"
             >
-              {isDark ? (
-                <Sun className="mr-2.5 h-4 w-4" />
-              ) : (
-                <Moon className="mr-2.5 h-4 w-4" />
-              )}
-              {isDark
-                ? t("sidebar.lightMode")
-                : t("sidebar.darkMode")}
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator className="bg-border/40" />
-          <DropdownMenuGroup>
-            <DropdownMenuItem className="text-sidebar-foreground">
-              <Sparkles className="mr-2.5 h-4 w-4" />
-              {t("sidebar.upgradeToPro")}
+              <ThemeIcon className="mr-2.5 h-4 w-4" />
+              {t("settings.general.theme")}: {t(`settings.general.${theme}`)}
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator className="bg-border/40" />
@@ -151,6 +142,13 @@ export function NavUser({
             >
               <BadgeCheck className="mr-2.5 h-4 w-4" />
               {t("sidebar.settings")}
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator className="bg-border/40" />
+          <DropdownMenuGroup>
+            <DropdownMenuItem className="text-sidebar-foreground">
+              <Sparkles className="mr-2.5 h-4 w-4" />
+              {t("sidebar.upgradeToPro")}
             </DropdownMenuItem>
             <DropdownMenuItem className="text-sidebar-foreground">
               <CreditCard className="mr-2.5 h-4 w-4" />

@@ -1,71 +1,125 @@
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useSyncExternalStore,
+} from "react";
 import { isTheme, type Theme } from "@/src/features/settings/api/settings";
+import { useUpdateSettings } from "@/src/features/settings/hooks/useSettingsApi";
 
-/** Media query de l'OS pour le thème système (prefers-color-scheme). */
+const STORAGE_KEY = "theme";
 const DARK_QUERY = "(prefers-color-scheme: dark)";
+const listeners = new Set<() => void>();
 
-/**
- * Valeur stockée : "light", "dark" ou "system". Absente/invalide → "system"
- * (nouvel utilisateur ou ancien format : on suit l'OS, choix le plus neutre).
- */
-function resolveTheme(saved: string | null): Theme {
-  if (saved !== null && isTheme(saved)) return saved;
-  return "system";
+let currentTheme: Theme | undefined;
+
+function getStoredTheme(): Theme {
+  if (typeof window === "undefined") return "system";
+
+  const saved = window.localStorage.getItem(STORAGE_KEY);
+  return saved && isTheme(saved) ? saved : "system";
 }
 
-/** Thème "system" → suit la préférence de l'OS ; sinon le thème choisi. */
-const prefersDark = (): boolean =>
-  typeof window !== "undefined" && window.matchMedia(DARK_QUERY).matches;
+function getTheme(): Theme {
+  currentTheme ??= getStoredTheme();
+  return currentTheme;
+}
 
-const isDarkFor = (theme: Theme): boolean =>
-  theme === "system" ? prefersDark() : theme === "dark";
+function subscribe(callback: () => void): () => void {
+  listeners.add(callback);
 
-/** Anime les transitions CSS autour d'un changement de thème (cf. global.css). */
-function withThemeTransition(update: () => void) {
+  if (typeof window === "undefined") {
+    return () => listeners.delete(callback);
+  }
+
+  const handleStorage = (event: StorageEvent) => {
+    if (event.key !== STORAGE_KEY) return;
+    currentTheme = getStoredTheme();
+    callback();
+  };
+
+  window.addEventListener("storage", handleStorage);
+  return () => {
+    listeners.delete(callback);
+    window.removeEventListener("storage", handleStorage);
+  };
+}
+
+function setStoredTheme(theme: Theme): void {
+  currentTheme = theme;
+
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(STORAGE_KEY, theme);
+  }
+
+  for (const listener of listeners) listener();
+}
+
+function subscribeToSystemTheme(callback: () => void): () => void {
+  if (typeof window === "undefined") return () => undefined;
+
+  const mediaQuery = window.matchMedia(DARK_QUERY);
+  mediaQuery.addEventListener("change", callback);
+  return () => mediaQuery.removeEventListener("change", callback);
+}
+
+function getSystemTheme(): boolean {
+  return typeof window !== "undefined" && window.matchMedia(DARK_QUERY).matches;
+}
+
+function withThemeTransition(update: () => void): void {
+  if (typeof document === "undefined") {
+    update();
+    return;
+  }
+
   const root = document.documentElement;
   root.classList.add("theme-transition");
   update();
+
   requestAnimationFrame(() => {
     requestAnimationFrame(() => root.classList.remove("theme-transition"));
   });
 }
 
 /**
- * Mini système de thème :
- * - source de vérité = state `theme` (persisté dans localStorage) ;
- * - effet unique : applique/dé-ré-applique `html.dark`, réactif à l'OS
- *   tant que le thème vaut "system" (listener sur prefers-color-scheme) ;
- * - `toggle` = bascule rapide light/dark, `setTheme` = choix explicite.
+ * Shared theme state:
+ * - defaults to system;
+ * - follows the OS while system is selected;
+ * - stays synchronized between hook instances and browser tabs.
  */
 export function useTheme() {
-  const [theme, setThemeState] = useState<Theme>(() =>
-    typeof window === "undefined" ? "system" : resolveTheme(localStorage.getItem("theme")),
+  const updateSettings = useUpdateSettings();
+  const theme = useSyncExternalStore(
+    subscribe,
+    getTheme,
+    (): Theme => "system",
   );
-  const [isDark, setIsDark] = useState<boolean>(() => isDarkFor(theme));
+  const systemIsDark = useSyncExternalStore(
+    subscribeToSystemTheme,
+    getSystemTheme,
+    () => false,
+  );
+  const isDark = theme === "system" ? systemIsDark : theme === "dark";
 
   useEffect(() => {
-    localStorage.setItem("theme", theme);
-    const mq = window.matchMedia(DARK_QUERY);
-    const apply = () => {
-      const dark = theme === "system" ? mq.matches : theme === "dark";
-      document.documentElement.classList.toggle("dark", dark);
-      setIsDark(dark);
-    };
-    apply();
-    if (theme !== "system") return;
-    // Le changement de préférence OS s'applique en temps réel
-    mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
-  }, [theme]);
+    document.documentElement.classList.toggle("dark", isDark);
+  }, [isDark]);
 
-  const setTheme = useCallback((value: Theme) => {
-    withThemeTransition(() => setThemeState(value));
-  }, []);
+  const setTheme = useCallback(
+    (value: Theme) => {
+      const previousTheme = theme;
+      withThemeTransition(() => setStoredTheme(value));
 
-  // Bascule rapide : à partir de "system", passe à l'inverse du thème OS courant
+      void updateSettings.mutateAsync({ theme: value }).catch(() => {
+        withThemeTransition(() => setStoredTheme(previousTheme));
+      });
+    },
+    [theme, updateSettings],
+  );
+
   const toggle = useCallback(() => {
-    withThemeTransition(() => setThemeState((t) => (isDarkFor(t) ? "light" : "dark")));
-  }, []);
+    setTheme(isDark ? "light" : "dark");
+  }, [isDark, setTheme]);
 
   return { theme, setTheme, toggle, isDark };
 }

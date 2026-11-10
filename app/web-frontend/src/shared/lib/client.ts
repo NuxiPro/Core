@@ -7,36 +7,44 @@ import {
   magicLinkClient,
 } from "better-auth/client/plugins";
 import { hc } from "hono/client";
+import i18n from "@/src/features/i18n";
 import { reportRateLimited } from "@/src/layout/components/animation/rate-limit-policy";
 import { handleAuthError } from "./auth-guard";
-import i18n from "@/src/features/i18n";
-
 
 const log = createLogger("client");
 const API_URL = import.meta.env.BACKEND_API_URL as string;
 const AUTH_URL = import.meta.env.BACKEND_AUTH_URL as string;
-const LANG = i18n.language?.startsWith("fr") ? "fr" : "en";
 
+// Retourne uniquement une langue supportée par l'API.
+const getActiveLanguage = (): "fr" | "en" =>
+  i18n.language?.startsWith("fr") ? "fr" : "en";
 
-if (import.meta.env.DEV) {
+// Affiche les URLs externes en développement pour faciliter le diagnostic.
+function logExternalUrls(): void {
+  if (!import.meta.env.DEV) return;
+
   for (const [name, url] of [
     ["API", API_URL],
     ["Auth", AUTH_URL],
   ] as const) {
     if (!url) continue;
+
     try {
-      const u = new URL(url);
-      if (
+      const parsedUrl = new URL(url);
+      const isExternal =
         typeof window !== "undefined" &&
-        u.origin !== window.location.origin
-      ) {
-        log.info(`[${name}] externe: ${url}`);
+        parsedUrl.origin !== window.location.origin;
+
+      if (isExternal) {
+        log.info(`[${name}] external: ${url}`);
       }
     } catch {
-      log.error(`[${name}] URL invalide: ${url}`);
+      log.error(`[${name}] invalid URL: ${url}`);
     }
   }
 }
+
+logExternalUrls();
 
 type AuthClientWithMagicLink = AuthClient<{
   plugins: [
@@ -45,54 +53,71 @@ type AuthClientWithMagicLink = AuthClient<{
   ];
 }>;
 
-export const authClient = createAuthClient({
-  baseURL: AUTH_URL,
-  plugins: [magicLinkClient(), lastLoginMethodClient()],
-  fetchOptions: {
-    headers: { "X-User-Language": LANG }
-  }
-}) as AuthClientWithMagicLink;
+// Ajoute la langue active à chaque requête API.
+function withLanguageHeader(init?: RequestInit): RequestInit {
+  const headers =
+    init?.headers instanceof Headers
+      ? Object.fromEntries(init.headers.entries())
+      : (init?.headers ?? {});
 
+  return {
+    ...init,
+    headers: {
+      ...headers,
+      "X-User-Language": getActiveLanguage(),
+    },
+  };
+}
+
+function getRequestUrl(input: RequestInfo | URL): string {
+  if (typeof input === "string") return input;
+  if (input instanceof URL) return input.href;
+  return input.url;
+}
+
+// Applique les traitements communs aux réponses API.
+function handleApiResponse(response: Response, url: string): void {
+  const isProtectedApiRequest =
+    url.includes("/api/v1") && !url.includes("/api/v1/auth/");
+
+  if (response.status === 401 && isProtectedApiRequest) {
+    handleAuthError();
+  }
+
+  if (response.status !== 429) return;
+
+  const retryAfter = Number(
+    response.headers.get("Retry-After") ??
+      response.headers.get("X-Retry-After") ??
+      "120",
+  );
+
+  if (Number.isFinite(retryAfter)) {
+    reportRateLimited(retryAfter);
+  }
+}
+
+// Fetch partagé par Hono et les appels qui doivent envoyer la langue.
 const fetcher = async (
   input: RequestInfo | URL,
   init?: RequestInit,
 ): Promise<Response> => {
-  // Ensure the language header is always sent (merged with any caller‑provided headers)
-  const languageHeader = { "X-User-Language": LANG };
-  const mergedInit: RequestInit = {
-    ...init,
-    headers: {
-      ...(init?.headers instanceof Headers ? Object.fromEntries(init.headers.entries()) : init?.headers ?? {}),
-      ...languageHeader,
-    },
-  };
-  const res = await fetch(input as RequestInfo, mergedInit);
-  const url =
-    typeof input === "string"
-      ? input
-      : input instanceof URL
-        ? input.href
-        : ((input as Request)?.url ?? "");
-
-  if (
-    res.status === 401 &&
-    url.includes("/api/v1") &&
-    !url.includes("/api/v1/auth/")
-  ) {
-    handleAuthError();
-  }
-  if (res.status === 429) {
-    const v = Number(
-      res.headers.get("Retry-After") ??
-        res.headers.get("X-Retry-After") ??
-        "120",
-    );
-    if (Number.isFinite(v)) {
-      reportRateLimited(v);
-    }
-  }
-  return res;
+  const response = await fetch(input, withLanguageHeader(init));
+  handleApiResponse(response, getRequestUrl(input));
+  return response;
 };
+
+export const authClient = createAuthClient({
+  baseURL: AUTH_URL,
+  plugins: [magicLinkClient(), lastLoginMethodClient()],
+  fetchOptions: {
+    headers: {
+      get "X-User-Language"() {
+        return getActiveLanguage();
+      },
+    },
+  },
+}) as AuthClientWithMagicLink;
 
 export const client = hc<AppType>(API_URL || "/", {
   fetch: fetcher,

@@ -5,7 +5,10 @@ export const Route = createFileRoute("/_dashboard/")({
   loader: async () => {
     const workspaces = await getWorkspaces();
     if (!workspaces || workspaces.length === 0) {
-      throw redirect({ to: "/onboarding" });
+      throw redirect({
+        to: "/onboarding",
+        search: { error: undefined },
+      });
     }
 
     // Redirige vers /kanban → KanbanIndex utilise useProjects() (cache React Query)

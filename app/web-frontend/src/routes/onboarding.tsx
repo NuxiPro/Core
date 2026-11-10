@@ -19,9 +19,12 @@ export const Route = createFileRoute("/onboarding")({
   validateSearch: (search: Record<string, unknown>) => ({
     error: typeof search.error === "string" ? search.error : undefined,
   }),
-  loader: async ({ search }) => {
+  loader: async ({ location }) => {
+    const queryString = location.href.split("?", 2)[1]?.split("#", 1)[0] ?? "";
+    const error = new URLSearchParams(queryString).get("error");
+
     // Expired or invalid magic link: dedicated feedback page.
-    if (search?.error) {
+    if (error) {
       throw redirect({ to: "/link-expired" });
     }
     const session = await resolveSession();
@@ -44,7 +47,7 @@ function OnboardingPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-surface-root flex items-center justify-center">
-          <div className="text-sm text-text-label">Chargement...</div>
+          <div className="text-sm text-text-label">loading...</div>
         </div>
       }
     >

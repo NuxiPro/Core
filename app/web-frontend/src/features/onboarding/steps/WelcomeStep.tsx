@@ -5,6 +5,7 @@
  */
 
 import { Rocket } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/src/layout/components/ui/button";
 
 interface WelcomeStepProps {
@@ -12,6 +13,8 @@ interface WelcomeStepProps {
 }
 
 export function WelcomeStep({ onNext }: WelcomeStepProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-full flex flex-col items-center justify-center px-6 animate-[fadeIn_0.4s_ease-out_forwards]">
       <div className="max-w-md w-full space-y-10 text-center">
@@ -21,10 +24,10 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
 
         <div className="space-y-3 animate-[fadeInUp_0.5s_ease-out_0.2s_both]">
           <h1 className="text-3xl font-semibold tracking-tight text-text-primary">
-            Bienvenue sur NuxiPro
+            {t("onboarding.welcomeTitle")}
           </h1>
           <p className="text-base text-text-label leading-relaxed">
-            L'alternative minimaliste qui vous aide au quotidien
+            {t("onboarding.welcomeDescription")}
           </p>
         </div>
 
@@ -33,7 +36,7 @@ export function WelcomeStep({ onNext }: WelcomeStepProps) {
             onClick={onNext}
             className="w-full h-12 bg-text-primary text-surface-root hover:opacity-90 rounded-lg font-medium text-base transition-colors"
           >
-            Commencer
+            {t("onboarding.start")}
           </Button>
         </div>
       </div>

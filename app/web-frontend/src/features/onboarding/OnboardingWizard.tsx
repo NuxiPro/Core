@@ -7,6 +7,7 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import {
   createWorkspace,
@@ -20,6 +21,7 @@ type WizardStep = "welcome" | "workspace" | "loading" | "success";
 export function OnboardingWizard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const animFrameRef = useRef<number>(0);
 
   const [step, setStep] = useState<WizardStep>("welcome");
@@ -137,8 +139,7 @@ export function OnboardingWizard() {
                     : "opacity-100 translate-y-0"
                 }`}
               >
-                Création de votre espace{" "}
-                <span className="text-text-label">{workspaceName}</span>...
+                {t("onboarding.creatingWorkspace", { name: workspaceName })}
               </h1>
 
               <h1
@@ -148,7 +149,7 @@ export function OnboardingWizard() {
                     : "opacity-0 -translate-y-1"
                 }`}
               >
-                Bienvenue à bord.
+                {t("onboarding.welcomeAboard")}
               </h1>
             </div>
           </div>
