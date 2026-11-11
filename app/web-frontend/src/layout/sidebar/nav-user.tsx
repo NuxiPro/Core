@@ -1,13 +1,12 @@
 import { useNavigate } from "@tanstack/react-router";
 import {
-  BadgeCheck,
   CreditCard,
   LogOut,
   Monitor,
   Moon,
+  Settings,
   Sparkles,
   Sun,
-  User,
 } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -29,6 +28,7 @@ import {
 import { useSidebar } from "@/src/layout/components/ui/sidebar";
 import { useTheme } from "@/src/shared/hooks/useTheme";
 import { waitForSession } from "@/src/shared/lib/auth-guard";
+import { UserIcon } from "../components/ui/user-icon";
 
 const SettingsDialog = lazy(() =>
   import("@/src/features/settings").then((m) => ({
@@ -52,8 +52,8 @@ export function NavUser({
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useTranslation();
 
-  const nextTheme = theme === "system" ? "light" : theme === "light" ? "dark" : "system";
-  const ThemeIcon = theme === "system" ? Monitor : isDark ? Sun : Moon;
+  const nextTheme = theme === "light" ? "dark" : "light";
+  const ThemeIcon = isDark ? Sun : Moon;
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -74,7 +74,7 @@ export function NavUser({
               <Avatar className="h-9 w-9 rounded-full">
                 <AvatarImage src={user.avatar} alt={user.name ?? user.email ?? ""} />
                 <AvatarFallback className="rounded-full bg-secondary">
-                  <User className="size-4 text-sidebar-foreground" />
+                  <UserIcon className="size-8 text-sidebar-foreground" />
                 </AvatarFallback>
               </Avatar>
               <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-sidebar" />
@@ -110,7 +110,7 @@ export function NavUser({
             <Avatar className="h-10 w-10 rounded-full shrink-0">
               <AvatarImage src={user.avatar} alt={user.name ?? user.email ?? ""} />
               <AvatarFallback className="rounded-full bg-secondary">
-                <User className="size-4 text-sidebar-foreground" />
+                <UserIcon className="size-7 text-sidebar-foreground" />
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
@@ -140,7 +140,7 @@ export function NavUser({
               onClick={() => setAccountOpen(true)}
               className="text-sidebar-foreground"
             >
-              <BadgeCheck className="mr-2.5 h-4 w-4" />
+              <Settings className="mr-2.5 h-4 w-4" />
               {t("sidebar.settings")}
             </DropdownMenuItem>
           </DropdownMenuGroup>

@@ -1,11 +1,11 @@
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { PanelLeftIcon } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { useIsMobile } from "@/src/shared/hooks/use-mobile";
 import { cn } from "@/src/shared/utils/utils";
-import { Button } from "./button";
+
 import {
   Sheet,
   SheetContent,
@@ -248,26 +248,66 @@ function Sidebar({
 function SidebarTrigger({
   className,
   onClick,
-  ...props
-}: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar();
+}: Pick<React.ComponentProps<"button">, "className" | "onClick">) {
+  const { open, toggleSidebar } = useSidebar();
+  const prefersReducedMotion = useReducedMotion();
+  const iconTransition = prefersReducedMotion
+    ? { duration: 0 }
+    : {
+        type: "spring" as const,
+        stiffness: 180,
+        damping: 28,
+        mass: 0.9,
+      };
 
   return (
-    <Button
+    <motion.button
+      type="button"
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
-      variant="ghost"
-      size="icon-sm"
-      className={cn(className)}
+      aria-label="Toggle sidebar"
+      aria-pressed={open}
+      whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
+      transition={iconTransition}
+      className={cn(
+        "inline-flex size-10 cursor-pointer items-center justify-center rounded-lg bg-transparent text-text-label transition-colors hover:bg-surface-hover/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+        className,
+      )}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
       }}
-      {...props}
     >
-      <PanelLeftIcon />
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>
+      <svg
+        viewBox="0 0 212 212"
+        aria-hidden="true"
+        className="size-9"
+        fill="none"
+      >
+        <rect
+          x="1"
+          y="1"
+          width="210"
+          height="210"
+          rx="24"
+          fill="var(--surface-card)"
+          stroke="var(--text-label)"
+          strokeWidth="3"
+        />
+        <motion.rect
+          animate={{ x: open ? 8 : 110 }}
+          transition={iconTransition}
+          y="8"
+          width="94"
+          height="196"
+          rx="16"
+          fill="var(--border-column)"
+          stroke="var(--text-label)"
+          strokeWidth="3"
+        />
+      </svg>
+      <span className="sr-only">Toggle sidebar</span>
+    </motion.button>
   );
 }
 
