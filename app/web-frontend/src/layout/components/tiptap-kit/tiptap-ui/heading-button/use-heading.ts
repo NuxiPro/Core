@@ -11,7 +11,7 @@ import { NodeSelection, TextSelection } from "@tiptap/pm/state";
 import type { Editor } from "@tiptap/react";
 import { useCallback, useEffect, useState } from "react";
 // --- Hooks ---
-import { useTiptapEditor } from "@/src/shared/hooks/use-tiptap-editor";
+import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 // --- Lib ---
 import {
   findNodePosition,

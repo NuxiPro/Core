@@ -7,9 +7,9 @@ import { HighlighterIcon } from "@layout/components/tiptap-kit/tiptap-icons/high
 import type { Editor } from "@tiptap/react";
 import { useCallback, useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { useIsBreakpoint } from "@/src/shared/hooks/use-is-breakpoint";
+import { useIsBreakpoint } from "@layout/hook/use-is-breakpoint";
 // --- Hooks ---
-import { useTiptapEditor } from "@/src/shared/hooks/use-tiptap-editor";
+import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 // --- Lib ---
 import {
   isExtensionAvailable,

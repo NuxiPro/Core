@@ -59,7 +59,16 @@ export type SentryLike = {
   captureMessage: (msg: string, ctx?: unknown) => void;
 };
 
-export function createLogger(context: string, _sentry?: SentryLike) {
+type LogMeta = {
+  context?: string;
+  extra?: Record<string, unknown>;
+};
+
+function fullContext(base: string, subContext?: string): string {
+  return subContext ? `${base}/${subContext}` : base;
+}
+
+export function createLogger(context: string, sentry?: SentryLike) {
   return {
     // info/debug stay silent in prod (deliberate); warn/alert/error always ship.
     debug(msg: string, extra?: unknown): void {
@@ -74,12 +83,25 @@ export function createLogger(context: string, _sentry?: SentryLike) {
     alert(msg: string, extra?: unknown): void {
       print("alert", context, msg, extra);
     },
-    error(msg: string, firstDetail?: unknown, secondDetail?: unknown): void {
-      const a = detail(firstDetail);
-      const b = detail(secondDetail);
-      const merged =
-        secondDetail === undefined ? a : a !== null && typeof a === "object" && b !== null && typeof b === "object" ? { ...(a as object), ...(b as object) } : { error: a, ...(b as object) };
-      print("error", context, msg, merged);
+    error(msg: string, firstDetail?: unknown, meta?: LogMeta): void {
+      const error = firstDetail instanceof Error ? firstDetail : undefined;
+      const subContext = meta?.context;
+      const sentryContext = fullContext(context, subContext);
+      const extra = {
+        context: sentryContext,
+        ...(error ? { msg } : { detail: firstDetail }),
+        ...(meta?.extra ?? {}),
+      };
+
+      print("error", context, msg, error ?? { ...extra });
+
+      if (sentry) {
+        if (error) {
+          sentry.captureException(error, { extra: { context: sentryContext, msg } });
+        } else {
+          sentry.captureMessage(msg, { level: "error", extra });
+        }
+      }
     },
   };
 }

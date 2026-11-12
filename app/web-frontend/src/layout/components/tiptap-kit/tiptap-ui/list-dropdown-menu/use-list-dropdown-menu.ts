@@ -14,7 +14,7 @@ import {
 import type { Editor } from "@tiptap/react";
 import { useEffect, useMemo, useState } from "react";
 // --- Hooks ---
-import { useTiptapEditor } from "@/src/shared/hooks/use-tiptap-editor";
+import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 // --- Lib ---
 import { isNodeInSchema } from "@/src/shared/lib/tiptap-utils";
 

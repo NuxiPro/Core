@@ -40,9 +40,9 @@ export async function handleResponse<T>(
   if (!response.ok) {
     const message = (body as ApiErrorResponse | null)?.message || errorMessage;
 
-    log.error(message, {
+    log.error(message, undefined, {
       ...(context && { context }),
-      status: response.status,
+      extra: { status: response.status },
     });
 
     throw new Error(message);
@@ -58,9 +58,9 @@ export async function handleResponse<T>(
     try {
       return schema.parse(body);
     } catch {
-      log.error("Invalid response shape", {
+      log.error("Invalid response shape", undefined, {
         ...(context && { context }),
-        status: response.status,
+        extra: { status: response.status },
       });
       throw new Error(errorMessage);
     }

@@ -3,7 +3,7 @@ import { LinkIcon } from "@layout/components/tiptap-kit/tiptap-icons/link-icon";
 import type { Editor } from "@tiptap/react";
 import { useCallback, useEffect, useState } from "react";
 // --- Hooks ---
-import { useTiptapEditor } from "@/src/shared/hooks/use-tiptap-editor";
+import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 
 // --- Lib ---
 import {

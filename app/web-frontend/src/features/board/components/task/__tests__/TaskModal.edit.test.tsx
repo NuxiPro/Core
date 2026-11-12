@@ -76,7 +76,7 @@ describe("TaskModal - mode édition", () => {
     );
 
     expect(
-      screen.getByRole("button", { name: /task\.close/i }),
+      screen.getByRole("button", { name: /close/i }),
     ).toBeInTheDocument();
   });
 
@@ -157,7 +157,7 @@ describe("TaskModal - mode édition", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /task\.close/i }));
+    fireEvent.click(screen.getByRole("button", { name: /close/i }));
 
     await waitFor(() => {
       expect(onClose).toHaveBeenCalledTimes(1);

@@ -14,7 +14,7 @@ import type { ButtonProps } from "@layout/components/tiptap-kit/tiptap-ui-primit
 import { Button } from "@layout/components/tiptap-kit/tiptap-ui-primitive/button";
 import { forwardRef, useCallback } from "react";
 // --- Hooks ---
-import { useTiptapEditor } from "@/src/shared/hooks/use-tiptap-editor";
+import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 // --- Lib ---
 import { parseShortcutKeys } from "@/src/shared/lib/tiptap-utils";
 

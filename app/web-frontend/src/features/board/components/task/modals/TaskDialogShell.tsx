@@ -34,6 +34,7 @@ export function TaskDialogShell({
           className,
         )}
         overlayClassName="bg-[rgba(17,19,24,0.16)] dark:bg-[rgba(0,0,0,0.48)] backdrop-blur-[2px]"
+        showCloseButton={false}
         onPointerDownOutside={preventOutside}
       >
         <div className="flex items-center justify-between px-5 pt-4 shrink-0">

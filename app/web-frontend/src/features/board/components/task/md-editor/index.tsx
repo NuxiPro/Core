@@ -45,7 +45,7 @@ import {
   ToolbarSeparator,
 } from "@layout/components/tiptap-kit/tiptap-ui-primitive/toolbar";
 
-import { useIsBreakpoint } from "@/src/shared/hooks/use-is-breakpoint";
+import { useIsBreakpoint } from "@layout/hook/use-is-breakpoint";
 
 import "./notion-editor.css";
 
@@ -147,7 +147,7 @@ export default function MarkdownEditor({
   height = 160,
   editorRef,
 }: MarkdownEditorProps) {
-  const isMobile = useIsBreakpoint();
+  const isMobile = useIsBreakpoint("max", 768);
   const [mobileView, setMobileView] = useState<"main" | "highlighter" | "link">(
     "main",
   );

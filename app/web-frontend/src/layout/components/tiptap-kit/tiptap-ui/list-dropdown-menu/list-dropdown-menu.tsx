@@ -19,7 +19,7 @@ import {
 import type { Editor } from "@tiptap/react";
 import { type ForwardedRef, forwardRef, useCallback, useState } from "react";
 // --- Hooks ---
-import { useTiptapEditor } from "@/src/shared/hooks/use-tiptap-editor";
+import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 
 export interface ListDropdownMenuProps extends Omit<ButtonProps, "type"> {
   /**

@@ -27,8 +27,8 @@ import { Separator } from "@layout/components/tiptap-kit/tiptap-ui-primitive/sep
 import type { Editor } from "@tiptap/react";
 import { forwardRef, useCallback, useEffect, useState } from "react";
 // --- Hooks ---
-import { useIsBreakpoint } from "@/src/shared/hooks/use-is-breakpoint";
-import { useTiptapEditor } from "@/src/shared/hooks/use-tiptap-editor";
+import { useIsBreakpoint } from "@layout/hook/use-is-breakpoint";
+import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 
 import "./link-popover.scss";
 
