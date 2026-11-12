@@ -7,6 +7,7 @@ import { createLogger } from "@packages/shared/utils/logger";
 
 const log = createLogger("i18n");
 
+export const SUPPORTED_LANGUAGES = ["en", "fr"] as const;
 // Diagnostic : permet d'identifier une langue détectée sans ressource,
 // une clé absente ou un fallback vers l'anglais.
 i18n
@@ -39,9 +40,11 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    supportedLngs: ["en", "fr"],
+    supportedLngs: [...SUPPORTED_LANGUAGES],
     fallbackLng: "en",
     interpolation: { escapeValue: false },
+    load: "languageOnly",
+    nonExplicitSupportedLngs: true,
     resources: {
       en: { translation: en },
       fr: { translation: fr },

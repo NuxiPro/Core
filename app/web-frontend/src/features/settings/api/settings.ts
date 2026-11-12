@@ -2,6 +2,10 @@ import { z } from "zod";
 import { handleResponse } from "@/src/shared/api/handleResponse";
 import { client } from "@/src/shared/lib/client";
 
+/** Langues supportées — miroir de `GetSetting` backend. */
+export const LANGUAGES = ["fr", "en"] as const;
+export type Language = (typeof LANGUAGES)[number];
+
 /**
  * Réglages utilisateur — miroir de `GetSetting` (setting.shemas.ts backend).
  * Type explicite (pas de dérivation depuis getSettings : circularité TS).
@@ -9,10 +13,10 @@ import { client } from "@/src/shared/lib/client";
 export type UserSettings = {
   theme: "light" | "dark" | "system";
   emailNotifications: boolean;
-  language: "fr" | "en";
+  language: Language;
 };
 
-/** Défauts = colonnes default du backend (`user_setting`). */
+/** Défauts de dernier recours si le serveur est indisponible. Le serveur reste prioritaire via useSyncLanguage. */
 const DEFAULT_SETTINGS: UserSettings = {
   theme: "system",
   emailNotifications: false,
@@ -45,10 +49,6 @@ export const patchSettings = async (patch: UserSettingsPatch): Promise<null> => 
     "setting/patch",
   );
 };
-
-/** Langues supportées — miroir de `GetSetting` backend (setting.shemas.ts). */
-export const LANGUAGES = ["fr", "en"] as const;
-export type Language = (typeof LANGUAGES)[number];
 
 /** Garde de type pour restreindre une chaîne non typée (DOM, i18n) à `Language`. */
 export const isLanguage = (v: string): v is Language =>

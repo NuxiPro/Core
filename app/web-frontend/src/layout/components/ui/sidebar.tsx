@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { motion, useReducedMotion } from "framer-motion";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { useIsMobile } from "@/src/shared/hooks/use-mobile";
+import { useIsMobile } from "@/src/layout/hook/use-mobile";
 import { cn } from "@/src/shared/utils/utils";
 
 import {

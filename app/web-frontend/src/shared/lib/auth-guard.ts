@@ -4,6 +4,7 @@ import { authClient } from "./client";
 type Session = typeof authClient.$Infer.Session;
 let redirecting = false;
 
+// Prevent redirect loops on auth error: clear cache and redirect to login
 export function handleAuthError() {
   if (redirecting) return;
   redirecting = true;
@@ -11,6 +12,7 @@ export function handleAuthError() {
   window.location.href = "/login";
 }
 
+// Return cached session immediately, or wait for the pending state to resolve
 export async function resolveSession(): Promise<Session["session"] | null> {
   const cached = authClient.useSession.get();
   if (!cached.isPending) return cached.data?.session ?? null;
@@ -24,6 +26,7 @@ export async function resolveSession(): Promise<Session["session"] | null> {
   });
 }
 
+// Wait until session satisfies the check condition, or reject on timeout
 export function waitForSession(
   check: (s: Session | null) => boolean,
   timeoutMs = 5000,

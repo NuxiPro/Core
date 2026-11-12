@@ -15,15 +15,14 @@
     "tagline": "Sovereignty and simplicity."
   },
   "onboarding": {
-    "welcomeTitle": "Welcome to NuxiPro",
-    "welcomeDescription": "The minimalist alternative that helps you every day",
-    "start": "Get started",
-    "workspaceTitle": "Create your workspace",
-    "workspaceDescription": "One workspace, one goal. You can add more later.",
-    "workspacePlaceholder": "E.g. My team, Marketing Q3...",
+    "workspaceTitle": "Name your space",
+    "workspaceDescription": "Your HQ to centralize all your solo projects simply. You can add more anytime.",
+    "workspacePlaceholder": "e.g., Growth, Q3 Refactor, Mobile...",
     "creating": "Creating...",
-    "creatingWorkspace": "Creating your workspace {{name}}...",
-    "welcomeAboard": "Welcome aboard."
+    "creatingWorkspace": "Creating « {{name}} »...",
+    "workspaceCreate": "Create my space",
+    "workspaceCreating": "Creating your personal space...",
+    "welcomeAboard": "Welcome to {{name}}."
   },
   "auth": {
     "continueWithGoogle": "Continue with Google",
@@ -207,7 +206,10 @@
     "descriptionPlaceholder": "Goals, milestones...",
     "creating": "Creating...",
     "create": "Create",
-    "noProjects": "No projects"
+    "noProjects": "No projects",
+    "emptyProjectsTitle": "Start by creating your first project",
+    "emptyProjectsDescription": "Organize your tasks and keep a clear view of your projects in a dedicated workspace.",
+    "createFirstProject": "Create my first project"
   },
   "errors": {
     "unknown": "unknown",

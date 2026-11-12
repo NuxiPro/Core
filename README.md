@@ -10,6 +10,10 @@
 
 ---
 
+> **I vibe-coded the frontend because design and UX aren't really my area, but I still like beautiful, well-designed things, and I keep total control over the infrastructure and servers.**
+
+---
+
 ## Why I Built NuxiPro:
 
 NuxiPro is built to last over time without becoming complicated and visually overloaded.

@@ -1,8 +1,8 @@
 import { Separator } from "@layout/components/tiptap-kit/tiptap-ui-primitive/separator";
 import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import "@layout/components/tiptap-kit/tiptap-ui-primitive/toolbar/toolbar.scss";
-import { useComposedRef } from "@/src/shared/hooks/use-composed-ref";
-import { useMenuNavigation } from "@/src/shared/hooks/use-menu-navigation";
+import { useComposedRef } from "@/src/layout/hook/use-composed-ref";
+import { useMenuNavigation } from "@/src/layout/hook/use-menu-navigation";
 import { cn } from "@/src/shared/lib/tiptap-utils";
 
 type BaseProps = React.HTMLAttributes<HTMLDivElement>;

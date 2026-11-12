@@ -7,7 +7,7 @@ import {
   magicLinkClient,
 } from "better-auth/client/plugins";
 import { hc } from "hono/client";
-import i18n from "@/src/features/i18n";
+import i18n, { SUPPORTED_LANGUAGES } from "@/src/features/i18n";
 import { reportRateLimited } from "@/src/layout/components/animation/rate-limit-policy";
 import { handleAuthError } from "./auth-guard";
 
@@ -16,8 +16,22 @@ const API_URL = import.meta.env.BACKEND_API_URL as string;
 const AUTH_URL = import.meta.env.BACKEND_AUTH_URL as string;
 
 // Retourne uniquement une langue supportée par l'API.
-const getActiveLanguage = (): "fr" | "en" =>
-  i18n.language?.startsWith("fr") ? "fr" : "en";
+export function getActiveLanguage(): typeof SUPPORTED_LANGUAGES[number] {
+  const current = i18n.language;
+  if (!current) {
+      log.warn("No language detected, falling back to 'en'");
+      return "en";
+    }
+
+    const matched = SUPPORTED_LANGUAGES.find((l) => current === l || current.startsWith(`${l}-`));
+
+    if (!matched) {
+      log.warn(`Unsupported language '${current}', falling back to 'en'`);
+      return "en";
+    }
+
+  return matched;
+}
 
 // Affiche les URLs externes en développement pour faciliter le diagnostic.
 function logExternalUrls(): void {
@@ -28,7 +42,6 @@ function logExternalUrls(): void {
     ["Auth", AUTH_URL],
   ] as const) {
     if (!url) continue;
-
     try {
       const parsedUrl = new URL(url);
       const isExternal =

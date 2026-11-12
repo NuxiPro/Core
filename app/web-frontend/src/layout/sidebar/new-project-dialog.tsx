@@ -13,8 +13,6 @@ import {
   DialogTrigger,
 } from "@/src/layout/components/ui/dialog";
 
-// slug stocké en DB utilisé directement (plus de projectSlug recalculé)
-
 type NewProjectDialogProps = {
   onCreated?: (projectId: string) => void;
   isOpenByDefault?: boolean;
@@ -195,7 +193,7 @@ export function NewProjectDialog({
                 placeholder={t("sidebar.projectNamePlaceholder")}
                 maxLength={30}
                 disabled={isSubmitting}
-                className="w-full h-10 px-3 bg-surface-root border border-border-subtle rounded-lg text-[14px] text-text-primary placeholder:text-text-muted-hard focus:outline-none focus:ring-1 focus:ring-ring focus:border-ring transition-colors disabled:opacity-50"
+                className="w-full h-10 px-3 bg-surface-root border border-border-subtle rounded-lg text-[14px] text-text-primary placeholder:text-text-muted-hard focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors disabled:opacity-50"
               />
             </div>
 
@@ -231,7 +229,7 @@ export function NewProjectDialog({
                   maxLength={200}
                   rows={3}
                   disabled={isSubmitting}
-                  className="w-full px-3 py-2.5 bg-surface-root border border-border-subtle rounded-lg text-[14px] text-text-primary placeholder:text-text-muted-hard focus:outline-none focus:ring-1 focus:ring-ring focus:border-ring transition-colors resize-none disabled:opacity-50"
+                  className="w-full px-3 py-2.5 bg-surface-root border border-border-subtle rounded-lg text-[14px] text-text-primary placeholder:text-text-muted-hard focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors resize-none disabled:opacity-50"
                 />
               </div>
             )}
