@@ -1,6 +1,3 @@
-import { mergeProps } from "@base-ui/react/merge-props";
-import { useRender } from "@base-ui/react/use-render";
-import { Separator } from "@layout/components/tiptap-kit/tiptap-ui-primitive/separator";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/src/shared/lib/tiptap-utils";
 import "./button-group.scss";

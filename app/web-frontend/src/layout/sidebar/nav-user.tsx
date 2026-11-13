@@ -2,7 +2,6 @@ import { useNavigate } from "@tanstack/react-router";
 import {
   CreditCard,
   LogOut,
-  Monitor,
   Moon,
   Settings,
   Sparkles,
@@ -72,7 +71,10 @@ export function NavUser({
           >
             <div className="relative shrink-0">
               <Avatar className="h-9 w-9 rounded-full">
-                <AvatarImage src={user.avatar} alt={user.name ?? user.email ?? ""} />
+                <AvatarImage
+                  src={user.avatar}
+                  alt={user.name ?? user.email ?? ""}
+                />
                 <AvatarFallback className="rounded-full bg-secondary">
                   <UserIcon className="size-8 text-sidebar-foreground" />
                 </AvatarFallback>
@@ -108,7 +110,10 @@ export function NavUser({
         >
           <div className="flex items-center gap-3 px-3 py-2.5">
             <Avatar className="h-10 w-10 rounded-full shrink-0">
-              <AvatarImage src={user.avatar} alt={user.name ?? user.email ?? ""} />
+              <AvatarImage
+                src={user.avatar}
+                alt={user.name ?? user.email ?? ""}
+              />
               <AvatarFallback className="rounded-full bg-secondary">
                 <UserIcon className="size-7 text-sidebar-foreground" />
               </AvatarFallback>

@@ -14,9 +14,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@layout/components/tiptap-kit/tiptap-ui-primitive/dropdown-menu";
-import { forwardRef, useCallback, useState } from "react";
 // --- Hooks ---
 import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
+import { forwardRef, useCallback, useState } from "react";
 
 export interface HeadingDropdownMenuProps
   extends Omit<ButtonProps, "type">,

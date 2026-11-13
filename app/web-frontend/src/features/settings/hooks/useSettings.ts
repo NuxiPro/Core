@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/src/features/i18n";
+import type {
+  Language,
+  UserSettingsPatch,
+} from "@/src/features/settings/api/settings";
 import {
   useGeneralSettings,
   useUpdateSettings,
@@ -8,7 +12,6 @@ import {
 import { useAsyncHandler } from "@/src/shared/hooks/useAsyncHandler";
 import { useAuth } from "@/src/shared/hooks/useAuth";
 import { authClient } from "@/src/shared/lib/client";
-import type { Language, UserSettingsPatch } from "@/src/features/settings/api/settings";
 
 // TEMP (08 §3.2) — la persistance server arrivée avec la route PATCH; en attendant,
 // le Save applique les changements localement et le dit honnêtement.

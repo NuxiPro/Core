@@ -1,8 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useSyncExternalStore,
-} from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { isTheme, type Theme } from "@/src/features/settings/api/settings";
 import { useUpdateSettings } from "@/src/features/settings/hooks/useSettingsApi";
 

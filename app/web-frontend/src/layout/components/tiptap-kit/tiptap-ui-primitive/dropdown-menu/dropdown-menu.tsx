@@ -1,4 +1,3 @@
-import { CheckIcon } from "@layout/components/tiptap-kit/tiptap-icons/check-icon";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/src/shared/lib/tiptap-utils";
 
@@ -9,17 +8,6 @@ function DropdownMenu({
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
   return (
     <DropdownMenuPrimitive.Root data-slot="tiptap-dropdown-menu" {...props} />
-  );
-}
-
-function DropdownMenuPortal({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Portal>) {
-  return (
-    <DropdownMenuPrimitive.Portal
-      data-slot="tiptap-dropdown-menu-portal"
-      {...props}
-    />
   );
 }
 
@@ -84,45 +72,6 @@ function DropdownMenuItem({
       className={cn("tiptap-dropdown-menu-item", className)}
       {...props}
     />
-  );
-}
-
-function DropdownMenuRadioGroup({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.RadioGroup>) {
-  return (
-    <DropdownMenuPrimitive.RadioGroup
-      data-slot="tiptap-dropdown-menu-radio-group"
-      {...props}
-    />
-  );
-}
-
-function DropdownMenuRadioItem({
-  className,
-  children,
-  inset,
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.RadioItem> & {
-  inset?: boolean;
-}) {
-  return (
-    <DropdownMenuPrimitive.RadioItem
-      data-slot="tiptap-dropdown-menu-radio-item"
-      data-inset={inset}
-      className={cn("tiptap-dropdown-menu-radio-item", className)}
-      {...props}
-    >
-      <span
-        className="tiptap-dropdown-menu-item-indicator"
-        data-slot="tiptap-dropdown-menu-radio-item-indicator"
-      >
-        <DropdownMenuPrimitive.ItemIndicator>
-          <CheckIcon />
-        </DropdownMenuPrimitive.ItemIndicator>
-      </span>
-      {children}
-    </DropdownMenuPrimitive.RadioItem>
   );
 }
 

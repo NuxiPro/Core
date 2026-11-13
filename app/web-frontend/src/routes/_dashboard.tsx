@@ -1,7 +1,7 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
 import { createLogger } from "@packages/shared/utils/logger";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useSyncLanguage } from "@/src/shared/hooks/useSyncLanguage";
 import { resolveSession } from "@/src/shared/lib/auth-guard";
 import { AppBreadcrumb } from "../layout/breadcrumb/app-breadcrumb";

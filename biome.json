@@ -1,18 +1,31 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.5/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.6/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "files": {
     "ignoreUnknown": true,
     "includes": [
       "app/web-frontend/**/*.{ts,tsx,js,jsx,css,html}",
       "app/backend/**/*.ts",
-      "app/lauding-page/**/*.{ts,tsx,js,jsx,css,html}",
-      "!app/web-frontend/routeTree.gen.ts",
-      "!app/lauding-page/**/routeTree.gen.ts",
-      "!app/lauding-page/dist",
-      "!app/lauding-page/node_modules",
-      "!app/web-frontend/dist",
-      "!app/web-frontend/node_modules"
+      "!**/node_modules/**",
+      "!**/dist/**",
+      "!**/build/**",
+      "!**/coverage/**",
+      "!**/.vite/**",
+      "!**/.turbo/**",
+      "!**/*.gen.ts",
+      "!**/routeTree.gen.ts"
     ]
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   },
   "formatter": {
     "indentStyle": "space",
@@ -43,21 +56,23 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "complexity": {
         "noExcessiveCognitiveComplexity": {
-          "level": "error",
-          "options": { "maxAllowedComplexity": 15 }
+          "level": "warn",
+          "options": { "maxAllowedComplexity": 20 }
         },
         "noForEach": "off"
       },
       "correctness": {
         "noUnusedVariables": "error",
+        "noUnusedImports": "error",
         "useExhaustiveDependencies": "warn",
         "useHookAtTopLevel": "error"
       },
       "style": {
         "useConst": "error",
+        "useImportType": "error",
         "useTemplate": "warn",
         "useSelfClosingElements": "warn"
       },
@@ -65,22 +80,19 @@
         "noConsole": "warn",
         "noDebugger": "error",
         "noArrayIndexKey": "warn",
-        "noDoubleEquals": "error"
+        "noDoubleEquals": "error",
+        "noExplicitAny": "warn"
       }
     }
   },
   "overrides": [
     {
       "includes": [
-        "app/web-frontend/src/components/tiptap-ui/**",
-        "app/web-frontend/src/components/tiptap-ui-primitive/**",
-        "app/web-frontend/src/components/tiptap-node/**",
-        "app/web-frontend/src/components/tiptap-icons/**",
-        "app/web-frontend/src/hooks/**",
-        "app/web-frontend/src/lib/tiptap-utils.ts"
+        "app/web-frontend/src/layout/components/tiptap-kit/**",
+        "app/web-frontend/src/shared/lib/tiptap-utils.ts"
       ],
       "linter": {
-        "rules": { "recommended": false }
+        "rules": { "preset": "none" }
       }
     },
     {
@@ -91,11 +103,6 @@
           "style": { "noDescendingSpecificity": "off" }
         }
       }
-    },
-    {
-      "includes": ["**/kanban-demo.html"],
-      "linter": { "enabled": false },
-      "formatter": { "enabled": false }
     }
   ]
 }

@@ -8,9 +8,9 @@ import { Badge } from "@layout/components/tiptap-kit/tiptap-ui-primitive/badge";
 // --- UI Primitives ---
 import type { ButtonProps } from "@layout/components/tiptap-kit/tiptap-ui-primitive/button";
 import { Button } from "@layout/components/tiptap-kit/tiptap-ui-primitive/button";
-import { forwardRef, useCallback, useMemo } from "react";
 // --- Hooks ---
 import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
+import { forwardRef, useCallback, useMemo } from "react";
 // --- Lib ---
 import { parseShortcutKeys } from "@/src/shared/lib/tiptap-utils";
 

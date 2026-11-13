@@ -1,16 +1,8 @@
 # NuxiPro
 
-> ⚠️ **Warning:** This version of NuxiPro is still under development and is not ready for use with sensitive data. If you use it with real data despite this warning, you will be responsible for any damage and data loss.
-
----
-
 > **⚠️ Read-Only Mirror**
 > This repository is an automated public mirror of **NuxiPro Cloud**. 
 > The official source of truth, active development, issues, and merge requests are hosted on [Codeberg](https://codeberg.org/NuxiPro/Core). Contributions and pull requests on GitHub are not monitored.
-
----
-
-> **I vibe-coded the frontend because design and UX aren't really my area, but I still like beautiful, well-designed things, and I keep total control over the infrastructure and servers.**
 
 ---
 
@@ -42,6 +34,22 @@ Core/
 ├── CLA.md                        ← Contributor License Agreement
 └── CONTRIBUTING.md               ← contribution guidelines
 ```
+
+---
+
+## Development
+
+The frontend was built using AI ("vibe coding"). This deliberate choice allows me to avoid getting bogged down in client-side issues and focus entirely on the infrastructure and backend server.
+
+### Security & Privacy
+
+* **Frontend:** While UI design and visual integration were delegated to AI, strict attention was paid to security to prevent any immediate vulnerabilities.
+* **Backend and Infrastructure:** Security is built in from the ground up (*Security by Design*) to protect future users.
+* **Sovereign Hosting:** As the primary daily user of NuxiPro myself, privacy is a top priority. All data is hosted in Finland in a sovereign, privacy-respecting environment.
+
+> **Reporting a Security Vulnerability**  
+> **Please do not open a public issue for security-related matters.**  
+> If you discover a vulnerability or have any sensitive inquiries, please contact me directly via email at: **security@nuxipro.com**
 
 ---
 
@@ -110,7 +118,14 @@ For more details, see the [LICENSE](./LICENSE) file.
 
 ---
 
-## Contributing
+## Contributing and Feedback
+
+Your feedback is always welcome! Feel free to open an **issue** to:
+* Suggest new features or improvements
+* Share general feedback
+* Report a bug (non-security critical)
+
+I will take the time to read and reply to every submission.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and [CLA.md](CLA.md).
 

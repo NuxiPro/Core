@@ -1,4 +1,3 @@
-import { LazyTipTapEditorWithSuspense } from "../md-editor/lazy-tiptap-editor";
 import { COLUMNS } from "@packages/shared/config";
 import type { TaskModalEditProps } from "@packages/shared/types/components";
 import type { PriorityLabel } from "@packages/shared/types/task/priority-level";
@@ -13,6 +12,7 @@ import { CONTENT_MAX, TITLE_MAX } from "@/src/shared/lib/constants";
 import { sanitizeHtml } from "@/src/shared/utils/sanitize";
 import { PrioritySelect } from "../card/priority";
 import { useTaskForm } from "../hooks/useTaskForm";
+import { LazyTipTapEditorWithSuspense } from "../md-editor/lazy-tiptap-editor";
 import { TaskDialogShell } from "./TaskDialogShell";
 
 // Due dates are day-precision: noon UTC survives ±12h timezones without day-shift.

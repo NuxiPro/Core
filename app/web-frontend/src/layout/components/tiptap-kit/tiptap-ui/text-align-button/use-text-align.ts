@@ -3,10 +3,10 @@ import { AlignCenterIcon } from "@layout/components/tiptap-kit/tiptap-icons/alig
 import { AlignJustifyIcon } from "@layout/components/tiptap-kit/tiptap-icons/align-justify-icon";
 import { AlignLeftIcon } from "@layout/components/tiptap-kit/tiptap-icons/align-left-icon";
 import { AlignRightIcon } from "@layout/components/tiptap-kit/tiptap-icons/align-right-icon";
-import type { ChainedCommands, Editor } from "@tiptap/react";
-import { useCallback, useEffect, useState } from "react";
 // --- Hooks ---
 import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
+import type { ChainedCommands, Editor } from "@tiptap/react";
+import { useCallback, useEffect, useState } from "react";
 // --- Lib ---
 import {
   isExtensionAvailable,
@@ -62,10 +62,7 @@ const textAlignLabels: Record<TextAlign, string> = {
 /**
  * Checks if text alignment can be performed in the current editor state
  */
-function canSetTextAlign(
-  editor: Editor | null,
-  align: TextAlign,
-): boolean {
+function canSetTextAlign(editor: Editor | null, align: TextAlign): boolean {
   if (!editor || editor.isDestroyed || !editor.isEditable) return false;
   if (
     !isExtensionAvailable(editor, "textAlign") ||
@@ -91,10 +88,7 @@ function hasSetTextAlign(
 /**
  * Checks if the text alignment is currently active
  */
-function isTextAlignActive(
-  editor: Editor | null,
-  align: TextAlign,
-): boolean {
+function isTextAlignActive(editor: Editor | null, align: TextAlign): boolean {
   if (!editor || !editor.isEditable) return false;
   return editor.isActive({ textAlign: align });
 }

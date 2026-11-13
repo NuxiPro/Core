@@ -1,17 +1,7 @@
 import type { Node as PMNode } from "@tiptap/pm/model";
 import type { Transaction } from "@tiptap/pm/state";
-import {
-  AllSelection,
-  NodeSelection,
-  TextSelection,
-  type Selection,
-} from "@tiptap/pm/state";
-import { CellSelection, cellAround } from "@tiptap/pm/tables";
-import {
-  type Editor,
-  findParentNodeClosestToPos,
-  type NodeWithPos,
-} from "@tiptap/react";
+import { AllSelection, NodeSelection, TextSelection } from "@tiptap/pm/state";
+import type { Editor, NodeWithPos } from "@tiptap/react";
 import { type ClassValue, clsx } from "clsx";
 
 const MAC_SYMBOLS: Record<string, string> = {
@@ -353,10 +343,7 @@ const ATTR_WHITESPACE =
   // eslint-disable-next-line no-control-regex
   /[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g;
 
-function isAllowedUri(
-  uri: string | undefined,
-  protocols?: ProtocolConfig,
-) {
+function isAllowedUri(uri: string | undefined, protocols?: ProtocolConfig) {
   const allowedProtocols: string[] = [
     "http",
     "https",

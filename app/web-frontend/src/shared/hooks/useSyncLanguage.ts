@@ -1,9 +1,9 @@
+import { createLogger } from "@packages/shared/utils/logger";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { createLogger } from "@packages/shared/utils/logger";
 import i18n from "@/src/features/i18n";
-import { settingsQueryBase } from "@/src/features/settings/hooks/useSettingsApi";
 import type { UserSettings } from "@/src/features/settings/api";
+import { settingsQueryBase } from "@/src/features/settings/hooks/useSettingsApi";
 
 /**
  * Synchronise la langue de l'app avec les réglages DB.
@@ -14,7 +14,11 @@ import type { UserSettings } from "@/src/features/settings/api";
 const log = createLogger("i18n/settings");
 
 export function useSyncLanguage() {
-  const { data: language, error, isPending } = useQuery({
+  const {
+    data: language,
+    error,
+    isPending,
+  } = useQuery({
     ...settingsQueryBase,
     select: (s: UserSettings) => s.language,
   });

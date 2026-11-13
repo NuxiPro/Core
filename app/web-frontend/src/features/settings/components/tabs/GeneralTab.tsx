@@ -1,6 +1,9 @@
 import { useTranslation } from "react-i18next";
+import {
+  isLanguage,
+  type Language,
+} from "@/src/features/settings/api/settings";
 import { useTheme } from "@/src/shared/hooks/useTheme";
-import { isLanguage, type Language } from "@/src/features/settings/api/settings";
 
 interface GeneralTabProps {
   language: string;
@@ -32,7 +35,10 @@ export function GeneralTab({
         {/* Langue */}
         <div className="flex items-center justify-between py-3 border-b border-[var(--border)]/40 first:pt-0 last:pb-0">
           <div className="space-y-0.5 pr-4">
-            <h4 className="text-sm font-medium text-[var(--text-primary)]" id="settings-language-label">
+            <h4
+              className="text-sm font-medium text-[var(--text-primary)]"
+              id="settings-language-label"
+            >
               {t("settings.general.language")}
             </h4>
             <p className="text-xs text-[var(--text-label)]">
@@ -42,7 +48,9 @@ export function GeneralTab({
           <select
             aria-labelledby="settings-language-label"
             value={language}
-            onChange={(e) => isLanguage(e.target.value) && setLanguage(e.target.value)}
+            onChange={(e) =>
+              isLanguage(e.target.value) && setLanguage(e.target.value)
+            }
             className="shrink-0 w-48 bg-[var(--dialog-input-bg)] border border-[var(--dialog-input-border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 hover:border-[var(--border-subtle)] transition-colors"
           >
             <option value="fr">{t("common.french")}</option>

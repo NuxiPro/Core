@@ -10,10 +10,10 @@ import {
   type Level,
   shouldShowButton,
 } from "@layout/components/tiptap-kit/tiptap-ui/heading-button";
-import type { Editor } from "@tiptap/react";
-import { useEffect, useState } from "react";
 // --- Hooks ---
 import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
+import type { Editor } from "@tiptap/react";
+import { useEffect, useState } from "react";
 
 /**
  * Configuration for the heading dropdown menu functionality

@@ -11,7 +11,10 @@ export function UserIcon({ className }: { className?: string }) {
       strokeLinejoin="round"
       strokeLinecap="round"
       aria-hidden="true"
-      className={cn("h-32 w-auto shrink-0 text-black dark:text-white", className)}
+      className={cn(
+        "h-32 w-auto shrink-0 text-black dark:text-white",
+        className,
+      )}
     >
       <path
         fillRule="evenodd"

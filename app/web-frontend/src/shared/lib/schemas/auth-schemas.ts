@@ -19,5 +19,3 @@ export const LoginSchema = z.object({
 export type LoginFields = z.infer<typeof LoginSchema>;
 
 export const RegisterSchema = LoginSchema;
-
-export type RegisterFields = z.infer<typeof RegisterSchema>;

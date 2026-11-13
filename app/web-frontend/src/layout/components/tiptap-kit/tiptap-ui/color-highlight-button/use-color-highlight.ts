@@ -4,12 +4,12 @@
 import { getNodeBackgroundAttributeName } from "@layout/components/tiptap-kit/tiptap-extension/node-background-extension";
 // --- Icons ---
 import { HighlighterIcon } from "@layout/components/tiptap-kit/tiptap-icons/highlighter-icon";
-import type { Editor } from "@tiptap/react";
-import { useCallback, useEffect, useState } from "react";
-import { useHotkeys } from "react-hotkeys-hook";
 import { useIsBreakpoint } from "@layout/hook/use-is-breakpoint";
 // --- Hooks ---
 import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
+import type { Editor } from "@tiptap/react";
+import { useCallback, useEffect, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 // --- Lib ---
 import {
   isExtensionAvailable,
@@ -120,15 +120,17 @@ export interface UseColorHighlightConfig {
   /**
    * Called when the highlight is applied.
    */
-  onApplied?: (({
-    color,
-    label,
-    mode,
-  }: {
-    color: string;
-    label: string;
-    mode: HighlightMode;
-  }) => void) | undefined;
+  onApplied?:
+    | (({
+        color,
+        label,
+        mode,
+      }: {
+        color: string;
+        label: string;
+        mode: HighlightMode;
+      }) => void)
+    | undefined;
 }
 
 export function pickHighlightColorsByValue(values: string[]) {

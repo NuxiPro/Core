@@ -26,12 +26,12 @@ import {
   PopoverTrigger,
 } from "@layout/components/tiptap-kit/tiptap-ui-primitive/popover";
 import { Separator } from "@layout/components/tiptap-kit/tiptap-ui-primitive/separator";
-import type { Editor } from "@tiptap/react";
-import { forwardRef, useMemo, useRef, useState } from "react";
 import { useIsBreakpoint } from "@layout/hook/use-is-breakpoint";
 // --- Hooks ---
 import { useMenuNavigation } from "@layout/hook/use-menu-navigation";
 import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
+import type { Editor } from "@tiptap/react";
+import { forwardRef, useMemo, useRef, useState } from "react";
 
 export interface ColorHighlightPopoverContentProps {
   /**

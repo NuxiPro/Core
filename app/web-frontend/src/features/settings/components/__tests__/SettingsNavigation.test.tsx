@@ -4,9 +4,7 @@ import { SettingsNavigation } from "../SettingsNavigation";
 
 describe("SettingsNavigation", () => {
   it("renders all available settings tabs", () => {
-    render(
-      <SettingsNavigation activeTab="general" onTabChange={vi.fn()} />,
-    );
+    render(<SettingsNavigation activeTab="general" onTabChange={vi.fn()} />);
 
     expect(screen.getByText("General")).toBeInTheDocument();
     expect(screen.getByText("Account & Security")).toBeInTheDocument();

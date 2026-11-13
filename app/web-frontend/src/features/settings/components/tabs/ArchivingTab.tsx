@@ -48,7 +48,10 @@ export function ArchivingTab() {
         {/* Délai */}
         <div className="flex items-center justify-between py-3 border-b border-[var(--border)]/40 first:pt-0 last:pb-0">
           <div className="space-y-0.5 pr-4">
-            <h4 className="text-sm font-medium text-[var(--text-primary)]" id="archive-delay-label">
+            <h4
+              className="text-sm font-medium text-[var(--text-primary)]"
+              id="archive-delay-label"
+            >
               {t("settings.archiving.delay")}
             </h4>
             <p className="text-xs text-[var(--text-label)]">

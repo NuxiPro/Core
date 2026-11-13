@@ -4,11 +4,11 @@
 import { ListIcon } from "@layout/components/tiptap-kit/tiptap-icons/list-icon";
 import { ListOrderedIcon } from "@layout/components/tiptap-kit/tiptap-icons/list-ordered-icon";
 import { ListTodoIcon } from "@layout/components/tiptap-kit/tiptap-icons/list-todo-icon";
+// --- Hooks ---
+import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 import { NodeSelection, TextSelection } from "@tiptap/pm/state";
 import type { Editor } from "@tiptap/react";
 import { useCallback, useEffect, useState } from "react";
-// --- Hooks ---
-import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 
 // --- Lib ---
 import {

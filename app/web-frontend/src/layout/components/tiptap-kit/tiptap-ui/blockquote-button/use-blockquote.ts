@@ -2,11 +2,11 @@
 
 // --- Icons ---
 import { BlockquoteIcon } from "@layout/components/tiptap-kit/tiptap-icons/blockquote-icon";
+// --- Hooks ---
+import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 import { NodeSelection, TextSelection } from "@tiptap/pm/state";
 import type { Editor } from "@tiptap/react";
 import { useCallback, useEffect, useState } from "react";
-// --- Hooks ---
-import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 
 // --- UI Utils ---
 import {

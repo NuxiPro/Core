@@ -38,14 +38,14 @@ export function WorkspaceStep({ onSubmit, isSubmitting }: WorkspaceStepProps) {
 
   return (
     <section className="min-h-full flex flex-col items-center justify-center px-6 motion-safe:animate-[fadeIn_0.35s_ease-out_forwards]">
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-[400px] w-full space-y-8"
-      >
+      <form onSubmit={handleSubmit} className="max-w-[400px] w-full space-y-8">
         {/* Header : Icône avec accrochage de lumière subtil + alignement précis */}
         <div className="space-y-4 text-center motion-safe:animate-[fadeInUp_0.45s_ease-out_0.05s_both]">
           <div className="mx-auto w-12 h-12 rounded-xl bg-surface-card border border-border-subtle shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex items-center justify-center">
-            <Briefcase className="w-5 h-5 text-text-primary" aria-hidden="true" />
+            <Briefcase
+              className="w-5 h-5 text-text-primary"
+              aria-hidden="true"
+            />
           </div>
 
           <div className="space-y-2">

@@ -24,11 +24,11 @@ import {
   PopoverTrigger,
 } from "@layout/components/tiptap-kit/tiptap-ui-primitive/popover";
 import { Separator } from "@layout/components/tiptap-kit/tiptap-ui-primitive/separator";
-import type { Editor } from "@tiptap/react";
-import { forwardRef, useCallback, useEffect, useState } from "react";
 // --- Hooks ---
 import { useIsBreakpoint } from "@layout/hook/use-is-breakpoint";
 import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
+import type { Editor } from "@tiptap/react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 
 import "./link-popover.scss";
 

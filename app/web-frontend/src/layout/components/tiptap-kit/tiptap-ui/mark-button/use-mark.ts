@@ -6,10 +6,10 @@ import { StrikeIcon } from "@layout/components/tiptap-kit/tiptap-icons/strike-ic
 import { SubscriptIcon } from "@layout/components/tiptap-kit/tiptap-icons/subscript-icon";
 import { SuperscriptIcon } from "@layout/components/tiptap-kit/tiptap-icons/superscript-icon";
 import { UnderlineIcon } from "@layout/components/tiptap-kit/tiptap-icons/underline-icon";
-import type { Editor } from "@tiptap/react";
-import { useCallback, useEffect, useState } from "react";
 // --- Hooks ---
 import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
+import type { Editor } from "@tiptap/react";
+import { useCallback, useEffect, useState } from "react";
 // --- Lib ---
 import {
   isMarkInSchema,

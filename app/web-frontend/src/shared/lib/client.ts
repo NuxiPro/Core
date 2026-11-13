@@ -16,19 +16,21 @@ const API_URL = import.meta.env.BACKEND_API_URL as string;
 const AUTH_URL = import.meta.env.BACKEND_AUTH_URL as string;
 
 // Retourne uniquement une langue supportée par l'API.
-export function getActiveLanguage(): typeof SUPPORTED_LANGUAGES[number] {
+export function getActiveLanguage(): (typeof SUPPORTED_LANGUAGES)[number] {
   const current = i18n.language;
   if (!current) {
-      log.warn("No language detected, falling back to 'en'");
-      return "en";
-    }
+    log.warn("No language detected, falling back to 'en'");
+    return "en";
+  }
 
-    const matched = SUPPORTED_LANGUAGES.find((l) => current === l || current.startsWith(`${l}-`));
+  const matched = SUPPORTED_LANGUAGES.find(
+    (l) => current === l || current.startsWith(`${l}-`),
+  );
 
-    if (!matched) {
-      log.warn(`Unsupported language '${current}', falling back to 'en'`);
-      return "en";
-    }
+  if (!matched) {
+    log.warn(`Unsupported language '${current}', falling back to 'en'`);
+    return "en";
+  }
 
   return matched;
 }

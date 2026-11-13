@@ -39,8 +39,4 @@ const CardItemGroup = forwardRef<
 });
 CardItemGroup.displayName = "CardItemGroup";
 
-export {
-  Card,
-  CardBody,
-  CardItemGroup,
-};
+export { Card, CardBody, CardItemGroup };

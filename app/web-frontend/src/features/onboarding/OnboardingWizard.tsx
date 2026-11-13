@@ -6,8 +6,8 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   createWorkspace,
   type Workspace,
@@ -83,7 +83,10 @@ export function OnboardingWizard() {
     <div className="h-full w-full bg-surface-root flex items-center justify-center">
       {/* Steps */}
       {step === "workspace" && (
-        <div key="workspace" className="w-full animate-[fadeIn_0.35s_ease-out_forwards]">
+        <div
+          key="workspace"
+          className="w-full animate-[fadeIn_0.35s_ease-out_forwards]"
+        >
           <WorkspaceStep onSubmit={handleSubmit} isSubmitting={false} />
         </div>
       )}

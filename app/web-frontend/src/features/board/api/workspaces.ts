@@ -4,6 +4,7 @@ import type {
 } from "@packages/shared/types/workspace";
 
 export type { Workspace } from "@packages/shared/types/workspace";
+
 import { handleResponse } from "@/src/shared/api/handleResponse";
 import { client } from "@/src/shared/lib/client";
 

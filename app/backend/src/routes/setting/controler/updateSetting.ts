@@ -1,6 +1,6 @@
-import { RouteHandler } from "@hono/zod-openapi";
+import type { RouteHandler } from "@hono/zod-openapi";
 import { updateSettingRoute } from "../setting.router";
-import { AppEnv } from "@backend/src/types/app-env";
+import type { AppEnv } from "@backend/src/types/app-env";
 import { userSetting } from "@backend/src/drizzle/schemas";
 import { db } from "@backend/src/drizzle/connection";
 import { eq } from "drizzle-orm";

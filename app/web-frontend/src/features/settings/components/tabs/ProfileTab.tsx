@@ -16,7 +16,12 @@ interface ProfileTabProps {
  * Onglet « Compte & Sécurité » — identité + e-mail (validation manuelle via
  * le footer sticky de la modale) + statut de sécurité (lecture seule).
  */
-export function ProfileTab({ user, isOAuth, email, setEmail }: ProfileTabProps) {
+export function ProfileTab({
+  user,
+  isOAuth,
+  email,
+  setEmail,
+}: ProfileTabProps) {
   const { t } = useTranslation();
 
   // Données serveur uniquement — aucun placeholder inventé.
@@ -45,7 +50,9 @@ export function ProfileTab({ user, isOAuth, email, setEmail }: ProfileTabProps) 
             <p className="text-sm font-medium text-[var(--text-primary)] truncate">
               {displayName}
             </p>
-            <p className="text-xs text-[var(--text-label)] truncate">{user?.email}</p>
+            <p className="text-xs text-[var(--text-label)] truncate">
+              {user?.email}
+            </p>
             <span className="inline-block text-[11px] text-[var(--text-muted-hard)] font-mono">
               {isOAuth ? "OAuth" : "Email"}
             </span>

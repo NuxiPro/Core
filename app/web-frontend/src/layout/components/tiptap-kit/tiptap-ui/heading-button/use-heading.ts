@@ -7,11 +7,11 @@ import { HeadingOneIcon } from "@layout/components/tiptap-kit/tiptap-icons/headi
 import { HeadingSixIcon } from "@layout/components/tiptap-kit/tiptap-icons/heading-six-icon";
 import { HeadingThreeIcon } from "@layout/components/tiptap-kit/tiptap-icons/heading-three-icon";
 import { HeadingTwoIcon } from "@layout/components/tiptap-kit/tiptap-icons/heading-two-icon";
+// --- Hooks ---
+import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 import { NodeSelection, TextSelection } from "@tiptap/pm/state";
 import type { Editor } from "@tiptap/react";
 import { useCallback, useEffect, useState } from "react";
-// --- Hooks ---
-import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 // --- Lib ---
 import {
   findNodePosition,
@@ -128,10 +128,7 @@ export function isHeadingActive(
 /**
  * Toggles heading in the editor
  */
-function toggleHeading(
-  editor: Editor | null,
-  level: Level | Level[],
-): boolean {
+function toggleHeading(editor: Editor | null, level: Level | Level[]): boolean {
   if (!editor || !editor.isEditable) return false;
 
   const levels = Array.isArray(level) ? level : [level];

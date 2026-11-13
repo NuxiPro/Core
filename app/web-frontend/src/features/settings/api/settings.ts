@@ -37,7 +37,9 @@ export const getSettings = async (): Promise<UserSettings> => {
 };
 
 /** PATCH /patchSettings */
-export const patchSettings = async (patch: UserSettingsPatch): Promise<null> => {
+export const patchSettings = async (
+  patch: UserSettingsPatch,
+): Promise<null> => {
   // Sanitize : ce qui part sur le réseau est strictement limité aux clés connues
   const clean = SettingsPatchSchema.parse(patch);
   const res = await client.api.v1.setting.patchSettings.$patch({ json: clean });

@@ -2,11 +2,11 @@
 
 // --- Icons ---
 import { CodeBlockIcon } from "@layout/components/tiptap-kit/tiptap-icons/code-block-icon";
+// --- Hooks ---
+import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 import { NodeSelection, TextSelection } from "@tiptap/pm/state";
 import type { Editor } from "@tiptap/react";
 import { useCallback, useEffect, useState } from "react";
-// --- Hooks ---
-import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
 // --- Lib ---
 import {
   findNodePosition,
@@ -41,10 +41,7 @@ export interface UseCodeBlockConfig {
 /**
  * Checks if code block can be toggled in the current editor state
  */
-function canToggle(
-  editor: Editor | null,
-  turnInto: boolean = true,
-): boolean {
+function canToggle(editor: Editor | null, turnInto: boolean = true): boolean {
   if (!editor || !editor.isEditable) return false;
   if (
     !isNodeInSchema("codeBlock", editor) ||

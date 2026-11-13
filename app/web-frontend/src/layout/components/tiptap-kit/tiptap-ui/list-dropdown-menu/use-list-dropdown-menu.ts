@@ -11,10 +11,10 @@ import {
   type ListType,
   listIcons,
 } from "@layout/components/tiptap-kit/tiptap-ui/list-button";
-import type { Editor } from "@tiptap/react";
-import { useEffect, useMemo, useState } from "react";
 // --- Hooks ---
 import { useTiptapEditor } from "@layout/hook/use-tiptap-editor";
+import type { Editor } from "@tiptap/react";
+import { useEffect, useMemo, useState } from "react";
 // --- Lib ---
 import { isNodeInSchema } from "@/src/shared/lib/tiptap-utils";
 

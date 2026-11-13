@@ -35,14 +35,19 @@ export async function apiRequest<T>({
   token,
   body,
 }: RequestOptions): Promise<T> {
-  const res = await fetch(`${baseUrl}${endpoint}`, {
+  const requestInit: RequestInit = {
     method,
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  };
+
+  if (body !== undefined) {
+    requestInit.body = JSON.stringify(body);
+  }
+
+  const res = await fetch(`${baseUrl}${endpoint}`, requestInit);
 
   if (!res.ok) {
     const errorText = await res.text();

@@ -96,9 +96,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 disabled={settings.isSaving}
                 className="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none"
               >
-                {settings.isSaving
-                  ? t("settings.saving")
-                  : t("settings.save")}
+                {settings.isSaving ? t("settings.saving") : t("settings.save")}
               </button>
             </div>
           )}

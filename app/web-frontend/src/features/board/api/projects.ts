@@ -4,6 +4,7 @@ import type {
 } from "@packages/shared/types/project/projects";
 
 export type { Project } from "@packages/shared/types/project/projects";
+
 import { handleResponse } from "@/src/shared/api/handleResponse";
 import { client } from "@/src/shared/lib/client";
 

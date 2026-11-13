@@ -75,9 +75,7 @@ describe("TaskModal - mode édition", () => {
       />,
     );
 
-    expect(
-      screen.getByRole("button", { name: /close/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /close/i })).toBeInTheDocument();
   });
 
   it("Cmd+Enter déclenche secureSave puis onClose", async () => {

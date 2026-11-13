@@ -54,7 +54,7 @@ export function useTiptapEditor(providedEditor?: Editor | null): {
     editor: storageEditor ?? mainEditor,
     selector(context) {
       if (!context.editor) {
-        return { editor: null, editorState: undefined, canCommand: undefined };
+        return { editor: null };
       }
 
       return {
