@@ -3,7 +3,11 @@ import { getWorkspaces } from "../api/workspaces";
 
 /* Workspaces mis en cache */
 export function useWorkspaces() {
-  const { data: workspaces = [], isLoading } = useQuery({
+  const {
+    data: workspaces = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["workspaces"],
     queryFn: getWorkspaces,
     // Workspaces rarely change — cache 10 min, keep 30 min
@@ -11,5 +15,5 @@ export function useWorkspaces() {
     gcTime: 30 * 60 * 1000,
   });
 
-  return { workspaces, isLoading };
+  return { workspaces, isLoading, isError };
 }

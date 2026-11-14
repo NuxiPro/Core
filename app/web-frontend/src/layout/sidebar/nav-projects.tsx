@@ -18,10 +18,12 @@ type Project = {
 export function NavProjects({
   projects,
   isLoading,
+  isError,
   activeProjectId,
 }: {
   projects?: Project[] | undefined;
   isLoading?: boolean | undefined;
+  isError?: boolean | undefined;
   activeProjectId?: string | undefined;
 }) {
   const { t } = useTranslation();
@@ -40,7 +42,8 @@ export function NavProjects({
             </SidebarMenuButton>
           </SidebarMenuItem>
         )}
-        {!isLoading && items.length === 0 && (
+
+        {!isLoading && !isError && items.length === 0 && (
           <SidebarMenuItem>
             <SidebarMenuButton
               disabled

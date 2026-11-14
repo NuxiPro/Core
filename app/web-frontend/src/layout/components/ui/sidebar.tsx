@@ -295,12 +295,12 @@ function SidebarTrigger({
           strokeWidth="3"
         />
         <motion.rect
-          animate={{ x: open ? 8 : 110 }}
+          animate={{ x: open ? 18 : 118 }}
           transition={iconTransition}
-          y="8"
-          width="94"
-          height="196"
-          rx="16"
+          y="18"
+          width="76"
+          height="176"
+          rx="14"
           fill="var(--border-column)"
           stroke="var(--text-label)"
           strokeWidth="3"

@@ -1,5 +1,11 @@
 import { useLocation } from "@tanstack/react-router";
-import { BuildingIcon, Check, ChevronDown, Plus } from "lucide-react";
+import {
+  BuildingIcon,
+  Check,
+  ChevronDown,
+  Plus,
+  RefreshCw,
+} from "lucide-react";
 import type { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
 import { useProjects } from "@/src/features/board/hooks/useProjects";
@@ -24,8 +30,8 @@ import { NewProjectDialog } from "./new-project-dialog";
 export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { projects, isLoading } = useProjects();
-  const { workspaces } = useWorkspaces();
+  const { projects, isLoading, isError: projectsError } = useProjects();
+  const { workspaces, isError: workspacesError } = useWorkspaces();
   const location = useLocation();
 
   // Slug depuis l'URL : /kanban/marketing-q3-a671
@@ -102,6 +108,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
             <NavProjects
               projects={projects}
               isLoading={isLoading}
+              isError={projectsError}
               activeProjectId={activeProjectId}
             />
           </div>
@@ -114,6 +121,27 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
         <div className="p-3">
           <NavUser user={userData} />
         </div>
+        {(workspacesError || projectsError) && (
+          <div
+            role="alert"
+            className="fixed bottom-4 right-4 z-[100] w-[min(92vw,420px)] rounded-xl border border-border-subtle bg-surface-card/95 p-3 shadow-lg backdrop-blur-md"
+          >
+            <p className="text-sm font-medium text-text-primary">
+              {t("sidebar.loadErrorTitle")}
+            </p>
+            <p className="mt-1 text-xs leading-5 text-text-label">
+              {t("sidebar.loadErrorDescription")}
+            </p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
+            >
+              <RefreshCw className="size-3.5" aria-hidden="true" />
+              {t("sidebar.refreshPage")}
+            </button>
+          </div>
+        )}
       </SidebarContent>
     </Sidebar>
   );

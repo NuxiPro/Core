@@ -23,11 +23,15 @@ export function TaskModalCreate({
     formState: { errors },
   } = useForm({ defaultValues: { title: "" } });
   const len = watch("title", "").length;
-  useEffect(() => {
-    setFocus("title");
-  }, [setFocus]);
-  // Anti-spam: Entrée martelée / double-clic = une seule création.
+  // Anti-spam: Enter pressed repeatedly or double-clicking creates only once.
   const submittedRef = useRef(false);
+
+  useEffect(() => {
+    if (!open) return;
+    submittedRef.current = false;
+    const frame = requestAnimationFrame(() => setFocus("title"));
+    return () => cancelAnimationFrame(frame);
+  }, [open, setFocus]);
 
   const onSubmit = useCallback(
     (d: { title: string }) => {

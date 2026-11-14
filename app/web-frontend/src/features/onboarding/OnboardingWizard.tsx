@@ -129,7 +129,7 @@ export function OnboardingWizard() {
                     : "opacity-0 -translate-y-1"
                 }`}
               >
-                {t("onboarding.welcomeAboard")}
+                {t("onboarding.welcomeAboard", { name: workspaceName })}
               </h1>
             </div>
           </div>

@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_dashboard/kanban/")({
 function KanbanIndex() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { projects, isLoading } = useProjects();
+  const { projects, isLoading, isError } = useProjects();
   const hasNavigated = useRef(false);
 
   useEffect(() => {
@@ -43,6 +43,8 @@ function KanbanIndex() {
       </div>
     );
   }
+
+  if (isError) return null;
 
   if (projects.length === 0) {
     return (

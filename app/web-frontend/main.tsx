@@ -30,7 +30,6 @@ if (loader) {
   const hide = () => {
     if (loader.classList.contains("nova")) return;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // Nova: flash + fade de la même respiration — le burst coïncide avec l'apparition de l'app
     loader.classList.add("nova", "is-hiding");
     const delay = reduce ? 0 : 460;
     setTimeout(() => loader.remove(), delay);

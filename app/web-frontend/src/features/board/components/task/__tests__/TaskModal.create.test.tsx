@@ -53,6 +53,22 @@ describe("TaskModal - mode création", () => {
     expect(titleInput).toBeInTheDocument();
   });
 
+  it("focuses the title field when the create dialog opens", async () => {
+    render(
+      <TaskModal
+        mode="create"
+        colId={colId}
+        columnTitle={columnTitle}
+        onAdd={vi.fn()}
+        open={true}
+        onOpenChange={vi.fn()}
+      />,
+    );
+
+    const titleInput = await screen.findByPlaceholderText("Title");
+    await waitFor(() => expect(titleInput).toHaveFocus());
+  });
+
   it("soumet via le raccourci Enter sur l'input titre", async () => {
     const onAdd = vi.fn();
     const onOpenChange = vi.fn();

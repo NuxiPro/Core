@@ -31,17 +31,17 @@
         transform: scale(1);
         filter: blur(0);
         transition:
-          opacity 380ms cubic-bezier(0.16, 1, 0.3, 1),
-          transform 380ms cubic-bezier(0.16, 1, 0.3, 1),
-          filter 380ms cubic-bezier(0.16, 1, 0.3, 1);
+          opacity 260ms cubic-bezier(0.23, 1, 0.32, 1),
+          transform 260ms cubic-bezier(0.23, 1, 0.32, 1),
+          filter 260ms cubic-bezier(0.23, 1, 0.32, 1);
       }
       html.dark #root-loader {
         background: #010102;
       }
       #root-loader.is-hiding {
         opacity: 0;
-        transform: scale(0.985);
-        filter: blur(6px);
+        transform: scale(0.99);
+        filter: blur(4px);
         pointer-events: none;
       }
 
@@ -51,64 +51,51 @@
         height: 68px;
       }
 
-      /* ── Glow — burst overshoot, puis implosion, puis tension ── */
+      /* ── Halo — présence calme pendant le chargement ── */
       .loader-glow {
         position: absolute;
-        inset: -55%;
+        inset: -45%;
         border-radius: 50%;
         background: radial-gradient(
           circle,
-          rgba(15, 118, 110, 0.26) 0%,
-          rgba(15, 118, 110, 0.09) 42%,
+          rgba(15, 118, 110, 0.18) 0%,
+          rgba(15, 118, 110, 0.06) 42%,
           transparent 70%
         );
         opacity: 0;
-        transform: scale(0.7);
+        transform: scale(0.86);
         animation:
-          glowSettle 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
-          glowImplode 420ms cubic-bezier(0.7, 0, 0.84, 0) 900ms forwards,
-          glowBreathe 1700ms ease-in-out 1500ms infinite alternate;
+          glowIn 500ms cubic-bezier(0.23, 1, 0.32, 1) forwards,
+          glowBreathe 1800ms ease-in-out 650ms infinite alternate;
       }
-      @keyframes glowSettle {
-        0% {
+      @keyframes glowIn {
+        from {
           opacity: 0;
-          transform: scale(0.7);
+          transform: scale(0.86);
         }
-        55% {
-          opacity: 1;
-          transform: scale(1.22); /* burst — léger dépassement */
-        }
-        100% {
-          opacity: 0.85;
-          transform: scale(1.05);
-        }
-      }
-      @keyframes glowImplode {
         to {
-          opacity: 0.95;
-          transform: scale(0.38);
+          opacity: 0.72;
+          transform: scale(1);
         }
       }
       @keyframes glowBreathe {
         from {
-          opacity: 0.75;
-          transform: scale(0.44);
+          opacity: 0.72;
+          transform: scale(1);
         }
         to {
-          opacity: 0.95;
-          transform: scale(0.52);
+          opacity: 0.86;
+          transform: scale(1.04);
         }
       }
 
-      /* ── Anneau — se dessine (P1), se contracte et s'éteint (P2) ── */
+      /* ── Anneau — tracé net, sans implosion décorative ── */
       .loader-ring {
         position: absolute;
         inset: 0;
         width: 68px;
         height: 68px;
-        transform: rotate(-90deg); /* départ du tracé en haut */
-        animation: ringImplode 420ms cubic-bezier(0.7, 0, 0.84, 0) 900ms
-          forwards;
+        transform: rotate(-90deg);
       }
       .loader-ring circle {
         fill: none;
@@ -117,9 +104,8 @@
         stroke-linecap: round;
         stroke-dasharray: 100;
         stroke-dashoffset: 100;
-        opacity: 0.9;
-        animation: ringDraw 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
-          ringGone 260ms ease-out 900ms forwards;
+        opacity: 0.82;
+        animation: ringDraw 650ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
       }
       @keyframes ringDraw {
         from {
@@ -129,24 +115,8 @@
           stroke-dashoffset: 0;
         }
       }
-      @keyframes ringGone {
-        from {
-          opacity: 0.9;
-        }
-        to {
-          opacity: 0;
-        }
-      }
-      @keyframes ringImplode {
-        from {
-          transform: rotate(-90deg) scale(1);
-        }
-        to {
-          transform: rotate(-90deg) scale(0.42);
-        }
-      }
 
-      /* ── Logo — se pose (P1), participe à l'implosion (P2), respire (tension) ── */
+      /* ── Logo — entrée courte, puis respiration presque imperceptible ── */
       .loader-logo {
         position: absolute;
         top: 50%;
@@ -156,9 +126,9 @@
         margin: -24px 0 0 -24px;
         opacity: 0;
         transform: scale(0.96) translateY(3px);
-        animation: logoLand 480ms cubic-bezier(0.16, 1, 0.3, 1) 100ms forwards,
-          logoImplode 420ms cubic-bezier(0.7, 0, 0.84, 0) 900ms forwards,
-          logoBreathe 1700ms ease-in-out 1500ms infinite alternate;
+        animation:
+          logoLand 420ms cubic-bezier(0.23, 1, 0.32, 1) 80ms forwards,
+          logoBreathe 1800ms ease-in-out 650ms infinite alternate;
       }
       @keyframes logoLand {
         to {
@@ -166,20 +136,14 @@
           transform: scale(1) translateY(0);
         }
       }
-      @keyframes logoImplode {
-        to {
-          opacity: 0.92;
-          transform: scale(0.86);
-        }
-      }
       @keyframes logoBreathe {
         from {
-          opacity: 0.92;
-          transform: scale(0.86);
+          opacity: 0.96;
+          transform: scale(1);
         }
         to {
           opacity: 1;
-          transform: scale(0.9);
+          transform: scale(1.015);
         }
       }
 
@@ -192,8 +156,8 @@
         border-radius: 50%;
         background: radial-gradient(
           circle,
-          rgba(15, 118, 110, 0.5) 0%,
-          rgba(15, 118, 110, 0.14) 45%,
+          rgba(15, 118, 110, 0.28) 0%,
+          rgba(15, 118, 110, 0.08) 45%,
           transparent 70%
         );
         opacity: 0;
@@ -201,34 +165,30 @@
         pointer-events: none;
       }
       #root-loader.nova .loader-nova {
-        animation: novaFinale 440ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: novaFinale 280ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
       }
       @keyframes novaFinale {
         from {
-          opacity: 0.95;
-          transform: scale(0.2);
+          opacity: 0.45;
+          transform: scale(0.86);
         }
         to {
           opacity: 0;
-          transform: scale(4.5);
+          transform: scale(2.8);
         }
       }
-      /* Le logo se détend pendant que l'explosion emporte la scène */
+      /* Le logo accompagne la sortie sans rebond visible. */
       #root-loader.nova .loader-logo {
-        animation: logoNova 440ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: logoNova 280ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
       }
       @keyframes logoNova {
         from {
-          opacity: 0.92;
-          transform: scale(0.86);
-        }
-        45% {
           opacity: 1;
-          transform: scale(1.02);
+          transform: scale(1);
         }
         to {
           opacity: 1;
-          transform: scale(1);
+          transform: scale(1.02);
         }
       }
 
@@ -241,12 +201,7 @@
           filter: none;
         }
         .loader-glow,
-        .loader-ring,
-        .loader-ring circle,
-        .loader-logo {
-          animation: none;
-        }
-        .loader-glow {
+        .loader-nova {
           opacity: 0;
         }
         .loader-ring circle {
@@ -256,6 +211,14 @@
         .loader-logo {
           opacity: 1;
           transform: none;
+        }
+        .loader-glow,
+        .loader-ring,
+        .loader-ring circle,
+        .loader-logo,
+        #root-loader.nova .loader-nova,
+        #root-loader.nova .loader-logo {
+          animation: none;
         }
       }
     </style>

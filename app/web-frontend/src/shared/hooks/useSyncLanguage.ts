@@ -2,7 +2,7 @@ import { createLogger } from "@packages/shared/utils/logger";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import i18n from "@/src/features/i18n";
-import type { UserSettings } from "@/src/features/settings/api";
+import type { UserSettings } from "@/src/features/settings/api/settings";
 import { settingsQueryBase } from "@/src/features/settings/hooks/useSettingsApi";
 
 /**

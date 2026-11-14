@@ -5,7 +5,7 @@ import { ErrorBoundary } from "../layout/components/ErrorBoundary";
 import { RouteTransition } from "../layout/components/RouteTransition";
 import { TooltipProvider } from "../layout/components/ui/tooltip";
 
-const TanStackRouterDevtools = import.meta.env.DEV
+const TanStackRouterDevtools = false
   ? React.lazy(() =>
       import("@tanstack/react-router-devtools").then((m) => ({
         default: m.TanStackRouterDevtools,
