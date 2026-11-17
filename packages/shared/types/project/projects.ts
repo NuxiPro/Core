@@ -1,3 +1,5 @@
+import type { Workspace } from "../workspace";
+
 export type CreateProjectInput = {
   name: string;
   description?: string;
@@ -11,5 +13,5 @@ export type Project = {
   prefix: string;
   slug: string;
   createdAt: string;
-  workspaceId: CreateProjectInput['workspaceId'];
+  workspaceId: Workspace["id"];
 };

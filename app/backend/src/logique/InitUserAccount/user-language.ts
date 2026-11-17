@@ -1,8 +1,13 @@
 import { db } from "@backend/src/drizzle/connection";
 import { user } from "@backend/src/drizzle/schemas";
+import { getOAuthState } from "better-auth/api";
 import { eq } from "drizzle-orm";
 import { userSetting } from "../../drizzle/schemas/user-center";
-import { type Lang, toLang } from "./01-ensure-default-settings";
+import {
+  type Lang,
+  type LanguageSource,
+  toLang,
+} from "./01-ensure-default-settings";
 
 /**
  * Langue déjà connue pour cet e-mail, ou `null` si :
@@ -40,26 +45,76 @@ export async function stashSignUpLanguage(
   const payload = {
     identifier: `${STASH_PREFIX}${email}`,
     value: lang,
-    expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 min
+    expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 min — must cover the magic-link TTL (auth.ts expiresIn: 900)
   };
   await internalAdapter.createVerificationValue(payload);
 }
 
-/** Lit + consomme le stash au seed. Retourne la langue du header, sinon `fallback`. */
+/**
+ * Lit + consomme le stash au seed. `null` si absent ou expiré — le choix du
+ * fallback appartient à l'appelant (il connaît la source à logger).
+ */
 export async function consumeStashedLanguage(
   email: string,
-  fallback: Lang,
   internalAdapter: {
     findVerificationValue: (v: {
       identifier: string;
     }) => Promise<{ identifier: string; value: string } | null>;
     deleteVerificationValue: (v: string) => Promise<unknown>;
   },
-): Promise<Lang> {
+): Promise<Lang | null> {
   const record = await internalAdapter.findVerificationValue({
     identifier: `${STASH_PREFIX}${email}`,
   });
-  if (!record) return fallback;
+  if (!record) return null;
   await internalAdapter.deleteVerificationValue(record.identifier);
   return toLang(record.value);
+}
+
+/**
+ * Resolve the language a new account is seeded with, and where it came from.
+ * Order: magic-link stash → OAuth server state → "en" fallback.
+ *
+ * The UI-language header is NOT available at seed time (link click /
+ * provider callback = browser navigation → doc 08 §1), so both paths relay
+ * it earlier in the flow instead:
+ * - magic link: `sendMagicLink` stashes it when the email is sent;
+ * - OAuth: the before hook in auth.ts parks it on /sign-in/social in the
+ *   server-only OAuth state slot (serverContext — the client cannot write
+ *   there).
+ */
+export async function resolveSeedLanguage(
+  email: string,
+  hookCtx?: unknown,
+): Promise<{ language: Lang; source: LanguageSource }> {
+  // Minimal shape of the context better-auth passes to database hooks.
+  const ctx = hookCtx as
+    | {
+        path?: string;
+        context?: {
+          internalAdapter: Parameters<typeof consumeStashedLanguage>[1];
+        };
+      }
+    | undefined;
+
+  // 1. Magic link: the stash was set by sendMagicLink. `null` means absent
+  //    or expired — the fallback decision stays here.
+  let language: Lang | null = ctx?.context
+    ? await consumeStashedLanguage(email, ctx.context.internalAdapter)
+    : null;
+  let source: LanguageSource = language ? "magic-link-stash" : "fallback";
+
+  // 2. OAuth: read back what the before hook parked on /sign-in/social.
+  //    serverContext is server-trusted, but toLang still validates (belt
+  //    and braces).
+  if (!language && ctx?.path?.startsWith("/callback")) {
+    const state = await getOAuthState<{ language?: unknown }>();
+    const stateLang = state?.serverContext?.language;
+    if (stateLang != null) {
+      language = toLang(stateLang);
+      source = "oauth-state";
+    }
+  }
+
+  return { language: language ?? toLang(null), source };
 }

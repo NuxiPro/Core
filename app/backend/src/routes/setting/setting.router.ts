@@ -1,5 +1,5 @@
-import { createRoute} from "@hono/zod-openapi";
 import { requirePermission } from "@backend/src/lib/auth-middleware";
+import { createRoute } from "@hono/zod-openapi";
 import { ErrorResponse, GetSetting, patchSetting } from "./setting.shemas";
 
 export const getSettingRoute = createRoute({
@@ -21,7 +21,7 @@ export const getSettingRoute = createRoute({
       content: { "application/json": { schema: ErrorResponse } },
     },
   },
-})
+});
 
 export const updateSettingRoute = createRoute({
   method: "patch",
@@ -51,4 +51,4 @@ export const updateSettingRoute = createRoute({
       content: { "application/json": { schema: ErrorResponse } },
     },
   },
-})
+});

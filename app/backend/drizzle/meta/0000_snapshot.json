@@ -1,5 +1,5 @@
 {
-  "id": "010d56ff-8b98-4d9b-a1ed-a3446233c1ef",
+  "id": "7d878da3-de61-4aa1-a8fa-bce37f6f5226",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -502,6 +502,24 @@
         "description": {
           "name": "description",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quadrant": {
+          "name": "quadrant",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "priority_label": {
+          "name": "priority_label",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "due_date": {
+          "name": "due_date",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
@@ -1043,6 +1061,27 @@
           "notNull": true,
           "default": "'en'"
         },
+        "archive_mode": {
+          "name": "archive_mode",
+          "type": "archive_mode",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'instant'"
+        },
+        "archive_delay_days": {
+          "name": "archive_delay_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "archive_due_date": {
+          "name": "archive_due_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp",
@@ -1075,6 +1114,14 @@
     }
   },
   "enums": {
+    "public.archive_mode": {
+      "name": "archive_mode",
+      "schema": "public",
+      "values": [
+        "instant",
+        "time"
+      ]
+    },
     "public.lang": {
       "name": "lang",
       "schema": "public",

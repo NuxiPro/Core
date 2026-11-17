@@ -30,6 +30,17 @@ export const ProjetReponse = z.object({
 });
 
 
+export const projectIdParams = z.object({
+  projectId: z.uuid({ version: "v7" }),
+});
+
+export const updateProjectInput = z
+  .object({
+    name: z.string().trim().min(1).max(30).optional(),
+    description: z.string().trim().max(200).nullable().optional(),
+  })
+  .strict();
+
 export const DeletedProject = z.object({
   id: z.uuid({ version: "v7", message: "Invalid ID: UUID format expected" }),
 });

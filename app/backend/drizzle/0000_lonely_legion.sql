@@ -1,3 +1,4 @@
+CREATE TYPE "public"."archive_mode" AS ENUM('instant', 'time');--> statement-breakpoint
 CREATE TYPE "public"."lang" AS ENUM('fr', 'en');--> statement-breakpoint
 CREATE TYPE "public"."theme" AS ENUM('light', 'dark', 'system');--> statement-breakpoint
 CREATE TABLE "account" (
@@ -67,6 +68,9 @@ CREATE TABLE "archived_cards" (
 	"project_id" uuid NOT NULL,
 	"title" varchar(255) NOT NULL,
 	"description" text,
+	"quadrant" integer NOT NULL,
+	"priority_label" varchar(10),
+	"due_date" timestamp,
 	"created_at" timestamp NOT NULL,
 	"archived_at" timestamp DEFAULT now() NOT NULL
 );
@@ -109,6 +113,9 @@ CREATE TABLE "user_setting" (
 	"theme" "theme" DEFAULT 'system' NOT NULL,
 	"email_notifications" boolean DEFAULT false NOT NULL,
 	"language" "lang" DEFAULT 'en' NOT NULL,
+	"archive_mode" "archive_mode" DEFAULT 'instant' NOT NULL,
+	"archive_delay_days" integer,
+	"archive_due_date" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint

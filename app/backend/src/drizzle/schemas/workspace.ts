@@ -7,6 +7,7 @@ import {
   uniqueIndex,
   uuid,
   varchar,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
 
@@ -114,8 +115,13 @@ export const archivedCardsTable = pgTable(
       .notNull(),
     title: varchar("title", { length: 255 }).notNull(),
     description: text("description"),
+    // Board context kept so a restore puts the task back in its original
+    // column with its metadata (position itself is recomputed at restore).
+    quadrant: integer("quadrant").notNull(),
+    priorityLabel: varchar("priority_label", { length: 10 }),
+    dueDate: timestamp("due_date", { mode: "date" }),
     createdAt: timestamp("created_at", { mode: "date" }).notNull(), // Important element for sorting
-    archivedAt: timestamp("archived_at", { mode: "date" })  // Date the task was completed
+    archivedAt: timestamp("archived_at", { mode: "date" }) // Date the task was completed
       .defaultNow()
       .notNull(),
   },

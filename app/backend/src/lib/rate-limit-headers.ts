@@ -8,12 +8,6 @@ export type ApiRateLimit = {
   resetAt: Date;
 };
 
-export function retryAfterSeconds(retryAt: Date, now: Date): string {
-  return String(
-    Math.max(1, Math.ceil((retryAt.getTime() - now.getTime()) / 1000)),
-  );
-}
-
 export function rateLimitHeaders({
   limit,
   remaining,

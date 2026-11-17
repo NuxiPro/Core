@@ -1,8 +1,10 @@
+import { archiveModule } from "@backend/src/routes/archive/index";
 import { kanbanModule } from "@backend/src/routes/kanban/index";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import type { Context } from "hono";
 import { compress } from "hono/compress";
 import { cors } from "hono/cors";
+import { csrf } from "hono/csrf";
 import { createMiddleware } from "hono/factory";
 import { secureHeaders } from "hono/secure-headers";
 import { auth } from "./auth";
@@ -10,9 +12,8 @@ import { apiRateLimit } from "./lib/api-rate-limit";
 import { securityAlert } from "./lib/security-alert";
 import { httpLogger } from "./logique/logging/logger";
 import { projectsModule } from "./routes/projects";
-import { workspaceModule } from "./routes/workspace";
-import { csrf } from "hono/csrf";
 import { settingModule } from "./routes/setting";
+import { workspaceModule } from "./routes/workspace";
 import type { AppEnv } from "./types/app-env";
 
 export type { AppEnv };
@@ -83,9 +84,12 @@ const app = new OpenAPIHono<AppEnv>({
     }),
   )
   .use("*", secureHeaders())
-  .use("*", csrf({
-    origin: allowedOrigin,
-  }))
+  .use(
+    "*",
+    csrf({
+      origin: allowedOrigin,
+    }),
+  )
   .use("*", compress())
   // In production, hide Zod error details
   .onError((err, c) => {
@@ -99,12 +103,14 @@ const app = new OpenAPIHono<AppEnv>({
   .use("/kanban/*", authGuard)
   .use("/projects/*", authGuard)
   .use("/workspaces/*", authGuard)
+  .use("/archive/*", authGuard)
 
   // Per-user quota on business routes (after guard: user is known)
   .use("/setting/*", apiRateLimit())
   .use("/kanban/*", apiRateLimit())
   .use("/projects/*", apiRateLimit())
   .use("/workspaces/*", apiRateLimit())
+  .use("/archive/*", apiRateLimit())
   .use("*", async (c, next) => {
     const method = c.req.method;
     if (["POST", "PATCH"].includes(method)) {
@@ -126,7 +132,8 @@ const app = new OpenAPIHono<AppEnv>({
   .route("/kanban", kanbanModule)
   .route("/projects", projectsModule)
   .route("/workspaces", workspaceModule)
-  .route("/setting", settingModule);
+  .route("/setting", settingModule)
+  .route("/archive", archiveModule);
 
 export type AppType = typeof app;
 export default app;

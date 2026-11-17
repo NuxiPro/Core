@@ -16,6 +16,61 @@
 
 [X] Ajouter un teste be for (Ajouter un teste pour savoir ou sa casse)
 
+[] Ajouter un moyen visuel pour comprendre que mon compte est en mode restrint donc l'user doit le savoir imédiatement
+[] Terminée la connection avec plunk et tester plunk en mode usage réel pour savoir si sa marche ou pas pour la prod 
+
+---
+
+## Onboarding — Choix du mode d'archivage (à la création du compte)
+
+Demander à l'user son mode d'archivage de tâches au moment où il crée son
+workspace (première connexion après inscription). C'est la première brique
+de la personnalisation d'archivage (voir plus haut).
+
+### Déjà en place
+
+- Préférence `user_setting.archive_mode` (`"instant"` | `"time"`, défaut
+  `"instant"`) — exposée dans GET/PATCH `/setting`. Les endpoints
+  `/api/v1/archive/*` (archiver, lister, restaurer, supprimer) sont prêts.
+
+### Reste à faire — Backend
+
+- [ ] Mode `"instant"` : **changer le comportement de la colonne DONE** —
+  le drag & drop d'une tâche dans DONE déclenche directement
+  `POST /api/v1/archive/{projectId}/newArchive` (la tâche n'y reste pas,
+  elle part à l'archive sur-le-champ).
+
+- [X] Préférence dans `user_setting` : `archiveMode` (`"instant"` |
+  `"time"`, défaut `"instant"`) en **pgEnum** (même pattern que
+  theme/lang). Pas de `archiveDelayDays` pour l'instant — viendra avec
+  le moteur temporel (YAGNI).
+- [X] Routes `/setting` étendues : `GetSetting` expose le champ, le
+  `PATCH` l'accepte (schéma déjà partiel), validation Zod enum 2 valeurs.
+- [ ] Plus tard (mode `"time"` actif) : **PAS de cron** (non scalable, du
+  travail à l'arrêt) — **archivage à la lecture (lazy), 100 % côté
+  serveur** : quand le board d'un user est chargé (ou un sweep léger
+  juste après le GET), le backend archive d'un coup, en une requête
+  set-based indexée, les tâches DONE depuis N jours de CET user.
+  L'user n'a **aucun accès direct au mécanisme** — il pose juste sa
+  préférence (`user_setting.archive_mode`, posée à l'onboarding puis
+  modifiable via la fenêtre de personnalisation). Coût proportionnel à
+  l'usage réel, zéro travail quand personne ne regarde, résultat
+  identique vu de l'écran.
+
+### Reste à faire — Frontend
+
+- [X] Étape insérée dans l'onboarding existant : workspace → **« Comment
+  veux-tu archiver tes tâches ? »** → chargement → succès
+  (`ArchiveModeStep.tsx`).
+- [X] UI de l'étape : 2 cartes radio (⚡ Instantané / ⏱️ Automatique),
+  navigation clavier native, i18n fr/en, tokens du design system.
+  Défaut pré-sélectionné : Instantané.
+- [X] Choix enregistré à la fin de l'onboarding (`PATCH /setting` en même
+  temps que la création du workspace, préférence non bloquante), jamais
+  re-demandé ensuite.
+- [ ] La préférence lue plus tard par la fenêtre de personnalisation
+  d'archivage et par le sweep lazy côté serveur.
+
 ---
 
 ## Frontend — Settings — Sauvegarde de l’e-mail du profil

@@ -6,7 +6,9 @@ import {
   DeletedProject,
   BoardResponse,
   ErrorResponse,
-  ProjectListItem
+  ProjectListItem,
+  projectIdParams,
+  updateProjectInput,
 } from "./projects.schemas";
 
 export const createProjetRoute = createRoute({
@@ -58,6 +60,53 @@ export const createProjetRoute = createRoute({
   },
 });
 
+
+export const getProjectRoute = createRoute({
+  method: "get",
+  path: "/{projectId}",
+  middleware: [requirePermission({ project: ["read"] })],
+  request: { params: projectIdParams },
+  responses: {
+    200: {
+      description: "Project details",
+      content: { "application/json": { schema: ProjetReponse } },
+    },
+    404: {
+      description: "Project not found",
+      content: { "application/json": { schema: ErrorResponse } },
+    },
+    500: {
+      description: "An internal server error occurred.",
+      content: { "application/json": { schema: ErrorResponse } },
+    },
+  },
+});
+
+export const updateProjectRoute = createRoute({
+  method: "patch",
+  path: "/{projectId}",
+  middleware: [requirePermission({ project: ["update"] })],
+  request: {
+    params: projectIdParams,
+    body: {
+      content: { "application/json": { schema: updateProjectInput } },
+    },
+  },
+  responses: {
+    200: {
+      description: "Project updated successfully",
+      content: { "application/json": { schema: ProjetReponse } },
+    },
+    404: {
+      description: "Project not found",
+      content: { "application/json": { schema: ErrorResponse } },
+    },
+    500: {
+      description: "An internal server error occurred.",
+      content: { "application/json": { schema: ErrorResponse } },
+    },
+  },
+});
 
 export const DeletedProjectRoute = createRoute({
   method: "delete",

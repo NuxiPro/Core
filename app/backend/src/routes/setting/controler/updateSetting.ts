@@ -1,15 +1,17 @@
-import type { RouteHandler } from "@hono/zod-openapi";
-import { updateSettingRoute } from "../setting.router";
-import type { AppEnv } from "@backend/src/types/app-env";
-import { userSetting } from "@backend/src/drizzle/schemas";
 import { db } from "@backend/src/drizzle/connection";
-import { eq } from "drizzle-orm";
+import { userSetting } from "@backend/src/drizzle/schemas";
+import type { AppEnv } from "@backend/src/types/app-env";
+import type { RouteHandler } from "@hono/zod-openapi";
 import { createLogger } from "@packages/shared/utils/logger";
+import { eq } from "drizzle-orm";
+import type { updateSettingRoute } from "../setting.router";
 
 const log = createLogger("Setting/update");
 
-export const updateSetting: RouteHandler<typeof updateSettingRoute, AppEnv> = async (c) => {
-
+export const updateSetting: RouteHandler<
+  typeof updateSettingRoute,
+  AppEnv
+> = async (c) => {
   const user = c.get("user");
   const body = c.req.valid("json");
 
@@ -18,11 +20,10 @@ export const updateSetting: RouteHandler<typeof updateSettingRoute, AppEnv> = as
       .update(userSetting)
       .set(body)
       .where(eq(userSetting.userId, user.id))
-      .returning()
-
+      .returning();
 
     return c.json(update, 200);
-  } catch(err) {
+  } catch (err) {
     log.error("[update setting] Error", err);
     return c.json({ message: "Internal server error" }, 500);
   }

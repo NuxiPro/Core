@@ -1,4 +1,5 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { SettingsIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   SidebarGroup,
@@ -7,6 +8,12 @@ import {
   SidebarMenuItem,
 } from "@/src/layout/components/ui/sidebar";
 import { slugify } from "@/src/shared/utils/utils";
+
+// Précharge la page de settings (lazy) dès le survol du bouton,
+// pour éviter un écran vide au premier clic.
+const preloadProjectSettings = () => {
+  void import("@/src/features/project-settings/ProjectSettingsPage");
+};
 
 type Project = {
   id: string;
@@ -27,6 +34,7 @@ export function NavProjects({
   activeProjectId?: string | undefined;
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const items = projects ?? [];
 
   return (
@@ -57,11 +65,14 @@ export function NavProjects({
           const isActive = item.id === activeProjectId;
 
           return (
-            <SidebarMenuItem key={item.id} className="my-0.5">
+            <SidebarMenuItem
+              key={item.id}
+              className="group/menu-item relative my-0.5"
+            >
               <SidebarMenuButton
                 asChild
                 isActive={isActive}
-                className="rounded-md transition-colors duration-200 hover:bg-sidebar-accent/60 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium"
+                className="rounded-md pr-9 transition-colors duration-200 hover:bg-sidebar-accent/60 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium"
               >
                 <Link
                   to="/kanban/$projectSlug"
@@ -85,6 +96,25 @@ export function NavProjects({
                   </span>
                 </Link>
               </SidebarMenuButton>
+              <button
+                type="button"
+                aria-label={`${t("settings.projectSettings")}: ${item.name}`}
+                onPointerEnter={preloadProjectSettings}
+                onFocus={preloadProjectSettings}
+                className="cursor-pointer absolute right-1.5 top-1/2 z-10 inline-flex size-6 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-opacity hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group-hover/menu-item:opacity-100"
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  navigate({
+                    to: "/kanban/$projectSlug/settings",
+                    params: {
+                      projectSlug: item.slug ?? slugify(item.name),
+                    },
+                  });
+                }}
+              >
+                <SettingsIcon className="size-4" aria-hidden="true" />
+              </button>
             </SidebarMenuItem>
           );
         })}

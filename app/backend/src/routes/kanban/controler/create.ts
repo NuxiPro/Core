@@ -62,7 +62,7 @@ export const createTaskHandler: RouteHandler<typeof createTaskRoute, AppEnv> = a
             .limit(1);
 
           const prevPosition = lastTask[0]?.positionString ?? null;
-          const builtTask = buildTask(data, prevPosition, null);
+          const builtTask = buildTask(data, project.id, prevPosition, null);
 
           await tx.insert(cardsTable).values({
             id: builtTask.id,

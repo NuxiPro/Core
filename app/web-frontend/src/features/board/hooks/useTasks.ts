@@ -48,6 +48,7 @@ export function useTasks(projectId: string | null) {
         id: (ctx.extra.tempId as string) ?? `temp-${Date.now()}`,
         title: input.title,
         colId: input.colId,
+        projectId: requireProjectId(),
         // Visual order comes from array position (splice), not this string.
         // Server replaces it with the real fractional key in onSuccess.
         positionString: "",

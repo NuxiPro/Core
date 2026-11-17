@@ -20,6 +20,7 @@ import { Route as DashboardKanbanRouteImport } from './src/routes/_dashboard/kan
 import { Route as DashboardKanbanIndexRouteImport } from './src/routes/_dashboard/kanban.index'
 import { Route as DashboardKanbanProjectSlugRouteImport } from './src/routes/_dashboard/kanban.$projectSlug'
 import { Route as DashboardKanbanProjectSlugArchiveRouteImport } from './src/routes/_dashboard/kanban.$projectSlug.archive'
+import { Route as DashboardKanbanProjectSlugSettingsRouteImport } from './src/routes/_dashboard/kanban.$projectSlug.settings'
 
 const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
@@ -77,6 +78,12 @@ const DashboardKanbanProjectSlugArchiveRoute =
     path: '/archive',
     getParentRoute: () => DashboardKanbanProjectSlugRoute,
   } as any)
+const DashboardKanbanProjectSlugSettingsRoute =
+  DashboardKanbanProjectSlugSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => DashboardKanbanProjectSlugRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof DashboardIndexRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/kanban/$projectSlug': typeof DashboardKanbanProjectSlugRouteWithChildren
   '/kanban/': typeof DashboardKanbanIndexRoute
   '/kanban/$projectSlug/archive': typeof DashboardKanbanProjectSlugArchiveRoute
+  '/kanban/$projectSlug/settings': typeof DashboardKanbanProjectSlugSettingsRoute
 }
 export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
@@ -100,6 +108,7 @@ export interface FileRoutesByTo {
   '/kanban/$projectSlug': typeof DashboardKanbanProjectSlugRouteWithChildren
   '/kanban': typeof DashboardKanbanIndexRoute
   '/kanban/$projectSlug/archive': typeof DashboardKanbanProjectSlugArchiveRoute
+  '/kanban/$projectSlug/settings': typeof DashboardKanbanProjectSlugSettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,6 +123,7 @@ export interface FileRoutesById {
   '/_dashboard/kanban/$projectSlug': typeof DashboardKanbanProjectSlugRouteWithChildren
   '/_dashboard/kanban/': typeof DashboardKanbanIndexRoute
   '/_dashboard/kanban/$projectSlug/archive': typeof DashboardKanbanProjectSlugArchiveRoute
+  '/_dashboard/kanban/$projectSlug/settings': typeof DashboardKanbanProjectSlugSettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/kanban/$projectSlug'
     | '/kanban/'
     | '/kanban/$projectSlug/archive'
+    | '/kanban/$projectSlug/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/onboarding'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/kanban/$projectSlug'
     | '/kanban'
     | '/kanban/$projectSlug/archive'
+    | '/kanban/$projectSlug/settings'
   id:
     | '__root__'
     | '/_dashboard'
@@ -152,6 +164,7 @@ export interface FileRouteTypes {
     | '/_dashboard/kanban/$projectSlug'
     | '/_dashboard/kanban/'
     | '/_dashboard/kanban/$projectSlug/archive'
+    | '/_dashboard/kanban/$projectSlug/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -242,17 +255,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardKanbanProjectSlugArchiveRouteImport
       parentRoute: typeof DashboardKanbanProjectSlugRoute
     }
+    '/_dashboard/kanban/$projectSlug/settings': {
+      id: '/_dashboard/kanban/$projectSlug/settings'
+      path: '/settings'
+      fullPath: '/kanban/$projectSlug/settings'
+      preLoaderRoute: typeof DashboardKanbanProjectSlugSettingsRouteImport
+      parentRoute: typeof DashboardKanbanProjectSlugRoute
+    }
   }
 }
 
 interface DashboardKanbanProjectSlugRouteChildren {
   DashboardKanbanProjectSlugArchiveRoute: typeof DashboardKanbanProjectSlugArchiveRoute
+  DashboardKanbanProjectSlugSettingsRoute: typeof DashboardKanbanProjectSlugSettingsRoute
 }
 
 const DashboardKanbanProjectSlugRouteChildren: DashboardKanbanProjectSlugRouteChildren =
   {
     DashboardKanbanProjectSlugArchiveRoute:
       DashboardKanbanProjectSlugArchiveRoute,
+    DashboardKanbanProjectSlugSettingsRoute:
+      DashboardKanbanProjectSlugSettingsRoute,
   }
 
 const DashboardKanbanProjectSlugRouteWithChildren =

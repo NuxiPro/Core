@@ -6,6 +6,10 @@ import { client } from "@/src/shared/lib/client";
 export const LANGUAGES = ["fr", "en"] as const;
 export type Language = (typeof LANGUAGES)[number];
 
+/** Modes d'archivage — miroir de `user_setting.archive_mode` backend. */
+export const ARCHIVE_MODES = ["instant", "time"] as const;
+export type ArchiveMode = (typeof ARCHIVE_MODES)[number];
+
 /**
  * Réglages utilisateur — miroir de `GetSetting` (setting.shemas.ts backend).
  * Type explicite (pas de dérivation depuis getSettings : circularité TS).
@@ -14,6 +18,9 @@ export type UserSettings = {
   theme: "light" | "dark" | "system";
   emailNotifications: boolean;
   language: Language;
+  archiveMode: ArchiveMode;
+  // Only meaningful in "time" mode (null = instant mode / not set).
+  archiveDelayDays: number | null;
 };
 
 /** Défauts de dernier recours si le serveur est indisponible. Le serveur reste prioritaire via useSyncLanguage. */
@@ -21,6 +28,8 @@ const DEFAULT_SETTINGS: UserSettings = {
   theme: "system",
   emailNotifications: false,
   language: "en",
+  archiveMode: "instant",
+  archiveDelayDays: null,
 };
 
 /** GET /getSettings */
@@ -72,6 +81,8 @@ const SettingsSchema = z.strictObject({
   theme: z.enum(THEMES),
   emailNotifications: z.boolean(),
   language: z.enum(LANGUAGES),
+  archiveMode: z.enum(ARCHIVE_MODES),
+  archiveDelayDays: z.number().int().min(1).max(90).nullable(),
 });
 
 const SettingsPatchSchema = z
@@ -79,5 +90,7 @@ const SettingsPatchSchema = z
     theme: z.enum(THEMES),
     emailNotifications: z.boolean(),
     language: z.enum(LANGUAGES),
+    archiveMode: z.enum(ARCHIVE_MODES),
+    archiveDelayDays: z.number().int().min(1).max(90).nullable(),
   })
   .partial();

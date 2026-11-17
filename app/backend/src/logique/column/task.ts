@@ -10,12 +10,14 @@ import { generateKeyBetween } from "fractional-indexing";
  * Position is computed via fractional indexing between the two neighbors.
  *
  * @param input        - Task data (title, description, colId)
+ * @param projectId    - ID of the project that owns the task
  * @param prevPosition - Position of the neighbor above (null = very top)
  * @param nextPosition - Position of the neighbor below (null = very bottom)
  * @throws "INVALID_POSITION" if neighbor positions are inconsistent
  */
 export function buildTask(
   input: z.infer<typeof CreateTaskInput>,
+  projectId: Task["projectId"],
   prevPosition: string | null = null,
   nextPosition: string | null = null,
 ): Omit<Task, "userId"> {
@@ -31,6 +33,7 @@ export function buildTask(
   return {
     id: uuid(),
     ...input,
+    projectId,
     positionString,
     createdAt: now,
   };

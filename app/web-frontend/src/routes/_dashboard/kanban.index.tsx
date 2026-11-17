@@ -39,7 +39,7 @@ function KanbanIndex() {
   if (isLoading) {
     return (
       <div className="h-full min-h-0 w-full flex items-center justify-center">
-        <div className="text-sm text-text-muted">Chargement...</div>
+        <div className="text-sm text-text-muted">Loading...</div>
       </div>
     );
   }

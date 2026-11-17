@@ -101,7 +101,7 @@ export function WorkspaceStep({ onSubmit, isSubmitting }: WorkspaceStepProps) {
               </span>
             ) : (
               <>
-                <span>{t("onboarding.workspaceCreating")}</span>
+                <span>{t("onboarding.continue")}</span>
                 <kbd
                   aria-hidden="true"
                   className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-[11px] font-mono rounded bg-surface-root/15 text-surface-root/80"

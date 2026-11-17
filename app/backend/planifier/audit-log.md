@@ -23,20 +23,25 @@ La table est hébergée directement dans la base PostgreSQL principale de NuxiPr
 
 | Colonne | Type SQL | Contraintes | Description & Rôle |
 | :--- | :--- | :--- | :--- |
-| **`id`** | `UUID` | `PRIMARY KEY`, `DEFAULT gen_random_uuid()` | Identifiant unique et immuable de l'entrée d'audit. |
-| **`user_id`** | `UUID` | `NOT NULL`, `INDEX` | Référence l'utilisateur concerné. *(Sans `ON DELETE CASCADE` immédiat afin de conserver la trace lors de la quarantaine de 2 ans).* |
+| **`id`** | `UUID` | `PRIMARY KEY` | Identifiant unique et immuable **de l'événement**. Généré côté backend via le helper `uuid()` existant (UUID **v7**, triable dans le temps) — pattern du codebase, aucune infrastructure nouvelle. La v7 rend l'index `(user_id, created_at)` et les scans par plage temporelle efficaces, et permet une pagination par curseur sur `id` ≈ temps. |
+| **`user_id`** | `UUID` | `NOT NULL`, `INDEX (user_id, created_at DESC)` | Référence l'utilisateur concerné. **Aucune clé étrangère** (ni `CASCADE` ni `RESTRICT`) : la trace survit au compte, et la purge à 2 ans est manuelle (§5). |
 | **`action`** | `VARCHAR(50)` | `NOT NULL` | Type d'événement standardisé (ex: `LOGIN_SUCCESS`, `EMAIL_CHANGED`, `2FA_DISABLED`). |
-| **`metadata`** | `JSONB` | `DEFAULT '{}'` | Contexte technique minimal de l'action (ex: ancien/nouvel e-mail, `project_id`, IP hashée via `CF-Connecting-IP`). **Zéro donnée métier.** |
-| **`created_at`** | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT NOW()` | Horodatage exact (UTC) de l'événement. |
+| **`metadata`** | `JSONB` | `DEFAULT '{}'` | Contexte technique minimal de l'action (ex: ancien/nouvel e-mail, `projectId` + `projectName`, IP hashée en **HMAC-SHA256 avec un secret serveur** via `CF-Connecting-IP` — un hash simple d'une IPv4 est réversible par force brute). **Zéro donnée métier** (voir exception justifiée pour `PROJECT_DELETED`). |
+| **`created_at`** | `TIMESTAMPTZ` | `NOT NULL`, `DEFAULT NOW()` | Horodatage exact (UTC) de l'événement — **horloge serveur**, seule opposable en cas de litige. |
 
 ### Catalogue des Actions Enregistrées (`action`)
 * `ACCOUNT_CREATED` : Création du compte et génération de l'`Account ID`.
 * `LOGIN_SUCCESS` : Connexion validée (via Magic Link + 2FA si actif).
+* `LOGIN_FAILED` : Tentative de connexion refusée. Prouve la vigilance de l'éditeur en cas de tentative d'intrusion.
 * `EMAIL_CHANGE_REQUESTED` : Demande d'OTP pour changement d'adresse e-mail.
 * `EMAIL_CHANGED` : Basculement effectif (`metadata: { "oldEmail": "...", "newEmail": "..." }`).
 * `2FA_ENABLED` / `2FA_DISABLED` : Activation ou désactivation du TOTP.
-* `PROJECT_DELETED` : Suppression définitive d'un projet (`metadata: { "projectId": "..." }`, sans le nom ni le contenu).
+* `PROJECT_DELETED` : Suppression définitive d'un projet. **Seule exception de minimisation assumée** : `metadata: { "projectId": "...", "projectName": "..." }`. Le nom est capturé **avant** la suppression en cascade ; sans lui, le projet disparaissant de la base, la preuve resterait un UUID sans signification lisible. La finalité (prouver l'action) est celle du présent document, la minimisation (art. 5.1.c) reste respectée — ni description, ni contenu, ni nombre de tâches.
+* `ACCOUNT_DELETED` : Suppression volontaire du compte par l'utilisateur (voir §5, cas de la rétention).
 * `ACCOUNT_BANNED` / `ACCOUNT_RESTORED` : Verrouillage manuel pour audit ou déblocage après vérification.
+
+### Immuabilité Contrainte
+La table est `INSERT only` par construction : `REVOKE UPDATE, DELETE ON audit_logs FROM <rôle applicatif>` côté PostgreSQL. Une piste d'audit modifiable ne vaut rien devant un juge ; la seule suppression possible est la purge programmée (§5), effectuée via le rôle d'administration.
 
 ---
 
@@ -45,7 +50,7 @@ La table est hébergée directement dans la base PostgreSQL principale de NuxiPr
 Les logs sont insérés de manière synchrone ou transactionnelle depuis le backend **Hono** via un helper unique `logAuditEvent(userId, action, metadata)` :
 
 1. **Via les `databaseHooks` de Better Auth :** Intercepte automatiquement les créations de sessions, mises à jour d'e-mail et modifications de statut 2FA.
-2. **Via les routes Hono sensibles :** Appelé explicitement lors des opérations destructrices (ex: `DELETE /api/projects/:id`).
+2. **Via les routes Hono sensibles :** Appelé explicitement lors des opérations destructrices (ex: `DELETE /api/projects/:id`) — **dans la même transaction** que l'action : impossible d'avoir une suppression sans sa trace, ni une trace sans suppression. Les identifiants (`projectId`, `projectName`) sont **réutilisés tels quels** depuis les données existantes, capturés avant la cascade — aucun identifiant nouveau n'est créé.
 
 ---
 
@@ -79,6 +84,9 @@ L'utilisateur doit fournir **3 preuves croisées** vérifiables dans PostgreSQL 
 ### Étape 3 : Issue de l'Audit
 * **Cas A — Identité prouvée :** L'administrateur restaure l'adresse e-mail légitime, réinitialise le 2FA compromis, et repasse `banned = false` (`banned_at = NULL`).
 * **Cas B — Preuve impossible (Perte totale des clés) :** L'accès est définitivement refusé. Le compte reste verrouillé (`banned = true`) en quarantaine pendant **2 ans** (délai légal de prescription / conservation sécurisée), puis l'intégralité du compte, des projets et des `audit_logs` associés est **purgée définitivement**.
+
+### Rétention — Compte Supprimé Volontairement
+En cas de suppression volontaire du compte (droit à l'effacement) : les données métier (projets, tâches, workspace) sont purgées immédiatement via la cascade. Les `audit_logs` de sécurité sont conservés **2 ans** (aligné sur la quarantaine, couvrant le délai de prescription contractuelle) sous base légale 6.1.f — c'est la trace qui permet à l'éditeur de prouver ce que le compte a fait de son vivant — puis purgés à leur tour.
 
 ---
 

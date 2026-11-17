@@ -1,6 +1,7 @@
 import { sendEmail } from "@backend/utils/PlunkEmail/magic-link";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth } from "better-auth";
+import { addOAuthServerContext, createAuthMiddleware } from "better-auth/api";
 import { admin, lastLoginMethod, magicLink } from "better-auth/plugins";
 import { db } from "./drizzle/connection/index";
 import * as schema from "./drizzle/schemas/index";
@@ -8,8 +9,8 @@ import { RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS } from "./lib/rate-limit-config";
 import { toLang } from "./logique/InitUserAccount/01-ensure-default-settings";
 import { seedAccountDefaults } from "./logique/InitUserAccount/seed";
 import {
-  consumeStashedLanguage,
   getUserLanguage,
+  resolveSeedLanguage,
   stashSignUpLanguage,
 } from "./logique/InitUserAccount/user-language";
 import { createLogger } from "./logique/logging/logger";
@@ -17,32 +18,39 @@ import { createLogger } from "./logique/logging/logger";
 const log = createLogger("auth");
 
 export const auth = betterAuth({
+  // OAuth sign-in starts as an XHR: the UI-language header IS available here
+  // (authClient sends it on every call), but NOT on the provider callback
+  // (browser navigation). Park it in the server-only OAuth state slot —
+  // the client cannot write serverContext — so user.create.after can read
+  // it back after the redirect. Same relay idea as the magic-link stash.
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path !== "/sign-in/social") return;
+      await addOAuthServerContext({
+        language: toLang(ctx.headers?.get("x-user-language")),
+      });
+    }),
+  },
   databaseHooks: {
     user: {
       create: {
-        after: async (user: { id: string; email: string }, hookCtx?: unknown) => {
+        after: async (
+          user: { id: string; email: string },
+          hookCtx?: unknown,
+        ) => {
           try {
-            // Le header n'EST PAS dispo ici (clic sur le lien = navigation
-            // navigateur → doc 08 §1). On relit le stash posé par
-            // sendMagicLink ; sinon default "en".
-            const ctx = hookCtx as
-              | {
-                context?: {
-                  internalAdapter: Parameters<typeof consumeStashedLanguage>[2];
-                };
-              }
-              | undefined;
-
+            // In which language is a new account born? One call — the rules
+            // (magic-link stash → OAuth state → fallback) live in
+            // user-language.ts.
+            const { language, source } = await resolveSeedLanguage(
+              user.email,
+              hookCtx,
+            );
             await seedAccountDefaults({
               id: user.id,
               email: user.email,
-              language: ctx?.context
-                ? await consumeStashedLanguage(
-                  user.email,
-                  toLang(null),
-                  ctx.context.internalAdapter,
-                )
-                : toLang(null),
+              language,
+              languageSource: source,
             });
           } catch (err) {
             // Garde-fou n°2 : un seed raté ne bloque JAMAIS la connexion.

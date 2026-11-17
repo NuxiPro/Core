@@ -23,6 +23,12 @@ export const deleteProjectHandler: RouteHandler<typeof DeletedProjectRoute, AppE
     if (deleted.length === 0) {
       return c.json({ message: "Project not found" }, 404);
     }
+    // Journal d'audit : une suppression définitive doit rester traçable
+    // (qui, quoi) pour pouvoir être opposée en cas de litige.
+    log.warn("[DELETE /deletedProject] Project permanently deleted by its owner", {
+      projectId: id,
+      userId: user.id,
+    });
     return c.json({ success: true }, 200);
   } catch (err) {
     log.error("[DELETE /deletedProject] Failed to delete project", err);

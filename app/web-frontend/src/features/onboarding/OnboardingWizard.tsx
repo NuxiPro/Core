@@ -1,9 +1,12 @@
 /**
  * Onboarding Wizard
  *
- * Conteneur simplifié — démarre directement sur la création du workspace.
+ * Conteneur simplifié — deux étapes : nom du workspace, puis mode
+ * d'archivage. La création (workspace + préférence) part d'un coup,
+ * pendant l'animation de chargement.
  */
 
+import { createLogger } from "@packages/shared/utils/logger";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
@@ -12,9 +15,16 @@ import {
   createWorkspace,
   type Workspace,
 } from "@/src/features/board/api/workspaces";
+import {
+  type ArchiveModeResult,
+  ArchiveModeStep,
+} from "@/src/features/onboarding/steps/ArchiveModeStep";
 import { WorkspaceStep } from "@/src/features/onboarding/steps/WorkspaceStep";
+import { patchSettings } from "@/src/features/settings/api/settings";
 
-type WizardStep = "workspace" | "loading" | "success";
+const log = createLogger("onboarding");
+
+type WizardStep = "workspace" | "archiveMode" | "loading" | "success";
 
 export function OnboardingWizard() {
   const navigate = useNavigate();
@@ -49,18 +59,33 @@ export function OnboardingWizard() {
     return () => cancelAnimationFrame(animFrameRef.current);
   }, [step]);
 
-  const handleSubmit = async (name: string) => {
+  // Étape 1 — le nom est retenu, la création n'a pas encore lieu.
+  const handleWorkspaceNext = (name: string) => {
     setWorkspaceName(name);
+    setStep("archiveMode");
+  };
+
+  // Étape 2 — création du workspace, puis préférences d'archivage.
+  const handleCreate = async ({ mode, delayDays }: ArchiveModeResult) => {
     setStep("loading");
 
     try {
       // Créer le workspace
-      const workspace = await createWorkspace({ name });
+      const workspace = await createWorkspace({ name: workspaceName });
 
       queryClient.setQueryData<Workspace[]>(["workspaces"], (old) => [
         ...(old ?? []),
         workspace,
       ]);
+
+      // Préférence non bloquante : en cas d'échec, le défaut "instant"
+      // s'applique et l'user pourra la refaire dans la fenêtre de
+      // personnalisation (à venir).
+      try {
+        await patchSettings({ archiveMode: mode, archiveDelayDays: delayDays });
+      } catch (err) {
+        log.warn("[onboarding] Failed to save archive mode preference", err);
+      }
 
       // Snap to 100%
       cancelAnimationFrame(animFrameRef.current);
@@ -75,7 +100,8 @@ export function OnboardingWizard() {
     } catch {
       cancelAnimationFrame(animFrameRef.current);
       setProgress(0);
-      setStep("workspace");
+      // Retour à l'étape du choix : le workspace n'a pas été créé.
+      setStep("archiveMode");
     }
   };
 
@@ -87,7 +113,15 @@ export function OnboardingWizard() {
           key="workspace"
           className="w-full animate-[fadeIn_0.35s_ease-out_forwards]"
         >
-          <WorkspaceStep onSubmit={handleSubmit} isSubmitting={false} />
+          <WorkspaceStep onSubmit={handleWorkspaceNext} isSubmitting={false} />
+        </div>
+      )}
+      {step === "archiveMode" && (
+        <div
+          key="archiveMode"
+          className="w-full animate-[fadeIn_0.35s_ease-out_forwards]"
+        >
+          <ArchiveModeStep onSubmit={handleCreate} />
         </div>
       )}
       {(step === "loading" || step === "success") && (

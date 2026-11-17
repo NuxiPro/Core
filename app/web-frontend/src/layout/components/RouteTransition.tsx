@@ -8,10 +8,13 @@ export function RouteTransition({ children }: { children: React.ReactNode }) {
   const prevPath = useRef(location.pathname);
 
   useEffect(() => {
-    const isArchive =
-      location.pathname.endsWith("/archive") ||
-      prevPath.current.endsWith("/archive");
-    if (location.pathname !== prevPath.current && !isArchive) {
+    // Pas de transition au sein de la section /kanban : changement de projet,
+    // /archive et /settings y remplacent le board en place — le fondu
+    // sortie/entrée se percevrait comme un clignotement.
+    const isKanbanSection =
+      prevPath.current.startsWith("/kanban") &&
+      location.pathname.startsWith("/kanban");
+    if (location.pathname !== prevPath.current && !isKanbanSection) {
       prevPath.current = location.pathname;
       setStage("exit");
     } else {

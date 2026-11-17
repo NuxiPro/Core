@@ -1,1 +1,0 @@
-ALTER TABLE "user_setting" ADD CONSTRAINT "user_setting_user_id_unique" UNIQUE("user_id");

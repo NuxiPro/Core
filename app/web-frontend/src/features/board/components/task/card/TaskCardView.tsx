@@ -152,17 +152,14 @@ const TaskCardView = memo(function TaskCardView({
       data-task-card={!isOverlay}
       data-task-card-overlay={isOverlay}
       {...overlay.spread}
+      onClick={handleCardClick}
       onKeyDown={handleKeyDown}
       role="button"
       tabIndex={isOverlay ? -1 : 0}
       aria-dropeffect={isOver ? "move" : undefined}
       className={cardClassName(isOver, isSelected, isOverlay, glowClass)}
     >
-      {/* Clic sur une surface séparée des listeners drag (pattern Kaneo) :
-          le wrapper porte le drag, le contenu porte le clic. */}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: le wrapper parent est déjà role="button" avec gestion clavier (onKeyDown), le clic enfant en est la souris-surface dédiée au drag */}
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: même justification — surface de clic enfant d'un bouton accessible, pas un contrôle indépendant */}
-      <div onClick={handleCardClick}>
+      <div>
         {isOver && (
           <div
             className="absolute -top-1.5 left-3 right-3 h-0.5 bg-primary rounded-full shadow-[0_1px_4px_rgba(94,106,210,0.4)] pointer-events-none"

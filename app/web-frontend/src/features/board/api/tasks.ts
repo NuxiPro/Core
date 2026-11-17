@@ -68,6 +68,7 @@ export async function updateTask(
     "Impossible de mettre à jour la tâche",
     "kanban/update-task",
   );
+  log.debug("success", body);
   return body.data;
 }
 

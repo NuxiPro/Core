@@ -60,6 +60,8 @@ describe("settings API", () => {
       theme: "system",
       emailNotifications: false,
       language: "en",
+      archiveMode: "instant",
+      archiveDelayDays: null,
     });
   });
 
