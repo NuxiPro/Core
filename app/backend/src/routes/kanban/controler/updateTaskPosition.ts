@@ -1,11 +1,15 @@
 import {
+  archiveCard,
+  getArchiveMode,
+} from "@backend/src/logique/archive/archive-card";
+import {
   MoveTask,
   PositionImpossibleError,
 } from "@backend/src/logique/column/indexactionTaskV2";
 import { createLogger } from "@backend/src/logique/logging/logger";
 import type { AppEnv } from "@backend/src/types/app-env";
 import type { RouteHandler } from "@hono/zod-openapi";
-import { updateTaskPositionRoute } from "../task.router";
+import type { updateTaskPositionRoute } from "../task.router";
 
 const log = createLogger("kanban/updateTaskPosition");
 
@@ -23,6 +27,23 @@ export const updateTaskPositionHandler: RouteHandler<
     const { id } = c.req.valid("param");
     const { colId, overTaskId, insertBefore } = c.req.valid("json");
 
+    // Instant archive mode: a task dropped into Done goes straight to the
+    // archive and never lands on the board. The server decides this, not
+    // the client. Note: anyone who can move a task (task:update) also has
+    // archive:create in every role, so this doesn't widen permissions.
+    if (colId === "Done" && (await getArchiveMode(user.id)) === "instant") {
+      const archived = await archiveCard(id, user.id);
+      if (!archived) {
+        return c.json({ message: "Task not found" }, 404);
+      }
+      log.debug("[PATCH /updateTaskPosition] archived instantly", {
+        taskId: id,
+      });
+      return c.json({ success: true, archived: true }, 200);
+    }
+
+    // Normal path (any other column, or Done in "time" mode): move it and
+    // report the new position. The lazy sweep archives "time" mode later.
     const newPosition = await MoveTask(
       id,
       user.id,
@@ -31,7 +52,7 @@ export const updateTaskPositionHandler: RouteHandler<
       insertBefore,
     );
 
-    return c.json({ success: true, newPosition }, 200);
+    return c.json({ success: true, archived: false, newPosition }, 200);
   } catch (err: unknown) {
     if (err instanceof PositionImpossibleError) {
       log.warn("[PATCH /updateTaskPosition] impossible position", {

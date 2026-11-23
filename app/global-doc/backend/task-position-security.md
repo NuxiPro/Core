@@ -8,15 +8,22 @@ Rule: the client proposes where it dropped, the server decides if allowed and co
 Browser (drag & drop)
   │  sends only: { colId, overTaskId, insertBefore }
   ▼  PATCH /api/v1/matrice/updateTaskPosition/{id}
-Server (MoveTask, one transaction)
-  │  1. task exists + mine?        → else 404
-  │  2. overTask exists + mine + same project?  → else 404 / 409
-  │  3. resolve prev/next (max 2 rows, indexed, no column scan)
-  │  4. newPos = generateKeyBetween(prev, next)
-  │     positions too long (>180)? → rebalance first
-  │  5. UPDATE ... WHERE id + userId
-  │     unique conflict (23505)? → rebalance + retry once
-  ▼  200 { success, newPosition }
+Server
+  │  colId = Done + archive mode "instant"?
+  │    → yes: archiveCard() — one transaction, task leaves the board
+  │           (same helper as POST /newArchive; mode read from DB,
+  │           never from the client)
+  ▼  200 { success, archived: true }   (no position: task is archived)
+  │
+  │    → no: MoveTask, one transaction
+  │      1. task exists + mine?        → else 404
+  │      2. overTask exists + mine + same project?  → else 404 / 409
+  │      3. resolve prev/next (max 2 rows, indexed, no column scan)
+  │      4. newPos = generateKeyBetween(prev, next)
+  │         positions too long (>180)? → rebalance first
+  │      5. UPDATE ... WHERE id + userId
+  │         unique conflict (23505)? → rebalance + retry once
+  ▼  200 { success, archived: false, newPosition }
 ```
 
 ## Drop cases
@@ -38,4 +45,4 @@ A client-sent position could reference another user's task and move cards into s
 
 ## Contract
 
-`PATCH /api/v1/matrice/updateTaskPosition/{id}` — body `{ colId, overTaskId: uuid|null, insertBefore: boolean }` → 200 `{ success, newPosition }`, else 400/401/404/409/500.
+`PATCH /api/v1/matrice/updateTaskPosition/{id}` — body `{ colId, overTaskId: uuid|null, insertBefore: boolean }` → 200 `{ success, archived, newPosition? }` (`archived: true` in instant archive mode when dropping into Done, then `newPosition` is absent), else 400/401/404/409/500.

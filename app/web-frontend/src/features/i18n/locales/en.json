@@ -30,8 +30,8 @@
     "archiveModeInstantTitle": "Instant",
     "archiveModeInstantBadge": "Recommended to try the tool",
     "archiveModeInstantDesc": "Tasks dropped in Done are archived right away. Simple and direct.",
-    "archiveModeTimeTitle": "Automatic",
-    "archiveModeTimeDesc": "Your tasks stay in Done, then move to the archive — without you thinking about it.",
+    "archiveModeTimeTitle": "Time-based",
+    "archiveModeTimeDesc": "Your tasks stay in Done, then move to the archive on their own after the delay you pick.",
     "archiveDelayQuestion": "How often should your tasks move to the archive?",
     "archiveDelay7": "7 days",
     "archiveDelay14": "14 days",
@@ -217,19 +217,44 @@
     "tabs": {
       "general": "General",
       "account": "Account & Security",
-      "archiving": "Archiving & Auto"
+      "archiving": "Archiving"
     },
     "archiving": {
-      "label": "Archiving & Auto",
-      "description": "Automatic retention of completed tasks.",
-      "autoArchive": "Auto-archiving",
-      "autoArchiveDesc": "Automatically moves completed tasks to the archive.",
-      "delay": "Delay before archiving",
-      "delayDesc": "How long completed tasks are kept before being archived.",
-      "delay7": "After 7 days",
-      "delay30": "After 30 days",
-      "delay90": "After 90 days",
-      "retentionNote": "Completed tasks are kept securely and remain searchable in the global archive area."
+      "label": "Archiving",
+      "description": "Choose when finished tasks move to the archive",
+      "timeBasedArchive": "Time-based archive",
+      "timeBasedArchiveDesc": "On: tasks in Done move to the archive on their own after the delay below. Off: they are archived the moment you drop them in Done.",
+      "delay": "Archive after",
+      "delayDesc": "How long a completed task stays in Done before it is archived.",
+      "delay7": "7 days",
+      "delay30": "30 days",
+      "delay90": "90 days",
+      "retentionNote": "Archived tasks are never lost: restore any of them to the board in one click."
+    },
+    "archive": {
+      "title": "Archive",
+      "close": "Close",
+      "panelDesc": "Archived tasks of {{projectName}}",
+      "searchLabel": "Search archived tasks",
+      "searchPlaceholder": "Search archive…",
+      "clearSearch": "Clear search",
+      "periodLabel": "Filter by period",
+      "allDates": "All",
+      "last7Days": "7 days",
+      "thisMonth": "This month",
+      "group": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "last7Days": "Last 7 days"
+      },
+      "openTask": "Open task",
+      "restore": "Restore",
+      "restoreLabel": "Restore {{title}}",
+      "emptyTitle": "Nothing archived yet",
+      "emptyDesc": "Completed tasks will show up here once archived.",
+      "noResultsTitle": "No results",
+      "noResultsDesc": "Try another word or period.",
+      "resetFilters": "Reset filters"
     }
   },
   "sidebar": {
@@ -276,14 +301,24 @@
     "last7Days": "Last 7 days",
     "thisMonth": "This month",
     "periodLabel": "Filter by period",
+    "group": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "last7Days": "Last 7 days"
+    },
     "exportMd": "Export .md",
     "exportLabel": "Export archives as Markdown, Pro feature",
     "archivedOn": "Archived on {{date}}",
     "restore": "Restore",
     "restoreLabel": "Restore task {{title}}",
+    "openTask": "Open task",
     "close": "Close archives panel",
+    "clearSearch": "Clear search",
     "emptyTitle": "No task found",
     "emptyDesc": "Try to change your search or the selected period.",
+    "noResultsTitle": "No results",
+    "noResultsDesc": "Try another word or period.",
+    "resetFilters": "Reset filters",
     "panelDesc": "Archived tasks panel for project {{projectName}} — search and restore"
   }
 }

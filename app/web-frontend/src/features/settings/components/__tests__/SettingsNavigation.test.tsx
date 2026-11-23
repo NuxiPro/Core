@@ -8,7 +8,7 @@ describe("SettingsNavigation", () => {
 
     expect(screen.getByText("General")).toBeInTheDocument();
     expect(screen.getByText("Account & Security")).toBeInTheDocument();
-    expect(screen.getByText("Archiving & Auto")).toBeInTheDocument();
+    expect(screen.getByText("Archiving")).toBeInTheDocument();
   });
 
   it("marks the active tab and notifies tab changes", () => {

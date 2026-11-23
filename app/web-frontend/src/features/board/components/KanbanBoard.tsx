@@ -27,7 +27,8 @@ export function KanbanBoard() {
   const { tasks, prefix, isLoading, addTask, updateTask, deleteTask } =
     useTasks(projectId);
 
-  const { moveTask } = useReorderTask(projectId);
+  const { moveTask, archivingIds, isArchivePulsing } =
+    useReorderTask(projectId);
 
   // Group by column, preserving cache order (optimistic splice + server order).
   // No re-sort here: sorting by positionString would cancel the local drop.
@@ -95,6 +96,8 @@ export function KanbanBoard() {
                 onDelete={deleteTask}
                 isLoading={isLoading}
                 activeTaskId={activeTask?.id ?? null}
+                archivingTaskIds={archivingIds}
+                archivePulse={isArchivePulsing}
                 onArchiveOpen={() =>
                   navigate({
                     to: "/kanban/$projectSlug/archive",

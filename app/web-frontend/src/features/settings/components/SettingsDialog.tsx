@@ -84,7 +84,14 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 setEmail={settings.setEmail}
               />
             )}
-            {activeTab === "archiving" && <ArchivingTab />}
+            {activeTab === "archiving" && (
+              <ArchivingTab
+                archiveMode={settings.archiveMode}
+                archiveDelayDays={settings.archiveDelayDays}
+                setArchiveMode={settings.setArchiveMode}
+                setArchiveDelayDays={settings.setArchiveDelayDays}
+              />
+            )}
           </div>
 
           {/* Footer sticky — uniquement pour la validation manuelle */}

@@ -101,7 +101,11 @@ export function NavProjects({
                 aria-label={`${t("settings.projectSettings")}: ${item.name}`}
                 onPointerEnter={preloadProjectSettings}
                 onFocus={preloadProjectSettings}
-                className="cursor-pointer absolute right-1.5 top-1/2 z-10 inline-flex size-6 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-opacity hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group-hover/menu-item:opacity-100"
+                className={`cursor-pointer absolute right-1.5 top-1/2 z-10 inline-flex size-6 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                  isActive
+                    ? "opacity-100"
+                    : "opacity-0 group-hover/menu-item:opacity-100"
+                }`}
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();

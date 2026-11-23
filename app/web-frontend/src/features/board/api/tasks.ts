@@ -91,7 +91,12 @@ export async function moveTask(
     insertBefore: boolean;
     signal?: AbortSignal;
   },
-): Promise<{ success: boolean; newPosition: string }> {
+): Promise<{
+  success: boolean;
+  archived: boolean;
+  // undefined when archived — the task has no position anymore.
+  newPosition?: string | undefined;
+}> {
   const { signal, ...rest } = options;
   // Validation client — bloque le payload malveillant avant le réseau
   if (!(COLUMN_IDS as readonly string[]).includes(rest.colId)) {
@@ -116,13 +121,17 @@ export async function moveTask(
 
   log.debug("← response", { status: response.status, ok: response.ok });
 
-  const body = await handleResponse<{ success: boolean; newPosition: string }>(
-    response,
-    "Impossible de déplacer la tâche",
-    "kanban/move-task",
-  );
+  const body = await handleResponse<{
+    success: boolean;
+    archived: boolean;
+    newPosition?: string | undefined;
+  }>(response, "Impossible de déplacer la tâche", "kanban/move-task");
 
   log.debug("success", body);
 
-  return { success: body.success, newPosition: body.newPosition };
+  return {
+    success: body.success,
+    archived: body.archived,
+    newPosition: body.newPosition,
+  };
 }

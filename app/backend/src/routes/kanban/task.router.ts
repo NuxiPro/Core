@@ -1,16 +1,16 @@
-import { createRoute, z } from "@hono/zod-openapi";
 import { requirePermission } from "@backend/src/lib/auth-middleware";
+import { createRoute, z } from "@hono/zod-openapi";
 import {
   CreateTaskInput,
   CreateTaskResponse,
   DeletedTask,
+  ErrorResponse,
   GetTaskDetailResponse,
   GetTaskSummaryResponse,
-  ErrorResponse,
   TaskIdParam,
-  UpdateTaskBody,
-  UpdatePositionBody,
   TaskPositionParam,
+  UpdatePositionBody,
+  UpdateTaskBody,
 } from "./task.shemas";
 
 const AuthErrorResponse = z.union([
@@ -51,7 +51,8 @@ export const createTaskRoute = createRoute({
       content: jsonContent(AuthErrorResponse),
     },
     403: {
-      description: "The authenticated user does not have permission to create tasks.",
+      description:
+        "The authenticated user does not have permission to create tasks.",
       content: jsonContent(ForbiddenResponse),
     },
     404: {
@@ -83,7 +84,8 @@ export const deletedTaskRoute = createRoute({
       content: jsonContent(AuthErrorResponse),
     },
     403: {
-      description: "The authenticated user does not have permission to delete tasks.",
+      description:
+        "The authenticated user does not have permission to delete tasks.",
       content: jsonContent(ForbiddenResponse),
     },
     404: {
@@ -117,7 +119,8 @@ export const getTaskDetailRoute = createRoute({
       content: jsonContent(AuthErrorResponse),
     },
     403: {
-      description: "The authenticated user does not have permission to read tasks.",
+      description:
+        "The authenticated user does not have permission to read tasks.",
       content: jsonContent(ForbiddenResponse),
     },
     404: {
@@ -153,7 +156,8 @@ export const getTasksRoute = createRoute({
       content: jsonContent(AuthErrorResponse),
     },
     403: {
-      description: "The authenticated user does not have permission to read tasks.",
+      description:
+        "The authenticated user does not have permission to read tasks.",
       content: jsonContent(ForbiddenResponse),
     },
     500: {
@@ -203,7 +207,8 @@ export const updateTaskRoute = createRoute({
       content: jsonContent(AuthErrorResponse),
     },
     403: {
-      description: "The authenticated user does not have permission to update tasks.",
+      description:
+        "The authenticated user does not have permission to update tasks.",
       content: jsonContent(ForbiddenResponse),
     },
     404: {
@@ -220,7 +225,8 @@ export const updateTaskRoute = createRoute({
 export const updateTaskPositionRoute = createRoute({
   method: "patch",
   path: "/updateTaskPosition/{id}",
-  description: "Moves a task to a new position using fractional indexing.",
+  description:
+    "Moves a task to a new position using fractional indexing. In instant archive mode, dropping it into Done archives it instead.",
   middleware: [requirePermission({ task: ["update"] })],
   request: {
     params: TaskPositionParam,
@@ -230,9 +236,16 @@ export const updateTaskPositionRoute = createRoute({
   },
   responses: {
     200: {
-      description: "Task position updated successfully.",
+      description: "Task moved successfully (or archived, see `archived`).",
       content: jsonContent(
-        z.object({ success: z.boolean(), newPosition: z.string() }),
+        z.object({
+          success: z.boolean(),
+          // true = instant archive mode: the task went to the archive
+          // instead of staying in Done.
+          archived: z.boolean(),
+          // Missing when archived: the task no longer has a position.
+          newPosition: z.string().optional(),
+        }),
       ),
     },
     400: {
@@ -244,7 +257,8 @@ export const updateTaskPositionRoute = createRoute({
       content: jsonContent(AuthErrorResponse),
     },
     403: {
-      description: "The authenticated user does not have permission to move tasks.",
+      description:
+        "The authenticated user does not have permission to move tasks.",
       content: jsonContent(ForbiddenResponse),
     },
     404: {

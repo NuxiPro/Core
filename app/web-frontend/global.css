@@ -401,6 +401,82 @@ html {
   pointer-events: none;
 }
 
+/* Archive exit — the card is filed away, not deleted: it pauses for a
+   beat, then lifts gently and glides out. Deliberately slower and softer
+   than the delete animation, it should feel calm, never destructive.
+   Keep the 700ms in sync with ARCHIVE_ANIMATION_MS in useReorderTask
+   (the cache removes the card slightly after the animation ends). */
+@keyframes task-archive-out {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  25% {
+    /* the "picking the card up" beat before it leaves */
+    transform: translateY(-6px) scale(1.015);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-18px) scale(0.97);
+    opacity: 0;
+  }
+}
+.task-card--archiving {
+  animation: task-archive-out 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  pointer-events: none;
+}
+
+/* Fallback used by the reduced-motion block below: fade out only. */
+@keyframes task-archive-fade {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Small check stamp shown while the card exits — the "done, filed away"
+   cue. Animates the badge only, the card's own transform stays untouched. */
+@keyframes archive-check-in {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.task-card__archive-check {
+  animation: archive-check-in 260ms cubic-bezier(0.25, 0.1, 0.25, 1) 80ms both;
+}
+
+/* Archive button (Done column): one quiet ring beat right after a task
+   is archived, so the user sees where it went. The class is added and
+   removed by useReorderTask — nothing pulses during normal browsing,
+   and the next archive gets a fresh beat.
+   Transform/opacity only, so the beat stays cheap. */
+@keyframes archive-button-pulse {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+.archive-button--pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgb(94 106 210 / 0.7);
+  /* Invisible until a pulse starts — one single beat while the class
+     is on (see ARCHIVE_PULSE_MS for how long it stays). */
+  opacity: 0;
+  pointer-events: none;
+  animation: archive-button-pulse 900ms cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   html,
@@ -417,6 +493,16 @@ html {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+  /* Archive exit: no lift, just a plain fade for motion-sensitive users. */
+  .task-card--archiving {
+    animation-name: task-archive-fade;
+  }
+  /* Archive button: hold a soft static ring instead of beating. */
+  .archive-button--pulse::after {
+    animation: none;
+    opacity: 0.6;
+    transform: scale(1.15);
   }
 }
 

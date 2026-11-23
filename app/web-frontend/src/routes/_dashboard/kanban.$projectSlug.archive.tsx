@@ -1,7 +1,10 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { lazy, Suspense, useMemo } from "react";
-import { getArchivedTasks, restoreTask } from "@/src/features/archive/api";
+import {
+  getArchivedTasks,
+  restoreTask,
+} from "@/src/features/archive/api/ArchiveApi";
 import { useProjects } from "@/src/features/board/hooks/useProjects";
 import { findProjectBySlug } from "@/src/shared/utils/utils";
 
@@ -35,10 +38,15 @@ function ArchiveRoute() {
   };
 
   // Archived list: disabled until the project is resolved.
+  // refetchOnMount must opt out of the global default (false): when the
+  // sheet opens after a task was archived, the list was invalidated while
+  // this route was unmounted — the stale cache must refresh here, or the
+  // user sees the old list until a full page reload.
   const { data: tasks = [] } = useQuery({
     queryKey: ["archived", projectId],
     queryFn: () => getArchivedTasks(requireProjectId()),
     enabled: !!projectId,
+    refetchOnMount: true,
   });
 
   const close = () =>
@@ -51,7 +59,13 @@ function ArchiveRoute() {
         onOpenChange={(o) => !o && close()}
         tasks={tasks}
         onRestore={async (id) => {
-          await restoreTask(id);
+          try {
+            await restoreTask(id);
+          } catch {
+            // restoreTask already logged the error — swallow it so a failed
+            // restore never surfaces as an unhandled rejection in the console.
+            return;
+          }
           qc.invalidateQueries({ queryKey: ["archived", projectId] });
           // The board cache lives under ["board", projectId] (useTasks) —
           // refreshing it brings the restored task back on the kanban.

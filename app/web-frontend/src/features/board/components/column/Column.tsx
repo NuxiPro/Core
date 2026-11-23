@@ -9,6 +9,9 @@ import ColumnHeader from "./ColumnHeader";
 import { TaskList } from "./TaskList";
 import { useSelectedTask } from "./useSelectedTask";
 
+// Stable default so memoized children never see a fresh empty array.
+const EMPTY_ARCHIVING: readonly string[] = [];
+
 function ColumnInner({
   cfg,
   colId,
@@ -19,6 +22,8 @@ function ColumnInner({
   onDelete,
   isLoading = false,
   activeTaskId = null,
+  archivingTaskIds = EMPTY_ARCHIVING,
+  archivePulse = false,
   onArchiveOpen,
 }: TaskColumnProps & { onArchiveOpen?: () => void }) {
   const { selectedTaskId, selectTask, clearSelectedTask } =
@@ -53,6 +58,7 @@ function ColumnInner({
         cfg={cfg}
         tasks={tasks}
         onArchiveView={colId === "Done" ? onArchiveOpen : undefined}
+        archivePulse={archivePulse}
       />
       <div
         className={`mx-2 mb-1 min-h-0 flex-1 flex flex-col overflow-hidden rounded-xl bg-background shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-300 ${isOver ? "border border-primary/50 ring-2 ring-primary/15" : "border border-transparent"}`}
@@ -65,6 +71,7 @@ function ColumnInner({
           onSelectTask={selectTask}
           onDeleteTask={onDelete}
           activeTaskId={activeTaskId}
+          archivingTaskIds={archivingTaskIds}
         />
       </div>
 

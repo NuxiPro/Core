@@ -28,7 +28,7 @@ Pattern for all three: scope by `userId`, `requirePermission`, `404` when not fo
 - [ ] Migré le backend de loops à plunk
 
 ## Bosser le onbording du projet
-- [ ] Prendre la structure de design de trello sans reprendre sa complexité
+- [X] Prendre la structure de design de trello sans reprendre sa complexité
 
 ---
 

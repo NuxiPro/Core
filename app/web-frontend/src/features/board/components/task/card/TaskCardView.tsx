@@ -7,7 +7,7 @@ import {
   type PriorityLabel,
   priorityStyles,
 } from "@packages/shared/types/task/priority-level";
-import { CalendarDays, Trash } from "lucide-react";
+import { CalendarDays, Check, Trash } from "lucide-react";
 import { type KeyboardEvent, memo, useCallback } from "react";
 import i18n from "@/src/features/i18n";
 import { Button } from "@/src/layout/components/ui/button";
@@ -65,6 +65,7 @@ function cardClassName(
   isSelected: boolean,
   isOverlay: boolean,
   glowClass: string,
+  isArchiving: boolean,
 ): string {
   return cn(
     "task-card group/card relative w-full rounded-xl px-3.5 pt-4 pb-3.5 select-none outline-none",
@@ -77,6 +78,9 @@ function cardClassName(
     "bg-card dark:bg-popover border border-border-subtle dark:border-border-subtle shadow-[0_1px_3px_0_rgba(17,19,24,0.10),0_4px_16px_0_rgba(17,19,24,0.10),0_0_0_1px_rgba(17,19,24,0.06)] dark:shadow-[0_2px_8px_0_rgba(0,0,0,0.5),0_8px_24px_0_rgba(0,0,0,0.45)]",
     "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card",
     glowClass,
+    // Exit animation wins over everything below (CSS animations beat
+    // regular declarations), so the card glides out on its own.
+    isArchiving && "task-card--archiving",
     isSelected &&
       "border-primary dark:border-primary shadow-[0_0_0_2px_rgba(94,106,210,0.20),0_4px_16px_0_rgba(94,106,210,0.12)] dark:shadow-[0_0_0_2px_rgba(94,106,210,0.30),0_4px_16px_0_rgba(0,0,0,0.5)]",
     isOverlay
@@ -94,6 +98,7 @@ const TaskCardView = memo(function TaskCardView({
   isSelected = false,
   isOverlay = false,
   activeTaskId = null,
+  isArchiving = false,
 }: ExtendedTaskCardProps) {
   const { handleCardClick, handleDelete } = useTaskCardActions({
     task,
@@ -157,7 +162,13 @@ const TaskCardView = memo(function TaskCardView({
       role="button"
       tabIndex={isOverlay ? -1 : 0}
       aria-dropeffect={isOver ? "move" : undefined}
-      className={cardClassName(isOver, isSelected, isOverlay, glowClass)}
+      className={cardClassName(
+        isOver,
+        isSelected,
+        isOverlay,
+        glowClass,
+        isArchiving,
+      )}
     >
       <div>
         {isOver && (
@@ -185,6 +196,18 @@ const TaskCardView = memo(function TaskCardView({
         </div>
         <TaskCardMeta task={task} priorityKey={priorityKey} />
       </div>
+      {isArchiving && (
+        // "Filed away" confirmation: a small check stamp while the card
+        // lifts out. Decorative only — the card text still gets read.
+        <span
+          aria-hidden
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <span className="task-card__archive-check flex size-6 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-500 ring-1 ring-emerald-500/30 backdrop-blur-sm">
+            <Check className="size-3.5" strokeWidth={3} />
+          </span>
+        </span>
+      )}
     </div>
   );
 });

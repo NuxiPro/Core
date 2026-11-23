@@ -113,7 +113,10 @@ const app = new OpenAPIHono<AppEnv>({
   .use("/archive/*", apiRateLimit())
   .use("*", async (c, next) => {
     const method = c.req.method;
-    if (["POST", "PATCH"].includes(method)) {
+    // PATCH endpoints that are pure actions carry no payload at all
+    // (e.g. archive restore) — they must be allowed through without a body.
+    const isBodylessAction = c.req.path.includes("/restoreArchive/");
+    if (["POST", "PATCH"].includes(method) && !isBodylessAction) {
       const contentLength = Number(c.req.header("content-length") || 0);
       if (contentLength === 0) {
         return c.json({ error: "Body requis" }, 400);

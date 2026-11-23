@@ -34,7 +34,6 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   const { workspaces, isError: workspacesError } = useWorkspaces();
   const location = useLocation();
 
-  // Slug depuis l'URL : /kanban/marketing-q3-a671
   const slugMatch = location.pathname.match(/\/kanban\/([^/]+)/);
   const slug = slugMatch?.[1] ?? "";
   const matchedProject = findProjectBySlug(projects, slug);

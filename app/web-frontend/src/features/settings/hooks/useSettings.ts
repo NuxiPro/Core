@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/src/features/i18n";
 import type {
+  ArchiveMode,
   Language,
   UserSettingsPatch,
 } from "@/src/features/settings/api/settings";
@@ -63,11 +64,17 @@ export function useSettings(open: boolean) {
   const [language, setLanguageLocal] = useState<Language>("fr");
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [email, setEmail] = useState(user?.email || "");
+  const [archiveMode, setArchiveModeLocal] = useState<ArchiveMode>("instant");
+  const [archiveDelayDays, setArchiveDelayDaysLocal] = useState<number | null>(
+    null,
+  );
 
   useEffect(() => {
     if (settings) {
       setLanguageLocal(settings.language);
       setEmailNotifications(settings.emailNotifications);
+      setArchiveModeLocal(settings.archiveMode);
+      setArchiveDelayDaysLocal(settings.archiveDelayDays);
     }
   }, [settings]);
 
@@ -82,6 +89,25 @@ export function useSettings(open: boolean) {
   const setEmailNotificationsPersisted = (v: boolean) => {
     setEmailNotifications(v);
     saveSettings({ emailNotifications: v });
+  };
+
+  // Archiving applies directly too (PATCH → one GET of re-sync, same as
+  // the other settings — nothing loads separately for the tab).
+  const setArchiveMode = (v: ArchiveMode) => {
+    setArchiveModeLocal(v);
+    // Turning the delayed mode on with no delay stored yet: send the
+    // default (30 days) along so the select always has a value.
+    if (v === "time" && archiveDelayDays === null) {
+      setArchiveDelayDaysLocal(30);
+      saveSettings({ archiveMode: v, archiveDelayDays: 30 });
+      return;
+    }
+    saveSettings({ archiveMode: v });
+  };
+
+  const setArchiveDelayDays = (v: number) => {
+    setArchiveDelayDaysLocal(v);
+    saveSettings({ archiveDelayDays: v });
   };
 
   const isProfileDirty = useMemo(
@@ -115,6 +141,10 @@ export function useSettings(open: boolean) {
     setLanguage,
     emailNotifications,
     setEmailNotifications: setEmailNotificationsPersisted,
+    archiveMode,
+    archiveDelayDays,
+    setArchiveMode,
+    setArchiveDelayDays,
     handleSaveProfile,
   };
 }

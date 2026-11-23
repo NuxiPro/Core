@@ -30,8 +30,8 @@
     "archiveModeInstantTitle": "Instantané",
     "archiveModeInstantBadge": "Recommandé pour essayer l'outil",
     "archiveModeInstantDesc": "Les tâches déposées dans « Terminé » partent immédiatement à l'archive. Simple et direct.",
-    "archiveModeTimeTitle": "Automatique",
-    "archiveModeTimeDesc": "Vos tâches restent dans « Terminé », puis partent à l'archive — sans que vous y pensiez.",
+    "archiveModeTimeTitle": "Basée sur le temps",
+    "archiveModeTimeDesc": "Vos tâches restent dans « Terminé », puis partent à l'archive d'elles-mêmes après le délai choisi.",
     "archiveDelayQuestion": "Tous les combien de temps vos tâches doivent-elles partir à l'archive ?",
     "archiveDelay7": "7 jours",
     "archiveDelay14": "14 jours",
@@ -214,19 +214,44 @@
     "tabs": {
       "general": "Général",
       "account": "Compte & Sécurité",
-      "archiving": "Archivage & Auto"
+      "archiving": "Archivage"
     },
     "archiving": {
-      "label": "Archivage & Auto",
-      "description": "Rétention automatique des tâches terminées (« Done »).",
-      "autoArchive": "Archivage automatique",
-      "autoArchiveDesc": "Déplace automatiquement les tâches « Done » vers les archives.",
-      "delay": "Délai avant archivage",
-      "delayDesc": "Durée de conservation des tâches terminées avant archivage.",
-      "delay7": "Après 7 jours",
-      "delay30": "Après 30 jours",
-      "delay90": "Après 90 jours",
-      "retentionNote": "Vos tâches terminées sont conservées de manière sécurisée et restent recherchables dans la zone d'archivage globale."
+      "label": "Archivage",
+      "description": "Choisissez quand les tâches terminées partent à l'archive",
+      "timeBasedArchive": "Archive basée sur le temps",
+      "timeBasedArchiveDesc": "Activé : les tâches dans Done partent à l'archive d'elles-mêmes après le délai ci-dessous. Désactivé : elles sont archivées dès le dépôt dans Done.",
+      "delay": "Archiver après",
+      "delayDesc": "Temps pendant lequel une tâche terminée reste dans Done avant d'être archivée.",
+      "delay7": "7 jours",
+      "delay30": "30 jours",
+      "delay90": "90 jours",
+      "retentionNote": "Les tâches archivées ne sont jamais perdues : restaurez-les sur le board en un clic."
+    },
+    "archive": {
+      "title": "Archive",
+      "close": "Fermer",
+      "panelDesc": "Tâches archivées de {{projectName}}",
+      "searchLabel": "Rechercher dans les tâches archivées",
+      "searchPlaceholder": "Rechercher dans l'archive…",
+      "clearSearch": "Effacer la recherche",
+      "periodLabel": "Filtrer par période",
+      "allDates": "Tout",
+      "last7Days": "7 jours",
+      "thisMonth": "Ce mois-ci",
+      "group": {
+        "today": "Aujourd'hui",
+        "yesterday": "Hier",
+        "last7Days": "7 derniers jours"
+      },
+      "openTask": "Ouvrir la tâche",
+      "restore": "Restaurer",
+      "restoreLabel": "Restaurer {{title}}",
+      "emptyTitle": "Rien d'archivé pour l'instant",
+      "emptyDesc": "Les tâches terminées apparaîtront ici une fois archivées.",
+      "noResultsTitle": "Aucun résultat",
+      "noResultsDesc": "Essaie un autre mot ou une autre période.",
+      "resetFilters": "Réinitialiser les filtres"
     }
   },
   "sidebar": {
@@ -276,14 +301,24 @@
     "last7Days": "7 derniers jours",
     "thisMonth": "Ce mois-ci",
     "periodLabel": "Filtrer par période",
+    "group": {
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "last7Days": "7 derniers jours"
+    },
     "exportMd": "Exporter .md",
     "exportLabel": "Exporter les archives en Markdown, fonctionnalité Pro",
     "archivedOn": "Archivé le {{date}}",
     "restore": "Restaurer",
     "restoreLabel": "Restaurer la tâche {{title}}",
+    "openTask": "Ouvrir la tâche",
     "close": "Fermer le panneau des archives",
+    "clearSearch": "Effacer la recherche",
     "emptyTitle": "Aucune tâche trouvée",
     "emptyDesc": "Essayez de modifier votre recherche ou changez la période sélectionnée.",
+    "noResultsTitle": "Aucun résultat",
+    "noResultsDesc": "Essayez un autre mot ou une autre période.",
+    "resetFilters": "Réinitialiser les filtres",
     "panelDesc": "Panneau des tâches archivées du projet {{projectName}} — recherche et restauration"
   }
 }

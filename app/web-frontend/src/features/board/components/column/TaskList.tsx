@@ -20,6 +20,9 @@ import { EmptyState } from "./EmptyState";
 const TASK_CARD_HEIGHT = 120;
 const TASK_GAP = 8;
 
+// Stable default so the memoized cards don't re-render on a fresh [].
+const EMPTY_ARCHIVING: readonly string[] = [];
+
 const EMPTY_STATE: Record<
   ColumnId,
   { icon: React.ReactNode; title: string; description: string }
@@ -49,6 +52,7 @@ export const TaskList = memo(function TaskList({
   onSelectTask,
   onDeleteTask,
   activeTaskId = null,
+  archivingTaskIds = EMPTY_ARCHIVING,
 }: TaskListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canUp, setCanUp] = useState(false);
@@ -147,6 +151,7 @@ export const TaskList = memo(function TaskList({
                         onOpenDetail={onSelectTask}
                         onDelete={onDeleteTask}
                         activeTaskId={activeTaskId}
+                        isArchiving={archivingTaskIds.includes(task.id)}
                       />
                     </li>
                   );
@@ -162,6 +167,7 @@ export const TaskList = memo(function TaskList({
                       onOpenDetail={onSelectTask}
                       onDelete={onDeleteTask}
                       activeTaskId={activeTaskId}
+                      isArchiving={archivingTaskIds.includes(task.id)}
                     />
                   </li>
                 ))}

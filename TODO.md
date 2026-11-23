@@ -35,10 +35,13 @@ de la personnalisation d'archivage (voir plus haut).
 
 ### Reste à faire — Backend
 
-- [ ] Mode `"instant"` : **changer le comportement de la colonne DONE** —
-  le drag & drop d'une tâche dans DONE déclenche directement
-  `POST /api/v1/archive/{projectId}/newArchive` (la tâche n'y reste pas,
-  elle part à l'archive sur-le-champ).
+- [X] Mode `"instant"` : **le drop dans DONE archive la tâche sur-le-champ**.
+  Intercepté côté **serveur** dans `updateTaskPosition` (zéro trust : le
+  client n'en décide pas) : `archiveCard()` dans
+  `logique/archive/archive-card.ts`, partagée avec la route
+  `POST /newArchive` et réutilisable plus tard par le sweep lazy du mode
+  `time`. La tâche n'y reste pas, elle part à l'archive — le frontend
+  retire la carte du cache sur `{ archived: true }`.
 
 - [X] Préférence dans `user_setting` : `archiveMode` (`"instant"` |
   `"time"`, défaut `"instant"`) en **pgEnum** (même pattern que

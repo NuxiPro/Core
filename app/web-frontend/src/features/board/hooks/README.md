@@ -19,7 +19,7 @@ Lecture + mutations CRUD du board.
 Déplacement drag & drop (`PATCH updateTaskPosition`).
 
 - Update optimiste **réel** : recalcule une clé `generateKeyBetween()` locale entre les voisins triés de la colonne cible, pour un affichage immédiat du drop.
-- `onSuccess` : écrase avec `newPosition` serveur (autorité), sans refetch (`invalidateOnSettled: false`).
+- `onSuccess` : si `archived: true` (mode instant, drop dans Done) → la tâche a quitté le board : la carte joue d'abord son animation de sortie (état `archivingIds` → classe `task-card--archiving`, 750 ms, avec un check vert de confirmation), puis elle est retirée du cache `["board", projectId]` et `["archived", projectId]` est invalidée. `isArchivePulsing` passe aussi à `true` (fenêtre de 1 s = une seule pulsation, réarmée à chaque archivage) → le bouton archive de la colonne Done bat une fois (`archive-button--pulse`) pour montrer où la tâche est partie. Sinon → écrase avec `newPosition` serveur (autorité), sans refetch (`invalidateOnSettled: false`).
 - Échec de génération locale (clés serrées) : garde l'ancienne position, le serveur corrige.
 
 ## `useKanbanDnd.ts`

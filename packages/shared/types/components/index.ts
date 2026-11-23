@@ -27,6 +27,12 @@ export interface TaskColumnProps {
   isLoading?: boolean | undefined;
   prefix?: string | undefined;
   activeTaskId?: TaskId | null | undefined;
+  // Ids of tasks currently playing their archive exit animation
+  // (instant archive mode — the card leaves after the animation ends).
+  archivingTaskIds?: readonly string[] | undefined;
+  // true for a few beats right after a task was archived — pulses the
+  // Done column's archive button.
+  archivePulse?: boolean | undefined;
 }
 
 // Cartes
@@ -40,6 +46,9 @@ export interface TaskCardExtendedProps extends TaskCardProps {
   onOpenDetail?: TaskSelectHandler | undefined;
   isOverlay?: boolean | undefined;
   activeTaskId?: string | null | undefined;
+  // True while the card plays its "filing away" animation after being
+  // archived — it is about to leave the board, not be deleted.
+  isArchiving?: boolean | undefined;
 }
 
 export interface UseTaskCardActionsParams {
@@ -61,6 +70,8 @@ export interface TaskListProps {
   onSelectTask: TaskSelectHandler;
   onDeleteTask: TaskDeleteHandler;
   activeTaskId?: string | null | undefined;
+  // Ids of tasks currently playing their archive exit animation.
+  archivingTaskIds?: readonly string[] | undefined;
 }
 
 // Modals

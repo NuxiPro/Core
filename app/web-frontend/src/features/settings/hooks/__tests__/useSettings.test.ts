@@ -53,6 +53,8 @@ const serverSettings = {
   theme: "dark" as const,
   emailNotifications: false,
   language: "en" as const,
+  archiveMode: "instant" as const,
+  archiveDelayDays: null as number | null,
 };
 
 beforeEach(() => {
@@ -82,6 +84,8 @@ describe("useSettings", () => {
     expect(result.current.language).toBe("en");
     expect(result.current.emailNotifications).toBe(false);
     expect(result.current.email).toBe("alice@example.com");
+    expect(result.current.archiveMode).toBe("instant");
+    expect(result.current.archiveDelayDays).toBe(null);
     expect(result.current.isProfileDirty).toBe(false);
     expect(useGeneralSettingsMock).toHaveBeenCalledWith(true);
   });
@@ -108,6 +112,51 @@ describe("useSettings", () => {
     expect(result.current.emailNotifications).toBe(true);
     expect(mutateAsyncMock).toHaveBeenCalledWith({
       emailNotifications: true,
+    });
+  });
+
+  it("persists enabling the delayed archive mode and fills in the default delay", () => {
+    const { result } = renderHook(() => useSettings(true));
+
+    act(() => {
+      result.current.setArchiveMode("time");
+    });
+
+    expect(result.current.archiveMode).toBe("time");
+    // No delay stored yet → the default (30 days) rides along.
+    expect(result.current.archiveDelayDays).toBe(30);
+    expect(mutateAsyncMock).toHaveBeenCalledWith({
+      archiveMode: "time",
+      archiveDelayDays: 30,
+    });
+  });
+
+  it("persists the archive delay", () => {
+    const { result } = renderHook(() => useSettings(true));
+
+    act(() => {
+      result.current.setArchiveDelayDays(90);
+    });
+
+    expect(result.current.archiveDelayDays).toBe(90);
+    expect(mutateAsyncMock).toHaveBeenCalledWith({ archiveDelayDays: 90 });
+  });
+
+  it("switches back to instant mode without touching the stored delay", () => {
+    const { result } = renderHook(() => useSettings(true));
+
+    act(() => {
+      result.current.setArchiveDelayDays(7);
+    });
+    act(() => {
+      result.current.setArchiveMode("instant");
+    });
+
+    expect(result.current.archiveMode).toBe("instant");
+    // The chosen delay stays, ready for the next time the mode is on.
+    expect(result.current.archiveDelayDays).toBe(7);
+    expect(mutateAsyncMock).toHaveBeenLastCalledWith({
+      archiveMode: "instant",
     });
   });
 

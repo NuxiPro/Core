@@ -13,6 +13,7 @@
 - Scoped per project: creation takes `{projectId}`, list requires `projectId` in query.
 - Detail loads one task by ID. Update edits title/description only; moving is a separate endpoint.
 - Move (`updateTaskPosition`) takes `{ colId, overTaskId, insertBefore }`. The server validates ownership, resolves neighbors and computes the new position. Never let the client send positions.
+- Instant archive mode: when the target column is `Done` and `user_setting.archive_mode = "instant"`, the move endpoint archives the task instead of storing it — response `{ success, archived: true }`, no position. Shared helper: `logique/archive/archive-card.ts` (`archiveCard`, `getArchiveMode`), also used by `POST /newArchive` and reserved for the future time-based sweep. The client never decides this (zero trust).
 
 ## Projects (`routes/projects/`)
 
@@ -23,9 +24,11 @@
 
 - List, create, get by ID. A user with no workspace is sent to onboarding by the frontend.
 
-## Archive (status: in devellopements)
+## Archive (`routes/archive/`)
 
-- `routes/archive/` holds only `ArchiveTask.md`. No controllers, nothing mounted in `src/index.ts`. The frontend has an archive page, but the backend has no archive endpoints yet. Human decision needed.
+- Full CRUD: `POST /{projectId}/newArchive`, `GET /getArchives`, `PATCH /restoreArchive/{id}`, `DELETE /deletedArchive/{id}` — all scoped by `userId`, transactional move between `cards` and `archived_cards`.
+- `logique/archive/archive-card.ts` holds the one archiving transaction every path reuses (explicit archive route, instant-mode drop, later the lazy sweep).
+- Restore puts the task back at the end of "To Do". Frontend: `features/archive/` (API + `ArchiveSheet`, cache key `["archived", projectId]`).
 
 ## Cron (`lib/`)
 

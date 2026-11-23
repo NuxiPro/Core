@@ -1,11 +1,11 @@
 /**
  * Archive Mode Step
  *
- * Second écran — l'user choisit comment ses tâches partent à l'archive :
- * immédiatement au dépôt dans « Terminé », ou automatiquement après un
- * délai (au choix : 7 jours, 14 jours ou personnalisé). Même langage
- * visuel que WorkspaceStep (clarté Apple × précision keyboard-first
- * Linear).
+ * Second screen — the user picks how tasks reach the archive: right away
+ * when dropped in "Done", or time-based after a delay (7 days, 14 days
+ * or custom). Both modes are automations; only the timing differs.
+ * Same visual language as WorkspaceStep (Apple clarity × keyboard-first
+ * Linear precision).
  */
 
 import { Archive, Clock, Zap } from "lucide-react";
@@ -27,7 +27,7 @@ interface ArchiveModeStepProps {
 
 export function ArchiveModeStep({ onSubmit }: ArchiveModeStepProps) {
   const { t } = useTranslation();
-  // Défaut raisonnable : l'archivage instantané est le comportement simple.
+  // Default: instant archiving is the simple behavior.
   const [mode, setMode] = useState<ArchiveMode>("instant");
   const [delayChoice, setDelayChoice] = useState<"7" | "14" | "custom">("7");
   const [customDays, setCustomDays] = useState("");
@@ -97,8 +97,8 @@ export function ArchiveModeStep({ onSubmit }: ArchiveModeStepProps) {
           </div>
         </div>
 
-        {/* Deux cartes radio — les radios natifs donnent la navigation
-            clavier (flèches) gratuitement. */}
+        {/* Two radio cards — native radios give keyboard navigation
+            (arrow keys) for free. */}
         <fieldset className="space-y-3 motion-safe:animate-[fadeInUp_0.45s_ease-out_0.15s_both]">
           <legend className="sr-only">
             {t("onboarding.archiveModeLegend")}
@@ -122,7 +122,7 @@ export function ArchiveModeStep({ onSubmit }: ArchiveModeStepProps) {
                   onChange={() => setMode(option.value)}
                   className="sr-only"
                 />
-                {/* Point radio visuel (le vrai input est sr-only). */}
+                {/* Visual radio dot (the real input is sr-only). */}
                 <span
                   aria-hidden="true"
                   className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-colors ${
@@ -141,7 +141,7 @@ export function ArchiveModeStep({ onSubmit }: ArchiveModeStepProps) {
                       aria-hidden="true"
                     />
                     {option.title}
-                    {/* Nudge : réduit le temps de décision des hésitants. */}
+                    {/* Nudge: cuts decision time for hesitant users. */}
                     {option.badge && (
                       <span className="rounded-full bg-text-primary/10 px-2 py-0.5 text-[10px] font-medium text-text-primary">
                         {option.badge}
@@ -157,7 +157,7 @@ export function ArchiveModeStep({ onSubmit }: ArchiveModeStepProps) {
           })}
         </fieldset>
 
-        {/* Sous-question du mode automatique : 3 pastilles, rien d'autre. */}
+        {/* Delay sub-question of the time-based mode: 3 pills, nothing else. */}
         {mode === "time" && (
           <fieldset className="space-y-3 motion-safe:animate-[fadeInUp_0.35s_ease-out_0.1s_both]">
             <legend className="sr-only">
@@ -193,7 +193,7 @@ export function ArchiveModeStep({ onSubmit }: ArchiveModeStepProps) {
               })}
             </div>
 
-            {/* Choix personnalisé : nombre de jours (1–90). */}
+            {/* Custom choice: number of days (1–90). */}
             {delayChoice === "custom" && (
               <div className="flex items-center gap-2 motion-safe:animate-[fadeInUp_0.3s_ease-out_0.05s_both]">
                 <Input
