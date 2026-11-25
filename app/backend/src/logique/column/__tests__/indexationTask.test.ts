@@ -62,9 +62,13 @@ describe("fractional-indexing (generateKeyBetween)", () => {
       pos = generateKeyBetween(pos, null);
       positions.push(pos);
     }
-    // Check that the list is sorted
-    for (let i = 1; i < positions.length; i++) {
-      expect(positions[i] > positions[i - 1]).toBe(true);
+    // Check that the list is sorted — each key strictly after the previous
+    // one. Walking the values (not the indexes) keeps TypeScript happy with
+    // noUncheckedIndexedAccess: no `string | undefined` to narrow.
+    let prev: string | undefined;
+    for (const curr of positions) {
+      if (prev !== undefined) expect(curr > prev).toBe(true);
+      prev = curr;
     }
   });
 });

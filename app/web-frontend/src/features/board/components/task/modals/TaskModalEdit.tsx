@@ -1,4 +1,3 @@
-import { COLUMNS } from "@packages/shared/config";
 import type { TaskModalEditProps } from "@packages/shared/types/components";
 import type { PriorityLabel } from "@packages/shared/types/task/priority-level";
 import type { Task } from "@packages/shared/types/task/task";
@@ -95,7 +94,7 @@ export function TaskModalEdit({ task, onClose, onUpdate }: TaskModalEditProps) {
     await handleSave();
     onClose();
   }, [handleSave, onClose]);
-  const colTitle = task ? (COLUMNS[task.colId]?.title ?? task.colId) : "";
+  const colTitle = task ? t(`column.title.${task.colId}`) : "";
 
   useEffect(() => {
     if (!task) return;

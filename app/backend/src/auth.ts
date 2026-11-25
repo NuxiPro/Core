@@ -53,8 +53,11 @@ export const auth = betterAuth({
               languageSource: source,
             });
           } catch (err) {
-            // Garde-fou n°2 : un seed raté ne bloque JAMAIS la connexion.
-            // L'idempotence permet le re-seed au prochain passage authentifié.
+            // Safety net: a failed seed never blocks the sign-in.
+            // Honest gap: this hook runs once (account creation) only, and
+            // the insert is onConflictDoNothing — a failed seed is NEVER
+            // retried. The account then lives on the frontend defaults
+            // (settings GET finds no row) until settings get written.
             log.error("[UserInit] Account seeding failed", err);
           }
         },

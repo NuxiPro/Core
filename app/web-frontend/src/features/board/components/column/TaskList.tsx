@@ -13,6 +13,7 @@ import type { TaskListProps } from "@packages/shared/types/components";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { CheckCircle2, Inbox } from "lucide-react";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Loader } from "@/src/layout/components/animation/loading/Loader";
 import TaskCard from "../task/card/TaskCardView";
 import { EmptyState } from "./EmptyState";
@@ -23,25 +24,12 @@ const TASK_GAP = 8;
 // Stable default so the memoized cards don't re-render on a fresh [].
 const EMPTY_ARCHIVING: readonly string[] = [];
 
-const EMPTY_STATE: Record<
-  ColumnId,
-  { icon: React.ReactNode; title: string; description: string }
-> = {
-  todo: {
-    icon: <Inbox width={24} height={24} strokeWidth={1.5} />,
-    title: "No active tasks",
-    description: "Click + to create a task",
-  },
-  In_Progress: {
-    icon: <Inbox width={24} height={24} strokeWidth={1.5} />,
-    title: "No tasks in progress",
-    description: "Drag a task here to start working on it",
-  },
-  Done: {
-    icon: <CheckCircle2 width={24} height={24} strokeWidth={1.5} />,
-    title: "No completed tasks",
-    description: "Completed tasks go to archives.",
-  },
+// Icons only — titles and descriptions live in the locales
+// (column.empty.*), translated at render time below.
+const EMPTY_ICON: Record<ColumnId, React.ReactNode> = {
+  todo: <Inbox width={24} height={24} strokeWidth={1.5} />,
+  In_Progress: <Inbox width={24} height={24} strokeWidth={1.5} />,
+  Done: <CheckCircle2 width={24} height={24} strokeWidth={1.5} />,
 };
 
 export const TaskList = memo(function TaskList({
@@ -54,6 +42,7 @@ export const TaskList = memo(function TaskList({
   activeTaskId = null,
   archivingTaskIds = EMPTY_ARCHIVING,
 }: TaskListProps) {
+  const { t } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canUp, setCanUp] = useState(false);
   const [canDown, setCanDown] = useState(false);
@@ -102,7 +91,7 @@ export const TaskList = memo(function TaskList({
       <section
         ref={scrollRef}
         className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-y-contain flex flex-col gap-2 px-3 pt-1 pb-2 scrollbar-thin"
-        aria-label="Task list"
+        aria-label={t("column.listLabel")}
         aria-busy={isLoading}
       >
         {isLoading ? (
@@ -115,9 +104,9 @@ export const TaskList = memo(function TaskList({
             data-droppable-column={colId}
           >
             <EmptyState
-              icon={EMPTY_STATE[colId].icon}
-              title={EMPTY_STATE[colId].title}
-              description={EMPTY_STATE[colId].description}
+              icon={EMPTY_ICON[colId]}
+              title={t(`column.empty.${colId}.title`)}
+              description={t(`column.empty.${colId}.desc`)}
             />
           </div>
         ) : (

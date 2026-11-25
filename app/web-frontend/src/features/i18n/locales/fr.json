@@ -291,10 +291,31 @@
     "rateLimitedFirm": "Trop de requêtes répétées. Votre accès est temporairement restreint. Réessayez dans {{duration}}."
   },
   "column": {
-    "addTask": "Ajouter une tâche"
+    "addTask": "Ajouter une tâche",
+    "listLabel": "Liste des tâches",
+    "title": {
+      "todo": "À faire",
+      "In_Progress": "En cours",
+      "Done": "Terminé"
+    },
+    "empty": {
+      "todo": {
+        "title": "Aucune tâche active",
+        "desc": "Cliquez sur + pour créer une tâche"
+      },
+      "In_Progress": {
+        "title": "Aucune tâche en cours",
+        "desc": "Déposez une tâche ici pour commencer"
+      },
+      "Done": {
+        "title": "Aucune tâche terminée",
+        "desc": "Les tâches terminées partent à l'archive."
+      }
+    }
   },
   "archive": {
     "title": "Archives du projet",
+    "view": "Voir les archives",
     "searchPlaceholder": "Rechercher une tâche...",
     "searchLabel": "Rechercher une tâche archivée",
     "allDates": "Toutes les dates",

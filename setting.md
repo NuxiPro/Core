@@ -156,8 +156,12 @@ chargement.
   fonctionnait, il a cassé entre 10:15 et 13:43 (refactor en cours à ce
   moment-là), puis le commit `eeb06cd` (17/11 22:50, « fix bug user langage »)
   a réécrit `auth.ts` + `user-language.ts`.
-- **Conclusion : le code est probablement corrigé, mais les données du compte
-  f@gmail.com sont restées en `en`** → le flip persiste.
+- **Conclusion (17/11) : le code est probablement corrigé, mais les données
+  du compte f@gmail.com sont restées en `en`** → le flip persiste.
+  **Revu le 25/11 : la conclusion était trop optimiste** — le test E2E a
+  prouvé que `eeb06cd` ne marchait PAS (le contexte du hook `user.create.after`
+  n'expose jamais `internalAdapter` → le stash n'était jamais lu). Vrai fix +
+  validation dans **§6**.
 
 ### Audit sécurité (ce qui ne PAS une faille)
 
@@ -171,9 +175,10 @@ chargement.
 ### Fragilité repérée (robustesse, pas sécurité)
 
 `StepDefaultSettings` utilise `onConflictDoNothing` → **un seed raté ne se
-rattrape jamais**, alors que le commentaire de `auth.ts` prétend le contraire
-(« l'idempotence permet le re-seed au prochain passage authentifié ») :
-**commentaire faux à corriger.**
+rattrape jamais**, alors que le commentaire de `auth.ts` prétendait le
+contraire (« l'idempotence permet le re-seed au prochain passage
+authentifié ») : **commentaire faux → corrigé le 24/11** (il dit maintenant
+la vérité et pointe vers ce document).
 
 ---
 
@@ -188,8 +193,8 @@ bun run test:run         # attendu : 60/60
 
 # Backend
 cd /home/babas/Projets/NuxiPro/Core/app/backend
-bun run typecheck        # 3 erreurs PRÉEXISTANTES (indexationTask.test ×2, dialog.ts HTMLElement)
-bun run test:run         # 1 échec PRÉEXISTANT (dateHelpers.test.ts importe isDBDateStr supprimé par 9d798ed)
+bun run typecheck        # attendu : 0 erreur
+bun test                 # attendu : 20/20
 ```
 
 Requête utile (pas de `psql` installé sur la machine) :
@@ -208,28 +213,50 @@ await pool.end();'
 
 ## 6. ⚠️ À faire (ouvert)
 
-- [ ] **Corriger la donnée** du compte connecté (le flip disparaît
-      immédiatement) — **pas encore fait** :
-      ```sql
-      UPDATE user_setting SET language = 'fr'
-      WHERE user_id = 'sT0S2Zfi30UAkrIeluij8lwsgsSunMtN';  -- f@gmail.com
-      ```
-      Alternative sans SQL : Settings → Langue → Français (valide au passage
-      le vrai chemin PATCH).
-- [ ] **Valider le fix de seed du commit `eeb06cd`** avec une inscription test
-      : envoyer un magic link pour un nouvel e-mail, vérifier (1) que le stash
-      `lang:{email}` est **consommé** (disparu de `verification`) et (2) que la
-      ligne `user_setting` sort en **`fr`**. L'URL du lien s'affiche dans le
-      terminal du backend en dev (`[Magic Link] …`).
-- [ ] **Corriger le faux commentaire** sur le « re-seed » dans `auth.ts`, ou
-      décider d'une vraie politique d'auto-réparation (ex. : si le seed a
-      raté, réconcilier détection navigateur ↔ serveur à la première
-      connexion) — décision produit à trancher.
+- [x] **(fait le 24/11) Corriger la donnée** du compte connecté :
+      `UPDATE user_setting SET language='fr'` sur `sT0S2Zfi30UAkrIeluij8lwsgsSunMtN`
+      (f@gmail.com) — passé de `en` à `fr`. *Si le localStorage avait déjà
+      caché `en`, un dernier flip EN→FR est possible au prochain chargement,
+      puis ça reste en FR.*
+- [x] **(fait le 25/11) Valider + corriger le fix de seed du commit
+      `eeb06cd`** — le commit ne marchait pas, le diagnostic et le fix :
+      - **Bug** : au seed, `consumeStashedLanguage` appelait
+        `internalAdapter.findVerificationValue()` avec le contexte passé au
+        hook `user.create.after` — or ce contexte **n'expose jamais
+        `.context`** (vérifié dans better-auth 1.7.23 : les after-hooks
+        reçoivent un contexte sans internalAdapter). La lecture n'avait donc
+        **jamais lieu** → stash jamais consommé → toujours `en` (fallback).
+        Preuve : le stash expiré de `seed-test-2511` a survécu à la
+        vérification (sa lecture l'aurait supprimé, cleanup d'expiration
+        comprise).
+      - **Fix** (`user-language.ts`) : `consumeStashedLanguage` lit +
+        supprime le stash **directement via drizzle** sur la table
+        `verification` (même table où `stashSignUpLanguage` l'écrit déjà).
+        Zéro dépendance au contexte better-auth. La branche OAuth et
+        l'ordre (stash → OAuth → fallback) sont inchangés.
+      - **Validé E2E le 25/11** : magic link `seed-test-2611@gmail.com` avec
+        `X-User-Language: fr` → log serveur
+        `language: "fr", source: "magic-link-stash"`, stash **disparu** de
+        `verification`, ligne `user_setting.language = 'fr'`.
+        Les stashes orphelins (2411/2511) ont été purgés au passage.
+        Comptes de test : `seed-test-2511` et `seed-test-2611` (à supprimer
+        plus tard avec le cron `purge-users` ou à la main).
+- [x] **(fait le 24/11) Corriger le faux commentaire** de `auth.ts` : le
+      « re-seed au prochain passage authentifié » n'existe pas (hook unique à
+      la création + `onConflictDoNothing`). Le commentaire dit maintenant la
+      vérité et pointe vers ce document.
+      *Amélioration optionnelle restante à trancher : upsert sur le
+      `PATCH /patchSettings` pour qu'un seed raté se rattrape à la première
+      modification de réglage.*
 - [ ] *(option)* **Test de parité i18n** : une clé utilisée dans un composant
       mais absente des locales = échec du test (le bug `archive.group.*` ne
       reviendra pas).
-- [ ] *(option)* Réparer les échecs préexistants : `dateHelpers.test.ts`
-      (supprimé `isDBDateStr`) et les 3 erreurs de typecheck backend.
+- [x] *(fait le 24/11)* Les 3 erreurs de typecheck backend sont corrigées :
+      `indexationTask.test.ts` (boucle réécrite sans index — `noUncheckedIndexedAccess`)
+      et `packages/shared/utils/dialog.ts` (type structurel `ClickTarget`
+      au lieu de `HTMLElement`, le backend compile `packages/` sans lib DOM).
+      L'échec `dateHelpers.test.ts` a disparu avec la suppression du fichier.
+      **Bilan : backend typecheck 0 erreur, `bun test` 20/20.**
 
 ---
 

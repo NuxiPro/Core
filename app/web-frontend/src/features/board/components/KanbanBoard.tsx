@@ -3,6 +3,7 @@ import { COLUMNS, type ColumnId } from "@packages/shared/config/index";
 import { COLUMN_IDS } from "@packages/shared/config/index-frontend";
 import type { TaskSummary } from "@packages/shared/types/task/task";
 import { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { BoardScrollContainer } from "@/src/features/board/components/BoardScrollContainer";
 import Column from "@/src/features/board/components/column/Column";
 import TaskCardView from "@/src/features/board/components/task/card/TaskCardView";
@@ -16,6 +17,7 @@ import { useKanbanDnd } from "../hooks/useKanbanDnd";
 export function KanbanBoard() {
   const { projectSlug: slug } = Route.useParams();
   const navigate = Route.useNavigate();
+  const { t } = useTranslation();
   const { projects, isLoading: isLoadingProjects } = useProjects();
 
   const matchedProject = useMemo(
@@ -38,6 +40,17 @@ export function KanbanBoard() {
     for (const task of tasks) grouped[task.colId]?.push(task);
     return grouped;
   }, [tasks]);
+
+  // Column titles are localized once, at the source: COLUMNS keeps the
+  // English default, every header and modal below just shows cfg.title.
+  const columns = useMemo(
+    () =>
+      COLUMN_IDS.map((id) => ({
+        id,
+        cfg: { ...COLUMNS[id], title: t(`column.title.${id}`) },
+      })),
+    [t],
+  );
 
   const {
     activeTask,
@@ -64,7 +77,7 @@ export function KanbanBoard() {
   if (isLoadingProjects) {
     return (
       <div className="h-full min-h-0 w-full flex items-center justify-center">
-        <div className="text-sm text-text-label">Chargement...</div>
+        <div className="text-sm text-text-label">{t("common.loading")}</div>
       </div>
     );
   }
@@ -81,13 +94,13 @@ export function KanbanBoard() {
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
         >
-          {COLUMN_IDS.map((id) => (
+          {columns.map(({ id, cfg }) => (
             <div
               key={id}
               className="shrink-0 h-full min-h-0 snap-start w-[85vw] sm:w-[340px] lg:flex-1 lg:w-auto lg:min-w-[280px] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform"
             >
               <Column
-                cfg={COLUMNS[id]}
+                cfg={cfg}
                 colId={id as ColumnId}
                 tasks={tasksByColumn[id]}
                 prefix={prefix}

@@ -1,5 +1,5 @@
 import { db } from "@backend/src/drizzle/connection";
-import { user } from "@backend/src/drizzle/schemas";
+import { user, verification } from "@backend/src/drizzle/schemas";
 import { getOAuthState } from "better-auth/api";
 import { eq } from "drizzle-orm";
 import { userSetting } from "../../drizzle/schemas/user-center";
@@ -10,11 +10,11 @@ import {
 } from "./01-ensure-default-settings";
 
 /**
- * Langue déjà connue pour cet e-mail, ou `null` si :
- *  - le compte n'existe pas encore (1er envoi), ou
- *  - l'utilisateur n'a jamais touché ses settings (pas de ligne).
+ * Language already saved for this email, or `null` when:
+ *  - the account does not exist yet (first send), or
+ *  - the user never touched settings (no row).
  *
- * TOUJOURS requête préparée + `eq()` drizzle. Zéro template literal.
+ * Always prepared queries + drizzle `eq()`. No template literals.
  */
 export async function getUserLanguage(email: string): Promise<Lang | null> {
   const rows = await db
@@ -30,7 +30,7 @@ export async function getUserLanguage(email: string): Promise<Lang | null> {
 
 const STASH_PREFIX = "lang:";
 
-/** Persiste la langue choisie au moment de l'envoi du lien (user absent de la DB). */
+/** Save the chosen language when the link is sent (user not in DB yet). */
 export async function stashSignUpLanguage(
   email: string,
   lang: Lang,
@@ -51,24 +51,27 @@ export async function stashSignUpLanguage(
 }
 
 /**
- * Lit + consomme le stash au seed. `null` si absent ou expiré — le choix du
- * fallback appartient à l'appelant (il connaît la source à logger).
+ * Read + consume the language stash at seed time.
+ * Reads the `verification` table directly: the context passed to the
+ * `user.create.after` hook does not expose internalAdapter (seen in
+ * dev, setting.md §4/§6).
+ * Returns `null` when missing or expired — the caller decides the fallback.
  */
 export async function consumeStashedLanguage(
   email: string,
-  internalAdapter: {
-    findVerificationValue: (v: {
-      identifier: string;
-    }) => Promise<{ identifier: string; value: string } | null>;
-    deleteVerificationValue: (v: string) => Promise<unknown>;
-  },
 ): Promise<Lang | null> {
-  const record = await internalAdapter.findVerificationValue({
-    identifier: `${STASH_PREFIX}${email}`,
-  });
-  if (!record) return null;
-  await internalAdapter.deleteVerificationValue(record.identifier);
-  return toLang(record.value);
+  const identifier = `${STASH_PREFIX}${email}`;
+  const rows = await db
+    .select({ value: verification.value, expiresAt: verification.expiresAt })
+    .from(verification)
+    .where(eq(verification.identifier, identifier))
+    .limit(1);
+
+  const row = rows[0];
+  // Delete always: an expired stash must not outlive its own read.
+  await db.delete(verification).where(eq(verification.identifier, identifier));
+  if (!row || row.expiresAt.getTime() <= Date.now()) return null;
+  return toLang(row.value);
 }
 
 /**
@@ -91,17 +94,13 @@ export async function resolveSeedLanguage(
   const ctx = hookCtx as
     | {
         path?: string;
-        context?: {
-          internalAdapter: Parameters<typeof consumeStashedLanguage>[1];
-        };
       }
     | undefined;
 
   // 1. Magic link: the stash was set by sendMagicLink. `null` means absent
-  //    or expired — the fallback decision stays here.
-  let language: Lang | null = ctx?.context
-    ? await consumeStashedLanguage(email, ctx.context.internalAdapter)
-    : null;
+  //    or expired — the fallback decision stays here. Read directly from
+  //    the DB: the hook context does not expose internalAdapter.
+  let language = await consumeStashedLanguage(email);
   let source: LanguageSource = language ? "magic-link-stash" : "fallback";
 
   // 2. OAuth: read back what the before hook parked on /sign-in/social.

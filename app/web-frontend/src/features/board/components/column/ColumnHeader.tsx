@@ -1,5 +1,6 @@
 import type { ColumnHeaderProps } from "@packages/shared/types/components/index";
 import { Archive } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/src/layout/components/ui/button";
 import { Skeleton } from "@/src/layout/components/ui/skeleton";
 import { cn } from "@/src/shared/utils/utils";
@@ -17,6 +18,7 @@ export default function ColumnHeader({
   onArchiveView,
   archivePulse = false,
 }: Props) {
+  const { t } = useTranslation();
   const isLoading = !tasks;
   return (
     <header className="flex items-center gap-2 flex-shrink-0 px-3 pt-3 pb-2">
@@ -40,7 +42,7 @@ export default function ColumnHeader({
               size="icon-xs"
               onClick={onArchiveView}
               onPointerDown={(e) => e.stopPropagation()}
-              aria-label="Voir les archives"
+              aria-label={t("archive.view")}
               // relative so the pulse ring (::after) anchors to the button.
               className={cn(
                 "relative size-7 text-muted-foreground hover:text-foreground",

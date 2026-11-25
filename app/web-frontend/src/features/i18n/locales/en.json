@@ -101,7 +101,27 @@
     "done": "Done"
   },
   "column": {
-    "addTask": "Add a task"
+    "addTask": "Add a task",
+    "listLabel": "Task list",
+    "title": {
+      "todo": "To Do",
+      "In_Progress": "In Progress",
+      "Done": "Done"
+    },
+    "empty": {
+      "todo": {
+        "title": "No active tasks",
+        "desc": "Click + to create a task"
+      },
+      "In_Progress": {
+        "title": "No tasks in progress",
+        "desc": "Drag a task here to start working on it"
+      },
+      "Done": {
+        "title": "No completed tasks",
+        "desc": "Completed tasks go to archives."
+      }
+    }
   },
   "metadata": {
     "priority": "Priority",
@@ -295,6 +315,7 @@
   },
   "archive": {
     "title": "Project archives",
+    "view": "View archives",
     "searchPlaceholder": "Search a task...",
     "searchLabel": "Search an archived task",
     "allDates": "All dates",
