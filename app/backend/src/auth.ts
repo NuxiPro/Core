@@ -119,7 +119,7 @@ export const auth = betterAuth({
         }
 
         if (process.env.NODE_ENV === "development") {
-          log.info(`[Magic Link] ${url}`);
+          log.devMagicLink(url);
           return;
         }
         await sendEmail(email, url, lang);

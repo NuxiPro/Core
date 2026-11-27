@@ -14,7 +14,10 @@ const log = createLogger("projects/newProjects");
  * Handler du contrôleur — pattern kaneo : le contrôleur exporte une fonction,
  * l'instance est créée une seule fois par le module (projects/index.ts).
  */
-export const createProjectHandler: RouteHandler<typeof createProjetRoute, AppEnv> = async (c) => {
+export const createProjectHandler: RouteHandler<
+  typeof createProjetRoute,
+  AppEnv
+> = async (c) => {
   const user = c.get("user");
   try {
     const data = c.req.valid("json");
@@ -37,7 +40,10 @@ export const createProjectHandler: RouteHandler<typeof createProjetRoute, AppEnv
         .select({ slug: projectsTable.slug })
         .from(projectsTable)
         .where(eq(projectsTable.userId, user.id));
-      const slug = createSlug(data.name, existing.map((r) => r.slug));
+      const slug = createSlug(
+        data.name,
+        existing.map((r) => r.slug),
+      );
 
       const [newProject] = await tx
         .insert(projectsTable)

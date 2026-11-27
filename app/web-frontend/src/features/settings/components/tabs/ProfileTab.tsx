@@ -82,7 +82,7 @@ export function ProfileTab({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="shrink-0 w-64 bg-[var(--dialog-input-bg)] border border-[var(--dialog-input-border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 hover:border-[var(--border-subtle)] transition-colors"
+            className="shrink-0 w-64 bg-[var(--dialog-input-bg)] border border-[var(--dialog-input-border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 hover:border-[var(--border-subtle)] transition-colors"
           />
         </div>
       </section>

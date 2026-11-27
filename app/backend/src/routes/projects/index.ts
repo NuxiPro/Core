@@ -16,10 +16,6 @@ import {
   updateProjectHandler,
 } from "./controler/project-settings";
 
-/**
- * Module projects — pattern kaneo : une seule instance OpenAPIHono, toutes les routes
- * sont enregistrées via .openapi().
- */
 export const projectsModule = createOpenAPIHono()
   .openapi(createProjetRoute, createProjectHandler)
   .openapi(DeletedProjectRoute, deleteProjectHandler)

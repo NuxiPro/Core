@@ -1,7 +1,5 @@
-import { createLogger } from "@packages/shared/utils/logger";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { useSyncLanguage } from "@/src/shared/hooks/useSyncLanguage";
 import { resolveSession } from "@/src/shared/lib/auth-guard";
 import { AppBreadcrumb } from "../layout/breadcrumb/app-breadcrumb";
@@ -21,18 +19,8 @@ export const Route = createFileRoute("/_dashboard")({
   component: DashboardLayout,
 });
 
-const log = createLogger("dashboard/i18n");
-
 function DashboardLayout() {
   useSyncLanguage();
-  const { i18n } = useTranslation();
-
-  useEffect(() => {
-    log.debug("Active dashboard language", {
-      language: i18n.language,
-      resolvedLanguage: i18n.resolvedLanguage,
-    });
-  }, [i18n.language, i18n.resolvedLanguage]);
 
   useEffect(() => {
     window.dispatchEvent(new Event("app-ready"));

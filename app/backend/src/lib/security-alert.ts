@@ -1,6 +1,9 @@
-import { createLogger } from "@packages/shared/utils/logger";
+import { createLogger } from "@backend/src/logique/logging/logger";
 import type { MiddlewareHandler } from "hono";
-import { RATE_LIMIT_WINDOW_MS, SECURITY_ALERT_THRESHOLD } from "./rate-limit-config";
+import {
+  RATE_LIMIT_WINDOW_MS,
+  SECURITY_ALERT_THRESHOLD,
+} from "./rate-limit-config";
 
 const log = createLogger("security");
 
@@ -10,7 +13,10 @@ const WINDOW_MS = RATE_LIMIT_WINDOW_MS;
 const THRESHOLD = SECURITY_ALERT_THRESHOLD;
 const MAX_KEYS = 1000;
 
-const hits = new Map<string, { count: number; resetAt: number; alerted: boolean }>();
+const hits = new Map<
+  string,
+  { count: number; resetAt: number; alerted: boolean }
+>();
 
 function sweep(now: number): void {
   if (hits.size <= MAX_KEYS) return;
@@ -27,8 +33,7 @@ export function securityAlert(): MiddlewareHandler {
     if (status !== 403 && status !== 429) return;
 
     // Anonymous key: user UUID (or "anon") + route only — no email, no IP (GDPR-safe).
-    const userId =
-      (c.get("user") as { id?: string } | undefined)?.id ?? "anon";
+    const userId = (c.get("user") as { id?: string } | undefined)?.id ?? "anon";
     const key = `${userId} ${c.req.path}`;
     const now = Date.now();
     sweep(now);

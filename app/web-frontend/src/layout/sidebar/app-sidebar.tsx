@@ -7,6 +7,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import type { ComponentProps } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProjects } from "@/src/features/board/hooks/useProjects";
 import { useWorkspaces } from "@/src/features/board/hooks/useWorkspaces";
@@ -14,6 +15,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/src/layout/components/ui/dropdown-menu";
 import {
@@ -26,12 +28,14 @@ import { findProjectBySlug } from "@/src/shared/utils/utils";
 import { NavProjects } from "./nav-projects";
 import { NavUser } from "./nav-user";
 import { NewProjectDialog } from "./new-project-dialog";
+import { NewWorkspaceDialog } from "./new-workspace-dialog";
 
 export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { projects, isLoading, isError: projectsError } = useProjects();
   const { workspaces, isError: workspacesError } = useWorkspaces();
+  const [createWorkspaceOpen, setCreateWorkspaceOpen] = useState(false);
   const location = useLocation();
 
   const slugMatch = location.pathname.match(/\/kanban\/([^/]+)/);
@@ -75,8 +79,20 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
                   )}
                 </DropdownMenuItem>
               ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={() => setCreateWorkspaceOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <Plus className="size-3.5 text-muted-foreground" />
+                <span>{t("sidebar.newWorkspace")}</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <NewWorkspaceDialog
+            open={createWorkspaceOpen}
+            onOpenChange={setCreateWorkspaceOpen}
+          />
         </SidebarHeader>
 
         {/* ZONE CENTRALE — scroll interne, ne pousse jamais le footer */}

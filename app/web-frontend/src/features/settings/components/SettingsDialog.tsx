@@ -19,17 +19,10 @@ interface SettingsDialogProps {
 }
 
 /**
- * Modale Settings — bridée à 840px, centrée sur overlay flouté.
- * Thème : la modale SUIT le thème global — les tokens sémantiques
- * (`--surface-*`, `--border`, `--text-*`, `--dialog-input-*`) résolvent via le
- * `.dark` de `documentElement`, donc la synchro se fait en CSS pur, sans état
- * JS. `dark:[color-scheme:dark]` passe les contrôles natifs (selects,
- * autofill) en sombre uniquement en mode sombre. La redirection
- * `[--dialog-bg:var(--surface-root)]` / `[--dialog-border:var(--border)]`
- * aligne le canvas des règles `[role="dialog"] !important` de global.css sur
- * l'échelle de surfaces — sans modifier global.css (sinon cartes invisibles :
- * #ffffff sur #ffffff en clair).
- * Seules les validations manuelles (e-mail) passent par le footer sticky.
+ * Settings dialog capped at 840px with a blurred overlay.
+ * Surfaces and controls use global theme tokens; native selects and autofill
+ * switch to the dark color scheme only when dark mode is active.
+ * Manual profile changes are confirmed in the sticky footer.
  */
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>("general");
@@ -44,7 +37,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
       <DialogContent
         showCloseButton={false}
         overlayClassName="bg-black/60 backdrop-blur-sm"
-        className="dark:[color-scheme:dark] [--dialog-bg:var(--surface-root)] [--dialog-border:var(--border)] w-[calc(100%-2rem)] max-w-[840px] h-[85vh] max-h-[85vh] p-0 bg-[var(--surface-root)] border border-[var(--border)] rounded-xl shadow-2xl flex overflow-hidden"
+        className="dark:[color-scheme:dark] [--dialog-bg:var(--surface-root)] [--dialog-border:var(--border)] w-[calc(100%-2rem)] max-w-[840px] max-h-[85vh] p-0 bg-[var(--surface-root)] border border-[var(--border)] rounded-xl shadow-2xl flex overflow-hidden"
       >
         {/* Sidebar de navigation (220px) */}
         <SettingsNavigation activeTab={activeTab} onTabChange={setActiveTab} />
@@ -62,7 +55,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
             {/* Feedback de sauvegarde (profil uniquement) */}
             {settings.saveMessage && (
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs">
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 border border-primary/20 text-primary text-xs">
                 <CheckCircle className="size-4 shrink-0" />
                 {settings.saveMessage}
               </div>
@@ -87,9 +80,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             {activeTab === "archiving" && (
               <ArchivingTab
                 archiveMode={settings.archiveMode}
-                archiveDelayDays={settings.archiveDelayDays}
                 setArchiveMode={settings.setArchiveMode}
-                setArchiveDelayDays={settings.setArchiveDelayDays}
               />
             )}
           </div>
@@ -101,7 +92,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 type="button"
                 onClick={settings.handleSaveProfile}
                 disabled={settings.isSaving}
-                className="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                className="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none"
               >
                 {settings.isSaving ? t("settings.saving") : t("settings.save")}
               </button>

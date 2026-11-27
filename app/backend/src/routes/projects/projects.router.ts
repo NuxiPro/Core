@@ -60,7 +60,6 @@ export const createProjetRoute = createRoute({
   },
 });
 
-
 export const getProjectRoute = createRoute({
   method: "get",
   path: "/{projectId}",
@@ -185,7 +184,6 @@ export const getBoardRoute = createRoute({
     },
   },
 });
-
 
 export const listProjectsRoute = createRoute({
   method: "get",

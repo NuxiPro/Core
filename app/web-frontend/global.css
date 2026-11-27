@@ -104,6 +104,7 @@ html.theme-transition *::after {
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -141,151 +142,174 @@ html.theme-transition *::after {
   --color-text-sidebar: var(--text-sidebar);
   --color-text-hover: var(--text-hover);
   --color-text-muted-hard: var(--text-muted-hard);
+  --color-skeleton: var(--skeleton);
 }
 
-/* Light mode — "Paper" — premium, non-fatiguing, same rigor as dark */
+/* Light mode — Ryoku-inspired soft surfaces with high-contrast ink. */
 :root {
-  /* Canvas: soft paper #f6f7f9 — muted by ~3% vs pure white to cut glare for long sessions.
-     Mirrors dark's #010102 logic in light: not pure white, one step below the lifted workspace. */
-  --background: #f6f7f9;
-  --card: #ffffff;
-  --card-foreground: #111318;
-  --foreground: #111318;
-  --popover: #ffffff;
-  --popover-foreground: #111318;
-  /* Primary: teal identité — sobre, signature du projet */
-  --primary: #0f766e;
-  --primary-hover: #0d655e;
-  --primary-active: #0b4f49;
+  /* Cool, tinted paper surfaces avoid broad pure-white areas. */
+  --background: #eef3f5;
+  --card: #f4f7f8;
+  --card-foreground: #1b2529;
+  --foreground: #1b2529;
+  --popover: #f4f7f8;
+  --popover-foreground: #1b2529;
+  /* Ryoku cyan, deepened for readable light-theme controls. */
+  --primary: #00677f;
+  --primary-hover: #00576c;
+  --primary-active: #00495c;
   --primary-foreground: #ffffff;
-  /* Secondary / muted: paper fill #eceef2 — one step above canvas, visible but calm */
-  --secondary: #eceef2;
-  --secondary-foreground: #111318;
-  --muted: #eceef2;
-  --muted-foreground: #6b7283;
-  /* Accent: hover #e4e6ec — pressed/hover state */
-  --accent: #e4e6ec;
-  --accent-foreground: #111318;
-  --destructive: #dc2626;
-  /* Hairline: ink at 10% (#e2e5eb) — visible at 1px, never a box */
-  --border: #e2e5eb;
-  --input: #ffffff;
-  --ring: #5e6ad2;
-  /* Charts: lavender ramp into paper neutral */
-  --chart-1: #5e6ad2;
-  --chart-2: #7e86e6;
-  --chart-3: #a5acf0;
-  --chart-4: #c7cafa;
-  --chart-5: #e2e5eb;
+  /* Surface-level controls stay distinct without stark white contrast. */
+  --secondary: #e1e9ec;
+  --secondary-foreground: #1b2529;
+  --muted: #e1e9ec;
+  --muted-foreground: #43545b;
+  --accent: #dce6ea;
+  --accent-foreground: #1b2529;
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+  /* Stronger control outlines improve visibility for low-vision users. */
+  --border: #b3c1c7;
+  --input: #758990;
+  --ring: #00677f;
+  /* Ryoku cyan / blue-grey / lavender data palette. */
+  --chart-1: #00677f;
+  --chart-2: #4b636b;
+  --chart-3: #5a5680;
+  --chart-4: #97a9b0;
+  --chart-5: #c0ccd1;
   --radius: 0.625rem;
-  /* Sidebar: one step darker than canvas — anchors the layout without harshness */
-  --sidebar: #eceef2;
-  --sidebar-foreground: #111318;
-  --sidebar-primary: #0f766e;
+  /* Sidebar: a muted blue-grey surface anchors the layout. */
+  --sidebar: #e4ecef;
+  --sidebar-foreground: #1b2529;
+  --sidebar-primary: #00677f;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #ffffff;
-  --sidebar-accent-foreground: #111318;
-  --sidebar-border: #e2e5eb;
-  --sidebar-ring: #5e6ad2;
-  --gradient-center: #ffffff;
-  --gradient-edge: #f6f7f9;
-  --dialog-bg: #ffffff;
-  --dialog-border: #e2e5eb;
-  --dialog-title: #111318;
-  --dialog-input-bg: #f6f7f9;
-  --dialog-input-border: #e2e5eb;
-  --dialog-overlay: rgba(17, 19, 24, 0.28);
-  --shadow-cta: rgba(94, 106, 210, 0.1);
-  /* Surface ladder — paper (inverse of dark) */
-  --surface-root: #f6f7f9;
-  --surface-workspace: #ffffff;
-  --surface-card: #ffffff;
-  --surface-hover: #eceef2;
-  --surface-elevated: #ffffff;
-  --surface-gradient-mid: #fefefe;
-  --surface-gradient-end: #eceef2;
-  --border-subtle: #cfd4de;
-  --border-column: #d2d7e0;
-  /* Text ladder — graphite, not pure black (less fatigue) */
-  --text-primary: #111318;
-  --text-label: #6b7283;
-  --text-sidebar: #6b7283;
-  --text-hover: #111318;
-  --text-muted-hard: #9aa0b0;
+  --sidebar-accent: #f2f6f7;
+  --sidebar-accent-foreground: #1b2529;
+  --sidebar-border: #aab9bf;
+  --sidebar-ring: #00677f;
+  --gradient-center: #f4f7f8;
+  --gradient-edge: #e7eef1;
+  --dialog-bg: #f4f7f8;
+  --dialog-border: #aab9bf;
+  --dialog-title: #1b2529;
+  --dialog-input-bg: #e9f0f2;
+  --dialog-input-border: #758990;
+  --dialog-overlay: rgba(27, 37, 41, 0.38);
+  --shadow-cta: rgba(0, 103, 127, 0.12);
+  /* Surface ladder: tinted canvas, softly raised card, clear hover state. */
+  --surface-root: #e7eef1;
+  --surface-workspace: #eef3f5;
+  --surface-card: #f4f7f8;
+  --surface-hover: #e1e9ec;
+  --surface-elevated: #f7f9fa;
+  --surface-gradient-mid: #f0f4f5;
+  --surface-gradient-end: #e4ecef;
+  --border-subtle: #82949b;
+  --border-column: #70858c;
+  /* Ink ladder: small labels stay readable on every light surface. */
+  --text-primary: #1b2529;
+  --text-label: #43545b;
+  --text-sidebar: #43545b;
+  --text-hover: #111b1f;
+  --text-muted-hard: #53656c;
+  --skeleton: #b8c6cc;
 }
 
-/* Dark mode — Linear-inspired near-black surface ladder */
+/* Dark mode — Ryoku palette: this desktop's colours, verbatim.
+   Source: ~/.cache/ryoku/colors.json (matugen "mono" scheme).
+   Unique identity: cyan primary + salmon error + lavender tertiary on a
+   blue-tinted near-black — not the usual blue/purple dark theme.
+   The ladder follows Material You containers for real depth, and every
+   surface below sits one precise step apart (no flat "all #111" look). */
 .dark {
-  /* Canvas: the deepest dark, #010102 — near-pure black with faint blue tint */
-  --background: #010102;
+  /* Canvas: ryoku surface — near-black with a faint blue-teal tint */
+  --background: #0f1417;
   /* Surface ladder: cards, panels, elevated elements */
-  --card: #0f1011;
-  --card-foreground: #f7f8f8;
-  --foreground: #f7f8f8;
-  --popover: #141516;
-  --popover-foreground: #f7f8f8;
-  /* Primary: teal identité — même teinte, lisible sur canvas #010102 */
-  --primary: #0f766e;
-  --primary-hover: #0d655e;
-  --primary-active: #0b4f49;
-  --primary-foreground: #ffffff;
-  /* Secondary & muted: surface-2 level */
-  --secondary: #141516;
-  --secondary-foreground: #f7f8f8;
-  --muted: #141516;
-  --muted-foreground: #d0d6e0;
-  /* Accent: surface-3 level for hover states */
-  --accent: #18191a;
-  --accent-foreground: #f7f8f8;
-  /* Destructive: reserved for errors only, tuned for contrast on dark */
-  --destructive: #f87171;
-  /* Hairline borders: subtle separation, never flat gray */
-  --border: #23252a;
-  --input: #141516;
-  --ring: #5e6ad2;
-  /* Charts: neutral grayscale ramp */
-  --chart-1: #d0d6e0;
-  --chart-2: #8a8f98;
-  --chart-3: #62666d;
-  --chart-4: #3e3e44;
-  --chart-5: #23252a;
-  /* Sidebar: sits between canvas and surface-1 */
-  --sidebar: #08090a;
-  --sidebar-foreground: #d0d6e0;
-  --sidebar-primary: #0f766e;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #0f1011;
-  --sidebar-accent-foreground: #f7f8f8;
-  --sidebar-border: #23252a;
-  --sidebar-ring: #5e6ad2;
-  /* Gradient: barely perceptible depth shift */
-  --gradient-center: #0a0b0c;
-  --gradient-edge: #010102;
-  /* Dialogs: surface-2 level */
-  --dialog-bg: #141516;
-  --dialog-border: #23252a;
-  --dialog-title: #f7f8f8;
-  --dialog-input-bg: #0f1011;
-  --dialog-input-border: #23252a;
+  --card: #171c1f;
+  --card-foreground: #dee3e6;
+  --foreground: #dee3e6;
+  --popover: #1b2023;
+  --popover-foreground: #dee3e6;
+  /* Primary: ryoku cyan — a LIGHT accent, so text on it is deep navy
+     (onPrimary): the signature "unique" move, dark-on-cyan buttons */
+  --primary: #8ad0ee;
+  --primary-hover: #7fbfdb;
+  --primary-active: #75b1ca;
+  --primary-foreground: #003545;
+  /* Secondary & muted: container level — calm fills, never competing */
+  --secondary: #171c1f;
+  --secondary-foreground: #dee3e6;
+  --muted: #171c1f;
+  --muted-foreground: #c0c8cc;
+  /* Accent: hover level, one step above card */
+  --accent: #1b2023;
+  --accent-foreground: #dee3e6;
+  /* Destructive: ryoku error — light salmon reads cleanly on the canvas,
+     dark red text on the salmon button keeps the contrast premium */
+  --destructive: #ffb4ab;
+  --destructive-foreground: #690005;
+  /* Hairline borders: ryoku outline scale — visible at 1px, never a box */
+  --border: #2c3134;
+  --input: #171c1f;
+  --ring: #8ad0ee;
+  /* Charts: the ryoku palette itself (cyan / lavender / blue-grey) */
+  --chart-1: #8ad0ee;
+  --chart-2: #c5c3ea;
+  --chart-3: #b4cad5;
+  --chart-4: #40484c;
+  --chart-5: #171c1f;
+  /* Sidebar: same field as the canvas, active item lifts one step */
+  --sidebar: #0f1417;
+  --sidebar-foreground: #c0c8cc;
+  --sidebar-primary: #8ad0ee;
+  --sidebar-primary-foreground: #003545;
+  --sidebar-accent: #171c1f;
+  --sidebar-accent-foreground: #dee3e6;
+  --sidebar-border: #2c3134;
+  --sidebar-ring: #8ad0ee;
+  /* Gradient: barely perceptible depth shift across the workspace */
+  --gradient-center: #171c1f;
+  --gradient-edge: #0f1417;
+  /* Dialogs: elevated container; its inputs recess BACK into the canvas
+     (dark field in a raised panel — the depth cue premium UIs use) */
+  --dialog-bg: #1b2023;
+  --dialog-border: #2c3134;
+  --dialog-title: #dee3e6;
+  --dialog-input-bg: #0f1417;
+  --dialog-input-border: #2c3134;
   --dialog-overlay: rgba(0, 0, 0, 0.7);
-  --shadow-cta: rgba(94, 106, 210, 0.15);
-  /* Surface tokens: the canonical Linear ladder */
-  --surface-root: #010102;
-  --surface-workspace: #0f1011;
-  --surface-card: #0f1011;
-  --surface-hover: #18191a;
-  --surface-elevated: #141516;
-  --surface-gradient-mid: #0a0b0c;
-  --surface-gradient-end: #0f1011;
+  /* CTA shadow: cyan glow under primary actions */
+  --shadow-cta: rgba(138, 208, 238, 0.15);
+  /* Surface tokens: the canonical Ryoku ladder */
+  --surface-root: #0f1417;
+  --surface-workspace: #0f1417;
+  --surface-card: #171c1f;
+  --surface-hover: #1b2023;
+  --surface-elevated: #1b2023;
+  --surface-gradient-mid: #13181b;
+  --surface-gradient-end: #171c1f;
   /* Border tokens: hairline scale */
-  --border-subtle: #34343a;
-  --border-column: #3b3b42;
+  --border-subtle: #40484c;
+  --border-column: #4a5357;
   /* Text tokens: ink scale */
-  --text-primary: #f7f8f8;
-  --text-label: #8a8f98;
-  --text-sidebar: #8a8f98;
-  --text-hover: #f7f8f8;
-  --text-muted-hard: #62666d;
+  --text-primary: #dee3e6;
+  --text-label: #8a9296;
+  --text-sidebar: #8a9296;
+  --text-hover: #dee3e6;
+  --text-muted-hard: #656d71;
+  --skeleton: #40484c;
+}
+
+/* Selection tint — a soft Ryoku cyan wash instead of the browser's default blue. */
+::selection {
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  color: var(--foreground);
+}
+
+.dark ::selection {
+  background: color-mix(in srgb, var(--primary) 28%, transparent);
+  color: var(--foreground);
 }
 
 /* Anti-FOUC: suspend transitions during initial paint */
@@ -358,6 +382,66 @@ html {
     transform: scale(0.98) translateY(4px);
   }
 }
+
+/* The archive sheet enters from and exits toward the right edge. */
+@keyframes archive-sheet-enter {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes archive-sheet-exit {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.archive-sheet-content[data-state="open"] {
+  animation: archive-sheet-enter 250ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.archive-sheet-content[data-state="closed"] {
+  animation: archive-sheet-exit 280ms cubic-bezier(0.77, 0, 0.175, 1) both;
+}
+
+@keyframes archive-sheet-fade-in {
+  from {
+    opacity: 0.7;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes archive-sheet-fade-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .archive-sheet-content[data-state="open"] {
+    animation: archive-sheet-fade-in 120ms ease-out both;
+  }
+
+  .archive-sheet-content[data-state="closed"] {
+    animation: archive-sheet-fade-out 120ms ease-out both;
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -376,31 +460,6 @@ html {
     transform: translateY(0);
   }
 }
-@keyframes task-shrink-out {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-    max-height: 200px;
-    margin-bottom: 0.5rem;
-  }
-  50% {
-    transform: scale(0.92);
-    opacity: 0.6;
-  }
-  100% {
-    transform: scale(0);
-    opacity: 0;
-    max-height: 0;
-    margin-bottom: 0;
-  }
-}
-
-/* Task delete animation */
-.task-card--deleting {
-  animation: task-shrink-out 160ms cubic-bezier(0.4, 0, 1, 1) forwards;
-  pointer-events: none;
-}
-
 /* Archive exit — the card is filed away, not deleted: it pauses for a
    beat, then lifts gently and glides out. Deliberately slower and softer
    than the delete animation, it should feel calm, never destructive.
@@ -469,12 +528,15 @@ html {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  border: 1px solid rgb(94 106 210 / 0.7);
+  border: 1px solid rgb(0 103 127 / 0.7);
   /* Invisible until a pulse starts — one single beat while the class
      is on (see ARCHIVE_PULSE_MS for how long it stays). */
   opacity: 0;
   pointer-events: none;
   animation: archive-button-pulse 900ms cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+.dark .archive-button--pulse::after {
+  border-color: rgb(138 208 238 / 0.7);
 }
 
 /* Reduced motion */
@@ -511,20 +573,20 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-  -webkit-text-fill-color: #0f1115 !important;
-  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
-  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--surface-root) inset !important;
+  box-shadow: 0 0 0 1000px var(--surface-root) inset !important;
   transition: background-color 5000s ease-in-out 0s;
-  caret-color: #0f1115;
+  caret-color: var(--foreground);
 }
 .dark input:-webkit-autofill,
 .dark input:-webkit-autofill:hover,
 .dark input:-webkit-autofill:focus,
 .dark input:-webkit-autofill:active {
-  -webkit-text-fill-color: #f7f8f8 !important;
-  -webkit-box-shadow: 0 0 0 1000px #0f1011 inset !important;
-  box-shadow: 0 0 0 1000px #0f1011 inset !important;
-  caret-color: #f7f8f8;
+  -webkit-text-fill-color: #dee3e6 !important;
+  -webkit-box-shadow: 0 0 0 1000px #171c1f inset !important;
+  box-shadow: 0 0 0 1000px #171c1f inset !important;
+  caret-color: #dee3e6;
 }
 
 /* ── Loader enter — premium douceur Apple spring ── */
@@ -593,10 +655,10 @@ input:-webkit-autofill:active {
 }
 .scroll-indicator-scroll:hover::-webkit-scrollbar-thumb,
 .scroll-indicator-scroll.scrolling::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: var(--border-subtle);
 }
 .scroll-indicator-scroll::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: var(--border-column);
 }
 @media (pointer: coarse) {
   .scroll-indicator-scroll::-webkit-scrollbar {

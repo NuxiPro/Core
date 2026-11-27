@@ -1,5 +1,4 @@
-import { createLogger } from "./logger";
-
+// biome-ignore-all lint/suspicious/noConsole: Development API diagnostics are intentionally sent to the browser console.
 type ApiErrorResponse = { message?: string };
 
 /** Contrat minimal d'un parseur de schéma (rempli par `z.ZodType`). */
@@ -7,13 +6,11 @@ export interface Schema<T> {
   parse(input: unknown): T;
 }
 
-const log = createLogger("Api/client");
-
 /**
  * Parse la réponse API de manière sûre.
  * Lit le body une seule fois (évite le double response.json()).
  * Lance une Error si response.ok est false.
- * Log automatiquement l'erreur via PostHog (sans données sensibles).
+ * In development, logs request failures without exposing response data.
  *
  * Sécurité par défaut : la réponse du réseau est une ENTRÉE HOSTILE.
  * - `schema` fourni → le body est validé avant d'être retourné (jamais
@@ -40,10 +37,12 @@ export async function handleResponse<T>(
   if (!response.ok) {
     const message = (body as ApiErrorResponse | null)?.message || errorMessage;
 
-    log.error(message, undefined, {
-      ...(context && { context }),
-      extra: { status: response.status },
-    });
+    if (import.meta.env.DEV) {
+      console.error("API request failed", {
+        ...(context && { context }),
+        status: response.status,
+      });
+    }
 
     throw new Error(message);
   }
@@ -58,10 +57,12 @@ export async function handleResponse<T>(
     try {
       return schema.parse(body);
     } catch {
-      log.error("Invalid response shape", undefined, {
-        ...(context && { context }),
-        extra: { status: response.status },
-      });
+      if (import.meta.env.DEV) {
+        console.error("Invalid API response shape", {
+          ...(context && { context }),
+          status: response.status,
+        });
+      }
       throw new Error(errorMessage);
     }
   }

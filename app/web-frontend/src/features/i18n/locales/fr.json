@@ -22,21 +22,10 @@
     "creatingWorkspace": "Création de « {{name}} »...",
     "workspaceCreate": "Créer mon espace",
     "workspaceCreating": "Création de votre espace personnel...",
-    "welcomeAboard": "Bienvenue dans {{name}}.",
     "continue": "Continuer",
-    "archiveModeTitle": "Comment veux-tu archiver tes tâches ?",
-    "archiveModeDescription": "Deux façons de garder votre board propre — tout est géré pour vous, vous ne vous occupez de rien.",
-    "archiveModeLegend": "Mode d'archivage",
-    "archiveModeInstantTitle": "Instantané",
-    "archiveModeInstantBadge": "Recommandé pour essayer l'outil",
-    "archiveModeInstantDesc": "Les tâches déposées dans « Terminé » partent immédiatement à l'archive. Simple et direct.",
-    "archiveModeTimeTitle": "Basée sur le temps",
-    "archiveModeTimeDesc": "Vos tâches restent dans « Terminé », puis partent à l'archive d'elles-mêmes après le délai choisi.",
-    "archiveDelayQuestion": "Tous les combien de temps vos tâches doivent-elles partir à l'archive ?",
-    "archiveDelay7": "7 jours",
-    "archiveDelay14": "14 jours",
-    "archiveDelayCustom": "Personnalisé",
-    "archiveDelayUnit": "jours"
+    "instantArchiveTitle": "Archivage instantané",
+    "instantArchiveSelected": "Sélectionné par défaut",
+    "instantArchiveDescription": "Les tâches déposées dans « Terminé » sont archivées immédiatement."
   },
   "auth": {
     "continueWithGoogle": "Continuer avec Google",
@@ -128,6 +117,7 @@
       "light": "Clair",
       "dark": "Sombre",
       "system": "Système",
+      "notifications": "Notifications",
       "emailNotifications": "Notifications par email",
       "emailNotificationsDesc": "Recevoir les alertes par email",
       "slackNotifications": "Notifications Slack",
@@ -136,7 +126,6 @@
       "themeDesc": "Thème clair ou sombre, appliqué en temps réel."
     },
     "project": {
-      "pageDescription": "Modifiez les informations de ce projet.",
       "backToBoard": "Retour au tableau",
       "notFound": "Impossible de charger ce projet.",
       "saveError": "Impossible d'enregistrer les modifications."
@@ -218,14 +207,11 @@
     },
     "archiving": {
       "label": "Archivage",
-      "description": "Choisissez quand les tâches terminées partent à l'archive",
+      "description": "L'archivage instantané est disponible ; l'archivage basé sur le temps est en développement.",
       "timeBasedArchive": "Archive basée sur le temps",
-      "timeBasedArchiveDesc": "Activé : les tâches dans Done partent à l'archive d'elles-mêmes après le délai ci-dessous. Désactivé : elles sont archivées dès le dépôt dans Done.",
-      "delay": "Archiver après",
-      "delayDesc": "Temps pendant lequel une tâche terminée reste dans Done avant d'être archivée.",
-      "delay7": "7 jours",
-      "delay30": "30 jours",
-      "delay90": "90 jours",
+      "timeModeStatus": "En développement",
+      "timeModeUnavailableDesc": "Ce mode n'est pas encore disponible. Seul l'archivage instantané fonctionne pour le moment.",
+      "timeModeStoredDesc": "Ce réglage enregistré n'est pas encore pris en charge. Les tâches resteront dans « Terminé » ; désactivez-le pour utiliser l'archivage instantané.",
       "retentionNote": "Les tâches archivées ne sont jamais perdues : restaurez-les sur le board en un clic."
     },
     "archive": {
@@ -262,6 +248,9 @@
     "billing": "Facturation",
     "logOut": "Déconnexion",
     "noWorkspace": "Aucun workspace",
+    "newWorkspace": "Créer un workspace",
+    "workspaceNamePlaceholder": "Tech, Build in public...",
+    "workspaceCreateError": "Impossible de créer le workspace. Réessayez.",
     "loadErrorTitle": "Impossible de charger votre workspace ou vos projets",
     "loadErrorDescription": "Vos données n'ont pas pu être affichées dans l'application. Veuillez actualiser la page pour les afficher correctement.",
     "refreshPage": "Actualiser la page",
@@ -332,6 +321,8 @@
     "archivedOn": "Archivé le {{date}}",
     "restore": "Restaurer",
     "restoreLabel": "Restaurer la tâche {{title}}",
+    "deleteTask": "Supprimer la tâche",
+    "deleteConfirm": "Cliquez encore pour supprimer",
     "openTask": "Ouvrir la tâche",
     "close": "Fermer le panneau des archives",
     "clearSearch": "Effacer la recherche",

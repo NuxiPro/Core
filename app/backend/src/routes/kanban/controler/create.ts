@@ -7,7 +7,7 @@ import {
 import type { RouteHandler } from "@hono/zod-openapi";
 import type { AppEnv } from "@backend/src/types/app-env";
 import { buildTask } from "@backend/src/logique/column/task";
-import { createLogger } from "@packages/shared/utils/logger";
+import { createLogger } from "@backend/src/logique/logging/logger";
 import { and, desc, eq } from "drizzle-orm";
 import { createTaskRoute } from "../task.router";
 
@@ -17,7 +17,10 @@ const log = createLogger("kanban/create");
  * Handler du contrôleur — pattern kaneo : le contrôleur exporte une fonction,
  * l'instance est créée une seule fois par le module (kanban/index.ts).
  */
-export const createTaskHandler: RouteHandler<typeof createTaskRoute, AppEnv> = async (c) => {
+export const createTaskHandler: RouteHandler<
+  typeof createTaskRoute,
+  AppEnv
+> = async (c) => {
   const user = c.get("user");
   const projectId = c.req.param("projectId");
   const data = c.req.valid("json");

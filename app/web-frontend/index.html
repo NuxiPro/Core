@@ -8,10 +8,10 @@
     <meta name="color-scheme" content="light dark" />
     <style>
       html {
-        background: #f6f7f9;
+        background: #e7eef1;
       }
       html.dark {
-        background: #010102;
+        background: #0f1417;
       }
 
       /* ── Boot loader v3 — cycle supernova synchronisé.
@@ -26,7 +26,7 @@
         align-items: center;
         justify-content: center;
         z-index: 9999;
-        background: #f6f7f9;
+        background: #e7eef1;
         opacity: 1;
         transform: scale(1);
         filter: blur(0);
@@ -36,7 +36,15 @@
           filter 260ms cubic-bezier(0.23, 1, 0.32, 1);
       }
       html.dark #root-loader {
-        background: #010102;
+        background: #0f1417;
+      }
+      html.dark .loader-glow {
+        background: radial-gradient(
+          circle,
+          rgba(138, 208, 238, 0.18) 0%,
+          rgba(138, 208, 238, 0.06) 42%,
+          transparent 70%
+        );
       }
       #root-loader.is-hiding {
         opacity: 0;
@@ -58,8 +66,8 @@
         border-radius: 50%;
         background: radial-gradient(
           circle,
-          rgba(15, 118, 110, 0.18) 0%,
-          rgba(15, 118, 110, 0.06) 42%,
+          rgba(0, 103, 127, 0.18) 0%,
+          rgba(0, 103, 127, 0.06) 42%,
           transparent 70%
         );
         opacity: 0;
@@ -99,13 +107,16 @@
       }
       .loader-ring circle {
         fill: none;
-        stroke: #0f766e;
+        stroke: #00677f;
         stroke-width: 1.5;
         stroke-linecap: round;
         stroke-dasharray: 100;
         stroke-dashoffset: 100;
         opacity: 0.82;
         animation: ringDraw 650ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+      }
+      html.dark .loader-ring circle {
+        stroke: #8ad0ee;
       }
       @keyframes ringDraw {
         from {
@@ -156,13 +167,21 @@
         border-radius: 50%;
         background: radial-gradient(
           circle,
-          rgba(15, 118, 110, 0.28) 0%,
-          rgba(15, 118, 110, 0.08) 45%,
+          rgba(0, 103, 127, 0.28) 0%,
+          rgba(0, 103, 127, 0.08) 45%,
           transparent 70%
         );
         opacity: 0;
         transform: scale(0);
         pointer-events: none;
+      }
+      html.dark .loader-nova {
+        background: radial-gradient(
+          circle,
+          rgba(138, 208, 238, 0.28) 0%,
+          rgba(138, 208, 238, 0.08) 45%,
+          transparent 70%
+        );
       }
       #root-loader.nova .loader-nova {
         animation: novaFinale 280ms cubic-bezier(0.23, 1, 0.32, 1) forwards;

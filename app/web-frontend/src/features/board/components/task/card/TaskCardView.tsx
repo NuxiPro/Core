@@ -35,7 +35,7 @@ function TaskCardMeta({
       )}
       {task.dueDate && (
         <span className="inline-flex items-center gap-1 rounded-full border border-border px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-          <CalendarDays className="size-3 text-teal-600 dark:text-teal-400" />
+          <CalendarDays className="size-3 text-primary" />
           {new Date(task.dueDate).toLocaleDateString(i18n.language || "en", {
             day: "numeric",
             month: "short",
@@ -72,7 +72,7 @@ function cardClassName(
     // Pas de transition-all sur transform (conflit dnd) — seulement couleurs/ombre
     "transition-[background-color,border-color,box-shadow] duration-[400ms] ease-spring will-change-transform",
     isOver &&
-      "ring-1 ring-primary/20 bg-primary/[0.03] shadow-[0_4px_12px_rgba(94,106,210,0.10)] scale-[1.01]",
+      "ring-1 ring-primary/20 bg-primary/[0.03] shadow-[0_4px_12px_rgba(0,103,127,0.10)] dark:shadow-[0_4px_12px_rgba(138,208,238,0.10)] scale-[1.01]",
     // Apple: 400ms spring, no jump — shadow breathes, border stays calm
     "transition-all duration-[400ms] ease-spring will-change-transform",
     "bg-card dark:bg-popover border border-border-subtle dark:border-border-subtle shadow-[0_1px_3px_0_rgba(17,19,24,0.10),0_4px_16px_0_rgba(17,19,24,0.10),0_0_0_1px_rgba(17,19,24,0.06)] dark:shadow-[0_2px_8px_0_rgba(0,0,0,0.5),0_8px_24px_0_rgba(0,0,0,0.45)]",
@@ -82,7 +82,7 @@ function cardClassName(
     // regular declarations), so the card glides out on its own.
     isArchiving && "task-card--archiving",
     isSelected &&
-      "border-primary dark:border-primary shadow-[0_0_0_2px_rgba(94,106,210,0.20),0_4px_16px_0_rgba(94,106,210,0.12)] dark:shadow-[0_0_0_2px_rgba(94,106,210,0.30),0_4px_16px_0_rgba(0,0,0,0.5)]",
+      "border-primary shadow-[0_0_0_2px_rgba(0,103,127,0.20),0_4px_16px_0_rgba(0,103,127,0.12)] dark:shadow-[0_0_0_2px_rgba(138,208,238,0.30),0_4px_16px_0_rgba(0,0,0,0.5)]",
     isOverlay
       ? "cursor-grabbing rotate-3 scale-[1.02] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(0,0,0,0.07)] dark:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.08)]"
       : "cursor-pointer active:scale-[0.985] active:duration-150",
@@ -173,7 +173,7 @@ const TaskCardView = memo(function TaskCardView({
       <div>
         {isOver && (
           <div
-            className="absolute -top-1.5 left-3 right-3 h-0.5 bg-primary rounded-full shadow-[0_1px_4px_rgba(94,106,210,0.4)] pointer-events-none"
+            className="absolute -top-1.5 left-3 right-3 h-0.5 bg-primary rounded-full shadow-[0_1px_4px_rgba(0,103,127,0.4)] dark:shadow-[0_1px_4px_rgba(138,208,238,0.4)] pointer-events-none"
             aria-hidden
           />
         )}
@@ -187,7 +187,7 @@ const TaskCardView = memo(function TaskCardView({
               size="icon-xs"
               onClick={handleDelete}
               onPointerDown={(e) => e.stopPropagation()}
-              className="shrink-0 text-text-muted-hard hover:text-red-400 transition-all duration-[300ms] ease-spring rounded-md w-5 h-5 opacity-0 group-hover/card:opacity-100 focus-visible:opacity-100"
+              className="shrink-0 text-text-muted-hard hover:text-destructive transition-all duration-[300ms] ease-spring rounded-md w-5 h-5 opacity-0 group-hover/card:opacity-100 focus-visible:opacity-100"
               aria-label="Supprimer la tâche"
             >
               <Trash width={10} height={10} strokeWidth={2} />
@@ -203,7 +203,7 @@ const TaskCardView = memo(function TaskCardView({
           aria-hidden
           className="absolute inset-0 flex items-center justify-center"
         >
-          <span className="task-card__archive-check flex size-6 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-500 ring-1 ring-emerald-500/30 backdrop-blur-sm">
+          <span className="task-card__archive-check flex size-6 items-center justify-center rounded-full bg-primary/15 text-primary ring-1 ring-primary/30 backdrop-blur-sm">
             <Check className="size-3.5" strokeWidth={3} />
           </span>
         </span>

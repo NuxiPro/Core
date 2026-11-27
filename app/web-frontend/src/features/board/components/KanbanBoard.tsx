@@ -85,7 +85,7 @@ export function KanbanBoard() {
   if (!projectId) return null;
 
   return (
-    <div className="h-full min-h-0 w-full bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-500/5 via-surface-workspace to-surface-workspace">
+    <div className="h-full min-h-0 w-full bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/5 via-surface-workspace to-surface-workspace">
       <BoardScrollContainer showArrows>
         <DndContext
           sensors={sensors}

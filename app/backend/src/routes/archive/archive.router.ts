@@ -2,11 +2,13 @@ import { requirePermission } from "@backend/src/lib/auth-middleware";
 import { createRoute, z } from "@hono/zod-openapi";
 import {
   ArchivedTaskResponse,
+  ArchivedTaskSummaryResponse,
   ArchiveIdParam,
   ArchiveTaskBody,
   ErrorResponse,
   GetArchivesQuery,
   ProjectIdParam,
+  UpdateArchiveBody,
 } from "./archive.schemas";
 
 const AuthErrorResponse = z.union([
@@ -62,19 +64,20 @@ export const archiveTaskRoute = createRoute({
 });
 
 // List the archived tasks of a project, newest first.
+// Step 1 (light): id + title + dates only — no description in the list.
 export const getArchivesRoute = createRoute({
   method: "get",
   path: "/getArchives",
   description:
-    "Returns the archived tasks of a project, newest first (served by the projectId + archivedAt index).",
+    "Returns the light list of a project's archived tasks (id, title, dates), newest first.",
   middleware: [requirePermission({ archive: ["read"] })],
   request: {
     query: GetArchivesQuery,
   },
   responses: {
     200: {
-      description: "Archived tasks returned successfully.",
-      content: jsonContent(z.array(ArchivedTaskResponse)),
+      description: "Archived task summaries returned successfully.",
+      content: jsonContent(z.array(ArchivedTaskSummaryResponse)),
     },
     401: {
       description: "Authentication is required.",
@@ -84,6 +87,84 @@ export const getArchivesRoute = createRoute({
       description:
         "The authenticated user does not have permission to read archives.",
       content: jsonContent(ForbiddenResponse),
+    },
+    500: {
+      description: "An internal server error occurred.",
+      content: jsonContent(ErrorResponse),
+    },
+  },
+});
+
+// Detail of one archived task: the board detail endpoint only reads
+// `cards`, and an archived row no longer lives there.
+export const getArchiveRoute = createRoute({
+  method: "get",
+  path: "/getArchive/{id}",
+  description: "Returns one archived task by its archive row id.",
+  middleware: [requirePermission({ archive: ["read"] })],
+  request: {
+    params: ArchiveIdParam,
+  },
+  responses: {
+    200: {
+      description: "Archived task returned successfully.",
+      content: jsonContent(ArchivedTaskResponse),
+    },
+    401: {
+      description: "Authentication is required.",
+      content: jsonContent(AuthErrorResponse),
+    },
+    403: {
+      description:
+        "The authenticated user does not have permission to read archives.",
+      content: jsonContent(ForbiddenResponse),
+    },
+    404: {
+      description: "Archived task not found or not accessible.",
+      content: jsonContent(ErrorResponse),
+    },
+    500: {
+      description: "An internal server error occurred.",
+      content: jsonContent(ErrorResponse),
+    },
+  },
+});
+
+// Edit an archived task in place: the row lives in `archived_cards`,
+// so the board updateTask endpoint (table `cards`) can never touch it.
+export const updateArchiveRoute = createRoute({
+  method: "patch",
+  path: "/updateArchive/{id}",
+  description:
+    "Updates the title, description, priority or due date of an archived task.",
+  middleware: [requirePermission({ archive: ["update"] })],
+  request: {
+    params: ArchiveIdParam,
+    body: {
+      content: jsonContent(UpdateArchiveBody),
+    },
+  },
+  responses: {
+    200: {
+      description: "Archived task updated successfully.",
+      content: jsonContent(ArchivedTaskResponse),
+    },
+    400: {
+      description: "The request body is empty.",
+      content: jsonContent(ErrorResponse),
+    },
+    401: {
+      description: "Authentication is required.",
+      content: jsonContent(AuthErrorResponse),
+    },
+    403: {
+      description:
+        "The authenticated user does not have permission to update archives.",
+      content: jsonContent(ForbiddenResponse),
+    },
+    404: {
+      description: "Archived task not found or not accessible.",
+      content: jsonContent(ErrorResponse),
     },
     500: {
       description: "An internal server error occurred.",

@@ -6,7 +6,6 @@ import { db } from "../../drizzle/connection/index";
 const log = createLogger("purge-session/");
 let isPurgeRunning = false;
 
-
 /**
  * Purges user sessions older than 30 days in batches to free up PostgreSQL storage.
  *

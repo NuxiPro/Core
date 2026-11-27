@@ -51,7 +51,7 @@ export function GeneralTab({
             onChange={(e) =>
               isLanguage(e.target.value) && setLanguage(e.target.value)
             }
-            className="shrink-0 w-48 bg-[var(--dialog-input-bg)] border border-[var(--dialog-input-border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 hover:border-[var(--border-subtle)] transition-colors"
+            className="shrink-0 w-48 bg-[var(--dialog-input-bg)] border border-[var(--dialog-input-border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 hover:border-[var(--border-subtle)] transition-colors"
           >
             <option value="fr">{t("common.french")}</option>
             <option value="en">{t("common.english")}</option>
@@ -76,7 +76,7 @@ export function GeneralTab({
                 onClick={() => setTheme(value)}
                 className={`relative p-2 rounded-lg border transition-colors duration-150 text-left ${
                   theme === value
-                    ? "border-emerald-500 bg-emerald-500/5"
+                    ? "border-primary bg-primary/5"
                     : "border-[var(--border)] hover:border-[var(--border-subtle)]"
                 }`}
               >
@@ -93,7 +93,7 @@ export function GeneralTab({
                   {t(`settings.general.${value}`)}
                 </p>
                 {theme === value && (
-                  <div className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-emerald-500" />
+                  <div className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-primary" />
                 )}
               </button>
             ))}
@@ -121,13 +121,17 @@ export function GeneralTab({
             aria-checked={emailNotifications}
             aria-label={t("settings.general.emailNotifications")}
             onClick={() => setEmailNotifications(!emailNotifications)}
-            className={`shrink-0 w-9 h-5 rounded-full relative transition-colors duration-150 ${
-              emailNotifications ? "bg-emerald-500" : "bg-[var(--border)]"
+            className={`relative h-5 w-9 shrink-0 rounded-full border border-transparent transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-card)] ${
+              emailNotifications
+                ? "bg-primary"
+                : "bg-[var(--border)] dark:bg-surface-hover dark:border-border-subtle"
             }`}
           >
             <span
-              className={`absolute top-0.5 left-0.5 size-4 rounded-full bg-white transition-transform duration-150 ${
-                emailNotifications ? "translate-x-4" : "translate-x-0"
+              className={`absolute left-0.5 top-0.5 size-4 rounded-full transition-[transform,background-color] duration-150 ${
+                emailNotifications
+                  ? "translate-x-4 bg-white dark:bg-primary-foreground"
+                  : "translate-x-0 bg-white dark:bg-foreground"
               }`}
             />
           </button>

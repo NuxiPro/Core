@@ -1,4 +1,4 @@
-import type { ArchivedTask } from "@packages/shared/types/task/task";
+import type { ArchivedTaskSummary } from "@packages/shared/types/task/task";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Archive, RotateCcw, Search, SearchX, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -27,12 +27,14 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   projectName?: string | undefined;
-  tasks: ArchivedTask[];
+  tasks: ArchivedTaskSummary[];
   onRestore: (taskId: string) => void;
   /** Click on a row. When omitted, rows are not clickable. */
   onOpenTask?: ((taskId: string) => void) | undefined;
-  /** Close the panel after opening a task (default: true). */
+  /** Close the panel after opening a task (default: true). Pass false to keep the archive visible behind the popup. */
   closeOnOpen?: boolean | undefined;
+  /** Task currently opened in the popup: purely visual highlight, controlled by the parent. */
+  selectedTaskId?: string | undefined;
 };
 
 const DAY = 86_400_000;
@@ -40,13 +42,11 @@ const ROW_HEIGHT = 52;
 const HEADER_HEIGHT = 36;
 const VIRTUALIZE_ABOVE = 40; // items (rows + headers)
 
-// ─────────────────────────── Dates & grouping ───────────────────────────
-
 const startOfDay = (d: Date) =>
   new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 
 // True when the task matches the selected period.
-function matchPeriod(task: ArchivedTask, period: Period) {
+function matchPeriod(task: ArchivedTaskSummary, period: Period) {
   if (period === "all") return true;
   const date = new Date(task.archivedAt);
   if (period === "7d") return Date.now() - date.getTime() < 7 * DAY;
@@ -91,9 +91,7 @@ function formatMeta(date: Date, kind: GroupKind, language: string) {
 
 type Item =
   | { type: "header"; key: string; label: string; count: number }
-  | { type: "task"; key: string; task: ArchivedTask; meta: string };
-
-// ─────────────────────────────── Row bits ───────────────────────────────
+  | { type: "task"; key: string; task: ArchivedTaskSummary; meta: string };
 
 // Highlights the first match of the search query inside the title.
 function Highlight({ text, query }: { text: string; query: string }) {
@@ -117,12 +115,14 @@ function ArchiveRow({
   task,
   meta,
   query,
+  selected,
   onOpen,
   onRestore,
 }: {
-  task: ArchivedTask;
+  task: ArchivedTaskSummary;
   meta: string;
   query: string;
+  selected: boolean;
   onOpen?: ((taskId: string) => void) | undefined;
   onRestore: (taskId: string) => void;
 }) {
@@ -139,22 +139,32 @@ function ArchiveRow({
     </>
   );
 
+  // Selected = soft background + thin accent bar on the left (purely visual).
   const mainClass =
-    "flex h-10 min-w-0 flex-1 items-center gap-3 rounded-lg px-3 text-left";
+    "relative flex h-10 min-w-0 flex-1 items-center gap-3 rounded-lg px-3 text-left transition-colors " +
+    "before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[3px] before:rounded-full before:bg-primary before:opacity-0 before:transition-opacity " +
+    "data-[selected=true]:bg-primary/10 data-[selected=true]:before:opacity-100";
 
   return (
-    <div className="group flex items-center gap-1 px-2" style={{ height: ROW_HEIGHT }}>
+    <div
+      className="group flex items-center gap-1 px-2"
+      style={{ height: ROW_HEIGHT }}
+    >
       {onOpen ? (
         <button
           type="button"
+          data-selected={selected}
+          aria-current={selected ? "true" : undefined}
           onClick={() => onOpen(task.id)}
           title={t("archive.openTask")}
-          className={`${mainClass} cursor-pointer transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
+          className={`${mainClass} cursor-pointer hover:bg-muted data-[selected=true]:hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
         >
           {content}
         </button>
       ) : (
-        <div className={mainClass}>{content}</div>
+        <div data-selected={selected} className={mainClass}>
+          {content}
+        </div>
       )}
 
       {/* Always visible (touch friendly), stronger on hover/focus. */}
@@ -165,7 +175,7 @@ function ArchiveRow({
         onClick={() => onRestore(task.id)}
         aria-label={t("archive.restoreLabel", { title: task.title })}
         title={t("archive.restore")}
-        className="shrink-0 text-muted-foreground opacity-60 transition-opacity hover:bg-accent hover:text-foreground hover:opacity-100 focus-visible:opacity-100 group-hover:opacity-100"
+        className="shrink-0 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:opacity-100"
       >
         <RotateCcw className="size-4" aria-hidden="true" />
       </Button>
@@ -173,25 +183,29 @@ function ArchiveRow({
   );
 }
 
+// Group header + premium separator (fading line under the label).
 function GroupHeader({ label, count }: { label: string; count: number }) {
   return (
     <h3
-      className="flex items-end gap-1.5 px-5 pb-1.5 text-xs font-medium text-muted-foreground first-letter:uppercase"
+      className="relative flex items-end gap-1.5 px-5 pb-2 text-xs font-medium text-muted-foreground first-letter:uppercase"
       style={{ height: HEADER_HEIGHT }}
     >
       {label}
-      <span className="font-normal tabular-nums opacity-60">{count}</span>
+      <span className="font-normal tabular-nums">{count}</span>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-4 bottom-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"
+      />
     </h3>
   );
 }
 
-// ─────────────────────────────── Component ───────────────────────────────
-
 /**
  * Archive panel (right side Sheet).
  *
- * 1. static zone — title, search, period chips;
- * 2. dynamic zone — archived tasks grouped by date (Today / Yesterday / ...).
+ * 1. static zone — title, search, period chips (unchanged);
+ * 2. dynamic zone — premium bordered frame containing the archived tasks
+ *    grouped by date, each group introduced by a premium separator.
  *
  * Daily-use shortcuts:
  * - "/" focuses the search, Enter opens the first result;
@@ -206,6 +220,7 @@ export function ArchiveSheet({
   onRestore,
   onOpenTask,
   closeOnOpen = true,
+  selectedTaskId,
 }: Props) {
   const { t, i18n } = useTranslation();
   const [q, setQ] = useState("");
@@ -267,7 +282,7 @@ export function ArchiveSheet({
       key: string;
       kind: GroupKind;
       label: string;
-      tasks: ArchivedTask[];
+      tasks: ArchivedTaskSummary[];
     }[] = [];
 
     for (const task of filtered) {
@@ -326,6 +341,7 @@ export function ArchiveSheet({
         task={item.task}
         meta={item.meta}
         query={query}
+        selected={item.task.id === selectedTaskId}
         onOpen={handleOpenTask}
         onRestore={onRestore}
       />
@@ -351,6 +367,7 @@ export function ArchiveSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
+        showCloseButton={false}
         aria-describedby="archive-desc"
         // Desktop: focus the search right away. Touch: don't pop the keyboard.
         onOpenAutoFocus={(e) => {
@@ -366,21 +383,26 @@ export function ArchiveSheet({
             updateQuery("");
           }
         }}
-        // "/" jumps to the search from anywhere in the panel.
+        // "/" jumps to the search from anywhere in the panel,
+        // except while typing in a field (input, textarea, rich-text editor).
         onKeyDown={(e) => {
           const target = e.target as HTMLElement;
-          if (e.key === "/" && target.tagName !== "INPUT") {
+          const typing =
+            target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.isContentEditable;
+          if (e.key === "/" && !typing) {
             e.preventDefault();
             searchRef.current?.focus();
           }
         }}
-        className="w-full max-w-md bg-card border-l border-border-subtle p-0 flex flex-col h-full data-[state=open]:animate-[slideInRight_0.35s_ease-out_forwards] data-[state=closed]:animate-[slideOutRight_0.35s_ease-out_forwards]"
+        className="archive-sheet-content w-full max-w-md bg-card border-l border-border-subtle p-0 flex flex-col h-full"
       >
         <SheetDescription id="archive-desc" className="sr-only">
           {t("archive.panelDesc", { projectName: projectName ?? "" })}
         </SheetDescription>
 
-        {/* ── Static zone ── */}
+        {/* ── Static zone (unchanged) ── */}
         <div className="flex shrink-0 flex-col gap-3 border-b border-border-subtle px-5 pb-3 pt-5">
           <SheetHeader className="flex-row items-start justify-between space-y-0 p-0">
             <div className="min-w-0">
@@ -451,20 +473,16 @@ export function ArchiveSheet({
                 <X className="size-3.5" aria-hidden="true" />
               </button>
             ) : (
-              <kbd
-                aria-hidden="true"
-                className="pointer-events-none absolute right-2.5 top-2.5 hidden rounded border border-border-subtle bg-background px-1.5 text-[10px] font-medium leading-4 text-muted-foreground [@media(pointer:fine)]:block"
-              >
+              <kbd className="pointer-events-none absolute right-2.5 top-2.5 hidden rounded border border-border-subtle bg-background px-1.5 text-[10px] font-medium leading-4 text-muted-foreground [@media(pointer:fine)]:block">
                 /
               </kbd>
             )}
           </div>
 
           {/* Period: one click, no dropdown. */}
-          <div
-            role="group"
+          <fieldset
             aria-label={t("archive.periodLabel")}
-            className="flex gap-1.5"
+            className="m-0 min-w-0 flex gap-1.5 border-0 p-0"
           >
             {PERIOD_OPTIONS.map((option) => {
               const active = option.value === period;
@@ -481,91 +499,98 @@ export function ArchiveSheet({
                   }`}
                 >
                   {t(option.labelKey)}
-                  <span
-                    className={`tabular-nums ${active ? "opacity-70" : "opacity-60"}`}
-                  >
-                    {counts[option.value]}
-                  </span>
+                  <span className="tabular-nums">{counts[option.value]}</span>
                 </button>
               );
             })}
-          </div>
+          </fieldset>
         </div>
 
-        {/* ── Dynamic zone ── */}
-        <section
-          ref={scrollRef}
-          aria-label={t("archive.title")}
-          className="flex-1 overflow-y-auto overscroll-contain py-1"
-        >
-          {items.length ? (
-            shouldVirtualize ? (
-              <div
-                className="relative w-full"
-                style={{ height: virtualizer.getTotalSize() }}
-              >
-                {virtualizer.getVirtualItems().map((row) => {
-                  const item = items[row.index];
-                  if (!item) return null;
-                  return (
-                    <div
-                      key={item.key}
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        transform: `translateY(${row.start}px)`,
-                      }}
-                    >
-                      {renderItem(item)}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div>
-                {items.map((item) => (
-                  <div key={item.key}>{renderItem(item)}</div>
-                ))}
-              </div>
-            )
-          ) : (
-            // Empty states: nothing archived yet vs. nothing matches the filters.
-            <div className="flex h-full flex-col items-center justify-center px-6 text-center">
-              <div className="rounded-full bg-muted p-3.5">
-                {hasTasks ? (
-                  <SearchX
-                    className="size-5 text-muted-foreground"
-                    aria-hidden="true"
-                  />
+        {/* ── Dynamic zone ──
+            Outer wrapper = breathing room. Frame = premium border (clips the
+            rounded corners). The scroll container keeps its ref, so the
+            virtualizer is untouched. */}
+        <div className="flex min-h-0 flex-1 flex-col p-3">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border-subtle bg-background/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+            <section
+              ref={scrollRef}
+              aria-label={t("archive.title")}
+              className="flex-1 overflow-y-auto overscroll-contain py-1"
+            >
+              {items.length ? (
+                shouldVirtualize ? (
+                  <div
+                    className="relative w-full"
+                    style={{ height: virtualizer.getTotalSize() }}
+                  >
+                    {virtualizer.getVirtualItems().map((row) => {
+                      const item = items[row.index];
+                      if (!item) return null;
+                      return (
+                        <div
+                          key={item.key}
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            transform: `translateY(${row.start}px)`,
+                          }}
+                        >
+                          {renderItem(item)}
+                        </div>
+                      );
+                    })}
+                  </div>
                 ) : (
-                  <Archive
-                    className="size-5 text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                )}
-              </div>
-              <p className="mt-3 text-sm font-medium text-foreground">
-                {hasTasks ? t("archive.noResultsTitle") : t("archive.emptyTitle")}
-              </p>
-              <p className="mt-1 max-w-[240px] text-xs leading-relaxed text-muted-foreground">
-                {hasTasks ? t("archive.noResultsDesc") : t("archive.emptyDesc")}
-              </p>
-              {hasTasks && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={resetFilters}
-                  className="mt-3 text-xs"
-                >
-                  {t("archive.resetFilters")}
-                </Button>
+                  <div>
+                    {items.map((item) => (
+                      <div key={item.key}>{renderItem(item)}</div>
+                    ))}
+                  </div>
+                )
+              ) : (
+                // Empty states: nothing archived yet vs. nothing matches the filters.
+                <div className="flex h-full min-h-[240px] flex-col items-center justify-center px-6 text-center">
+                  <div className="rounded-full bg-muted p-3.5">
+                    {hasTasks ? (
+                      <SearchX
+                        className="size-5 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <Archive
+                        className="size-5 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </div>
+                  <p className="mt-3 text-sm font-medium text-foreground">
+                    {hasTasks
+                      ? t("archive.noResultsTitle")
+                      : t("archive.emptyTitle")}
+                  </p>
+                  <p className="mt-1 max-w-[240px] text-xs leading-relaxed text-muted-foreground">
+                    {hasTasks
+                      ? t("archive.noResultsDesc")
+                      : t("archive.emptyDesc")}
+                  </p>
+                  {hasTasks && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={resetFilters}
+                      className="mt-3 text-xs"
+                    >
+                      {t("archive.resetFilters")}
+                    </Button>
+                  )}
+                </div>
               )}
-            </div>
-          )}
-        </section>
+            </section>
+          </div>
+        </div>
       </SheetContent>
     </Sheet>
   );

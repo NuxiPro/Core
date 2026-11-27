@@ -15,17 +15,19 @@ function RouteComponent() {
   }, []);
 
   return (
-    <div className="relative h-full w-full bg-[#010102] font-sans">
+    <div className="dark relative h-full w-full bg-background text-foreground font-sans">
       <div className="flex items-center justify-center h-full px-4">
         <div className="w-full max-w-[340px] space-y-6 text-center">
           <BrandLogo />
-          <div className="mx-auto size-12 rounded-full bg-amber-500/10 flex items-center justify-center">
-            <span className="text-xl text-amber-400">!</span>
+          <div className="mx-auto size-12 rounded-full bg-destructive/10 flex items-center justify-center">
+            <span className="text-xl text-destructive">!</span>
           </div>
-          <h1 className="text-xl font-semibold text-white">
+          <h1 className="text-xl font-semibold text-foreground">
             {t("auth.linkExpiredTitle")}
           </h1>
-          <p className="text-sm text-[#8a8f98]">{t("auth.linkExpiredHint")}</p>
+          <p className="text-sm text-muted-foreground">
+            {t("auth.linkExpiredHint")}
+          </p>
           <Button
             type="button"
             className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary-hover border-0 font-medium transition-all duration-[420ms] ease-out"

@@ -153,7 +153,7 @@ export function DeleteProjectDialog({
               <span className="truncate">{project.name}</span>
               {copyState === "copied" ? (
                 <Check
-                  className="size-3 shrink-0 text-emerald-600 dark:text-emerald-400"
+                  className="size-3 shrink-0 text-primary"
                   aria-hidden="true"
                 />
               ) : (

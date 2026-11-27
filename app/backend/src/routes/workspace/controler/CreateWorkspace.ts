@@ -8,7 +8,10 @@ import type { AppEnv } from "@backend/src/types/app-env";
 
 const log = createLogger("workspace/create");
 
-export const createWorkspaceHandler: RouteHandler<typeof createWorkspaceRoute, AppEnv> = async (c) => {
+export const createWorkspaceHandler: RouteHandler<
+  typeof createWorkspaceRoute,
+  AppEnv
+> = async (c) => {
   const user = c.get("user");
   try {
     const data = c.req.valid("json");

@@ -79,7 +79,7 @@ export function NavUser({
                   <UserIcon className="size-8 text-sidebar-foreground" />
                 </AvatarFallback>
               </Avatar>
-              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-sidebar" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-sidebar" />
             </div>
             <div className="flex flex-col items-start min-w-0 flex-1 overflow-hidden">
               <span className="text-[13px] font-semibold leading-tight text-sidebar-foreground truncate block w-full">

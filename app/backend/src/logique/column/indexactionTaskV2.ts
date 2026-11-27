@@ -59,9 +59,9 @@ export async function MoveTask(
     // 1. Check that the task to move exists and get its projectId
     const [taskRows] = await tx
       .select({ id: cardsTable.id, projectId: cardsTable.projectId })
-        .from(cardsTable)
-        .where(and(eq(cardsTable.id, taskId), eq(cardsTable.userId, userId)))
-        .limit(1);
+      .from(cardsTable)
+      .where(and(eq(cardsTable.id, taskId), eq(cardsTable.userId, userId)))
+      .limit(1);
 
     if (!taskRows) throw new Error("TASK_NOT_FOUND");
     const projectId = taskRows.projectId;
@@ -82,12 +82,16 @@ export async function MoveTask(
           quadrant: cardsTable.quadrant,
         })
         .from(cardsTable)
-        .where(and(eq(cardsTable.id, overTaskId), eq(cardsTable.userId, userId)))
+        .where(
+          and(eq(cardsTable.id, overTaskId), eq(cardsTable.userId, userId)),
+        )
         .limit(1);
       if (!overRows) throw new Error("TASK_NOT_FOUND");
       // Safety: overTask must be in the same project AND the same target column
-      if (overRows.projectId !== projectId) throw new PositionImpossibleError("Voisin invalide");
-      if (overRows.quadrant !== targetQuadrant) throw new PositionImpossibleError("Voisin invalide");
+      if (overRows.projectId !== projectId)
+        throw new PositionImpossibleError("Voisin invalide");
+      if (overRows.quadrant !== targetQuadrant)
+        throw new PositionImpossibleError("Voisin invalide");
       overPos = overRows.positionString;
     }
 
@@ -147,7 +151,8 @@ export async function MoveTask(
 
     // 4. Generation with preventive rebalance + 23505 retry
     const tryGenerate = (a: string | null, b: string | null) => {
-      if ((a && a.length > 180) || (b && b.length > 180)) throw new Error("REBALANCE_NEEDED");
+      if ((a && a.length > 180) || (b && b.length > 180))
+        throw new Error("REBALANCE_NEEDED");
       return generateKeyBetween(a, b);
     };
 
@@ -158,7 +163,9 @@ export async function MoveTask(
         const [refetched] = await tx
           .select({ positionString: cardsTable.positionString })
           .from(cardsTable)
-          .where(and(eq(cardsTable.id, overTaskId), eq(cardsTable.userId, userId)))
+          .where(
+            and(eq(cardsTable.id, overTaskId), eq(cardsTable.userId, userId)),
+          )
           .limit(1);
         overPos = refetched?.positionString ?? null;
       } else {
@@ -179,19 +186,29 @@ export async function MoveTask(
     try {
       await tx
         .update(cardsTable)
-        .set({ positionString: newPosition, quadrant: targetQuadrant, updatedAt: new Date() })
+        .set({
+          positionString: newPosition,
+          quadrant: targetQuadrant,
+          updatedAt: new Date(),
+        })
         .where(and(eq(cardsTable.id, taskId), eq(cardsTable.userId, userId)));
     } catch (e: unknown) {
       // uniqueIndex collision (userId, projectId, quadrant, positionString) → 23505
       const isUniqueViolation =
-        e instanceof Error && (e.message.includes("23505") || (e as { code?: string }).code === "23505");
+        e instanceof Error &&
+        (e.message.includes("23505") ||
+          (e as { code?: string }).code === "23505");
       if (isUniqueViolation) {
         await rebalanceQuadrant(tx, userId, projectId, targetQuadrant);
         ({ prev: prevPos, next: nextPos } = await resolveAfterRebalance());
         const retryPos = generateKeyBetween(prevPos, nextPos);
         await tx
           .update(cardsTable)
-          .set({ positionString: retryPos, quadrant: targetQuadrant, updatedAt: new Date() })
+          .set({
+            positionString: retryPos,
+            quadrant: targetQuadrant,
+            updatedAt: new Date(),
+          })
           .where(and(eq(cardsTable.id, taskId), eq(cardsTable.userId, userId)));
         return retryPos;
       }

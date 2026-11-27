@@ -51,7 +51,7 @@ function ColumnInner({
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-col h-full min-h-0 shrink-0 rounded-2xl bg-muted dark:bg-card border border-border-column shadow-[0_1px_3px_0_rgba(17,19,24,0.06),0_4px_16px_0_rgba(17,19,24,0.06)] dark:shadow-[0_2px_8px_0_rgba(0,0,0,0.45)] transition-all duration-200 ${isOver ? "bg-accent dark:bg-popover border-primary/40 dark:border-primary/30 shadow-[0_4px_16px_0_rgba(94,106,210,0.12)]" : ""}`}
+      className={`flex flex-col h-full min-h-0 shrink-0 rounded-2xl bg-muted dark:bg-card border border-border-column shadow-[0_1px_3px_0_rgba(17,19,24,0.06),0_4px_16px_0_rgba(17,19,24,0.06)] dark:shadow-[0_2px_8px_0_rgba(0,0,0,0.45)] transition-all duration-200 ${isOver ? "bg-accent dark:bg-popover border-primary/40 dark:border-primary/30 shadow-[0_4px_16px_0_rgba(0,103,127,0.12)] dark:shadow-[0_4px_16px_0_rgba(138,208,238,0.12)]" : ""}`}
       data-column={colId}
     >
       <ColumnHeader
@@ -80,7 +80,7 @@ function ColumnInner({
           <button
             type="button"
             onClick={handleAddTask}
-            className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="flex cursor-pointer w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <Plus width={15} height={15} strokeWidth={2.5} />
             {t("column.addTask")}

@@ -13,7 +13,10 @@ const log = createLogger("projects/get-board");
 /**
  * Handler du contrôleur — pattern kaneo
  */
-export const getBoardHandler: RouteHandler<typeof getBoardRoute, AppEnv> = async (c) => {
+export const getBoardHandler: RouteHandler<
+  typeof getBoardRoute,
+  AppEnv
+> = async (c) => {
   const user = c.get("user");
   const { projectId } = c.req.valid("param");
 
@@ -21,7 +24,9 @@ export const getBoardHandler: RouteHandler<typeof getBoardRoute, AppEnv> = async
     const [project] = await db
       .select()
       .from(projectsTable)
-      .where(and(eq(projectsTable.id, projectId), eq(projectsTable.userId, user.id)));
+      .where(
+        and(eq(projectsTable.id, projectId), eq(projectsTable.userId, user.id)),
+      );
 
     if (!project) {
       return c.json({ message: "Project not found" }, 404);
@@ -44,7 +49,10 @@ export const getBoardHandler: RouteHandler<typeof getBoardRoute, AppEnv> = async
       200,
     );
   } catch (err) {
-    log.error("[GET /projects/:projectId/board] DB error", { projectId, error: err });
+    log.error("[GET /projects/:projectId/board] DB error", {
+      projectId,
+      error: err,
+    });
     return c.json({ message: "Internal server error" }, 500);
   }
 };

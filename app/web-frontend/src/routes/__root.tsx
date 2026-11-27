@@ -2,16 +2,7 @@ import { createRootRoute, Outlet } from "@tanstack/react-router";
 import * as React from "react";
 import { useTheme } from "@/src/shared/hooks/useTheme";
 import { ErrorBoundary } from "../layout/components/ErrorBoundary";
-import { RouteTransition } from "../layout/components/RouteTransition";
 import { TooltipProvider } from "../layout/components/ui/tooltip";
-
-const TanStackRouterDevtools = false
-  ? React.lazy(() =>
-      import("@tanstack/react-router-devtools").then((m) => ({
-        default: m.TanStackRouterDevtools,
-      })),
-    )
-  : () => null;
 
 export const Route = createRootRoute({
   head: () => ({
@@ -41,21 +32,16 @@ function RootLayout() {
       <TooltipProvider delayDuration={0}>
         <React.Suspense
           fallback={
-            <div className="h-screen w-screen flex items-center justify-center bg-[#010102]">
-              <div className="w-5 h-5 border-2 border-[#23252a] border-t-[#f7f8f8] rounded-full animate-spin" />
+            <div className="h-screen w-screen flex items-center justify-center bg-surface-root">
+              <div className="w-5 h-5 border-2 border-border border-t-foreground rounded-full animate-spin" />
             </div>
           }
         >
           <ErrorBoundary>
-            <RouteTransition>
-              <Outlet />
-            </RouteTransition>
+            <Outlet />
           </ErrorBoundary>
         </React.Suspense>
       </TooltipProvider>
-      <React.Suspense fallback={null}>
-        <TanStackRouterDevtools position="bottom-right" />
-      </React.Suspense>
     </div>
   );
 }

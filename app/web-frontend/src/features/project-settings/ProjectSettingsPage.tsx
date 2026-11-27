@@ -23,7 +23,7 @@ const DESCRIPTION_MAX = 200;
 
 // Tokens sémantiques du global.css (adaptés au thème clair/sombre automatiquement).
 const fieldClassName =
-  "w-full rounded-lg border border-border bg-surface-root px-3 py-2 text-sm text-text-primary placeholder:text-text-muted-hard outline-none transition-colors hover:border-border-subtle focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/30";
+  "w-full rounded-lg border border-input bg-surface-root px-3 py-2 text-sm text-text-primary placeholder:text-text-muted-hard outline-none transition-colors hover:border-border-subtle focus:border-primary focus:ring-2 focus:ring-primary/30";
 
 interface ProjectSettingsPageProps {
   projectSlug: string;
@@ -138,15 +138,9 @@ export function ProjectSettingsPage({ projectSlug }: ProjectSettingsPageProps) {
         </Link>
 
         <header className="mt-6 mb-8">
-          <p className="text-xs font-semibold uppercase tracking-wide text-text-label">
+          <h1 className="text-xs font-semibold uppercase tracking-wide text-text-label">
             {t("settings.projectSettings")}
-          </p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-text-primary">
-            {project.name}
           </h1>
-          <p className="mt-2 text-sm text-text-label">
-            {t("settings.project.pageDescription")}
-          </p>
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -211,7 +205,10 @@ export function ProjectSettingsPage({ projectSlug }: ProjectSettingsPageProps) {
                 maxLength={DESCRIPTION_MAX}
                 rows={4}
                 placeholder={t("settings.general.descriptionPlaceholder")}
-                className={cn(fieldClassName, "resize-y")}
+                className={cn(
+                  fieldClassName,
+                  "h-32 max-h-32 resize-none overflow-y-auto",
+                )}
               />
             </div>
           </section>
@@ -220,7 +217,7 @@ export function ProjectSettingsPage({ projectSlug }: ProjectSettingsPageProps) {
             {feedback === "saved" ? (
               <p
                 role="status"
-                className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400"
+                className="flex items-center gap-1.5 text-xs text-primary"
               >
                 <CheckCircle className="size-3.5 shrink-0" aria-hidden="true" />
                 {t("settings.saved")}
@@ -261,7 +258,7 @@ export function ProjectSettingsPage({ projectSlug }: ProjectSettingsPageProps) {
             type="button"
             variant="destructive"
             size="sm"
-            className="mt-3"
+            className="mt-3 cursor-pointer"
             onClick={() => setIsDeleteOpen(true)}
           >
             <Trash2 className="size-3.5" aria-hidden="true" />

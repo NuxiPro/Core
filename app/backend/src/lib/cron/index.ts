@@ -7,6 +7,10 @@ import { purgeExpiredSessions } from "./deleted-useless-session";
  * automatiquement (une source unique, zéro drift doc/réalité).
  */
 export const CRONS = [
-  { name: "purge-users",            schedule: "0 6 */2 * *", task: purgeUnverifiedUsers },
-  { name: "purge-expired-sessions", schedule: "0 6 1 * *",   task: purgeExpiredSessions },
+  { name: "purge-users", schedule: "0 6 */2 * *", task: purgeUnverifiedUsers },
+  {
+    name: "purge-expired-sessions",
+    schedule: "0 6 1 * *",
+    task: purgeExpiredSessions,
+  },
 ] as const;

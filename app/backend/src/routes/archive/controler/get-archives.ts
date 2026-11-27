@@ -2,10 +2,10 @@ import { db } from "@backend/src/drizzle/connection";
 import { archivedCardsTable } from "@backend/src/drizzle/schemas/workspace";
 import type { AppEnv } from "@backend/src/types/app-env";
 import type { RouteHandler } from "@hono/zod-openapi";
-import { createLogger } from "@packages/shared/utils/logger";
+import { createLogger } from "@backend/src/logique/logging/logger";
 import { and, desc, eq } from "drizzle-orm";
 import type { getArchivesRoute } from "../archive.router";
-import { serializeArchived } from "./serialize";
+import { serializeArchivedLight } from "./serialize";
 
 const log = createLogger("archive/list");
 
@@ -20,8 +20,17 @@ export const getArchivesHandler: RouteHandler<
     // The userId filter doubles as the ownership check: another user's
     // project simply returns an empty list (no data leak).
     // Single indexed query on (projectId, archivedAt), newest first.
+    // Step 1 (light list): only id/title/dates — no description here.
+    // The full row is fetched by GET /getArchive/{id} on click.
     const rows = await db
-      .select()
+      .select({
+        id: archivedCardsTable.id,
+        title: archivedCardsTable.title,
+        projectId: archivedCardsTable.projectId,
+        userId: archivedCardsTable.userId,
+        archivedAt: archivedCardsTable.archivedAt,
+        createdAt: archivedCardsTable.createdAt,
+      })
       .from(archivedCardsTable)
       .where(
         and(
@@ -31,7 +40,7 @@ export const getArchivesHandler: RouteHandler<
       )
       .orderBy(desc(archivedCardsTable.archivedAt));
 
-    return c.json(rows.map(serializeArchived), 200);
+    return c.json(rows.map(serializeArchivedLight), 200);
   } catch (err) {
     log.error("[GET /getArchives] DB error", {
       projectId,

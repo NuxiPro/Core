@@ -30,9 +30,20 @@ export type ArchivedTask = {
   description?: Task["description"];
   projectId: Project["id"];
   userId: Task["userId"];
+  dueDate: Task["dueDate"],
+  priority: Task["priority"];
   archivedAt: string;
   createdAt: Task["createdAt"];
 };
+
+/**
+ * Light row for the archive list (step 1): id + title (max 255 chars) + dates.
+ * No description (up to 50K chars) — the full detail is fetched on click.
+ */
+export type ArchivedTaskSummary = Pick<
+  ArchivedTask,
+  "id" | "title" | "projectId" | "userId" | "archivedAt" | "createdAt"
+>;
 
 export type ArchiveTaskInput = {
   taskId: Task["id"];

@@ -15,8 +15,7 @@ export const createProjetInput = z.object({
     .max(200, { message: "Description too long" })
     .default("")
     .refine((val) => !/[<>]/.test(val), {
-      message:
-        "Characters < and > are not allowed in the description",
+      message: "Characters < and > are not allowed in the description",
     }),
   workspaceId: z.string(),
 });
@@ -28,7 +27,6 @@ export const ProjetReponse = z.object({
   slug: z.string(),
   createdAt: z.string(),
 });
-
 
 export const projectIdParams = z.object({
   projectId: z.uuid({ version: "v7" }),
@@ -44,7 +42,6 @@ export const updateProjectInput = z
 export const DeletedProject = z.object({
   id: z.uuid({ version: "v7", message: "Invalid ID: UUID format expected" }),
 });
-
 
 export const TaskSummaryResponse = z.object({
   id: z.uuid({ version: "v7" }),

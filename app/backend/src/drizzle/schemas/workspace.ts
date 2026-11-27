@@ -7,7 +7,6 @@ import {
   uniqueIndex,
   uuid,
   varchar,
-  boolean,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
 

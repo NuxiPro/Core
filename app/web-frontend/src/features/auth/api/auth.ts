@@ -1,7 +1,5 @@
-import { createLogger } from "@/src/shared/api/logger";
+// biome-ignore-all lint/suspicious/noConsole: Network failures are reported only during development.
 import { authClient } from "@/src/shared/lib/client";
-
-const log = createLogger("auth");
 
 export async function requestMagicLink(email: string) {
   try {
@@ -12,15 +10,11 @@ export async function requestMagicLink(email: string) {
       errorCallbackURL: `${window.location.origin}/link-expired`,
     });
 
-    if (error) {
-      log.error("Failed to send magic link", undefined, {
-        extra: { authError: error },
-      });
-    }
-
     return { data, error };
   } catch (err) {
-    log.error("Network error magic-link", err);
+    if (import.meta.env.DEV) {
+      console.error("Magic-link request failed");
+    }
     throw err;
   }
 }
@@ -28,14 +22,11 @@ export async function requestMagicLink(email: string) {
 export async function signOut() {
   try {
     const { data, error } = await authClient.signOut();
-    if (error) {
-      log.error("Failed to sign out", undefined, {
-        extra: { authError: error },
-      });
-    }
     return { data, error };
   } catch (err) {
-    log.error("Network error sign-out", err);
+    if (import.meta.env.DEV) {
+      console.error("Sign-out request failed");
+    }
     throw err;
   }
 }

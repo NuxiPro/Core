@@ -9,7 +9,10 @@ import type { AppEnv } from "@backend/src/types/app-env";
 
 const log = createLogger("workspaces/get");
 
-export const getWorkspaceHandler: RouteHandler<typeof getWorkspaceRoute, AppEnv> = async (c) => {
+export const getWorkspaceHandler: RouteHandler<
+  typeof getWorkspaceRoute,
+  AppEnv
+> = async (c) => {
   const user = c.get("user");
   const { id } = c.req.valid("param");
   try {
@@ -20,7 +23,9 @@ export const getWorkspaceHandler: RouteHandler<typeof getWorkspaceRoute, AppEnv>
         createdAt: WorkspacesTable.createdAt,
       })
       .from(WorkspacesTable)
-      .where(and(eq(WorkspacesTable.id, id), eq(WorkspacesTable.userId, user.id)))
+      .where(
+        and(eq(WorkspacesTable.id, id), eq(WorkspacesTable.userId, user.id)),
+      )
       .limit(1);
     if (!workspace) {
       return c.json({ message: "Workspace not found" }, 404);

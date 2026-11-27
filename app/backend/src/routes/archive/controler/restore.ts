@@ -6,7 +6,7 @@ import {
 } from "@backend/src/drizzle/schemas/workspace";
 import type { AppEnv } from "@backend/src/types/app-env";
 import type { RouteHandler } from "@hono/zod-openapi";
-import { createLogger } from "@packages/shared/utils/logger";
+import { createLogger } from "@backend/src/logique/logging/logger";
 import { and, desc, eq } from "drizzle-orm";
 import { generateKeyBetween } from "fractional-indexing";
 import type { restoreArchiveRoute } from "../archive.router";

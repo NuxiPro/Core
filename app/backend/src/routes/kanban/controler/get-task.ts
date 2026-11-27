@@ -21,7 +21,7 @@ import type { RouteHandler } from "@hono/zod-openapi";
 import type { AppEnv } from "@backend/src/types/app-env";
 import { getDbDateStr } from "@backend/utils/dateHelpers";
 import { and, eq } from "drizzle-orm";
-import { createLogger } from "@packages/shared/utils/logger";
+import { createLogger } from "@backend/src/logique/logging/logger";
 import { getTasksRoute, getTaskDetailRoute } from "../task.router";
 
 const log = createLogger("kanban/get-task");
@@ -48,8 +48,7 @@ export async function getTasksByProject(projectId: string, userId: string) {
       id: row.id,
       title: row.title,
       colId: getColIdFromSqlId(row.quadrant),
-      dueDate:
-        row.dueDate instanceof Date ? row.dueDate.toISOString() : null,
+      dueDate: row.dueDate instanceof Date ? row.dueDate.toISOString() : null,
       priority: row.priorityLabel || "none",
       positionString: row.positionString,
       createdAt:
@@ -85,7 +84,7 @@ export async function getTaskById(id: string, userId: string) {
 
     // Ensure row is not silently empty
     if (!row) {
-      log.error("[getTaskById] Task not found", { taskId: id, status: 404 })
+      log.error("[getTaskById] Task not found", { taskId: id, status: 404 });
       return null;
     }
 
@@ -119,7 +118,10 @@ export async function getTaskById(id: string, userId: string) {
  * Selects only: id, title, quadrant (= colId), createdAt
  * Does not carry: description, updatedAt
  */
-export const getTasksHandler: RouteHandler<typeof getTasksRoute, AppEnv> = async (c) => {
+export const getTasksHandler: RouteHandler<
+  typeof getTasksRoute,
+  AppEnv
+> = async (c) => {
   const user = c.get("user");
 
   const { projectId, limit, offset } = c.req.valid("query");
@@ -168,7 +170,10 @@ export const getTasksHandler: RouteHandler<typeof getTasksRoute, AppEnv> = async
  * GET /getTask/{id} — Full detail
  * Selects all fields needed by the edit form.
  */
-export const getTaskDetailHandler: RouteHandler<typeof getTaskDetailRoute, AppEnv> = async (c) => {
+export const getTaskDetailHandler: RouteHandler<
+  typeof getTaskDetailRoute,
+  AppEnv
+> = async (c) => {
   const user = c.get("user");
 
   const { id } = c.req.valid("param");

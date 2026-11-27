@@ -13,10 +13,13 @@
       "@backend/*": ["../backend/*"],
       "@packages/*": ["../../packages/*"],
       "@layout/*": ["./src/layout/*"],
+      "@board/*":["./src/features/board/*"]
     },
 
     // On ajoute "bun" pour que les commandes Bun soient reconnues
     "types": ["vite/client", "bun", "vitest/globals"],
+
+    "allowImportingTsExtensions": true,
 
     "sourceMap": true,
     "strict": true,

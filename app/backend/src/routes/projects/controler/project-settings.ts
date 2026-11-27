@@ -3,7 +3,7 @@ import { projectsTable } from "@backend/src/drizzle/schemas/workspace";
 import type { AppEnv } from "@backend/src/types/app-env";
 import type { RouteHandler } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
-import { createLogger } from "@packages/shared/utils/logger";
+import { createLogger } from "@backend/src/logique/logging/logger";
 import { getProjectRoute, updateProjectRoute } from "../projects.router";
 
 const log = createLogger("projects/settings");
@@ -27,7 +27,9 @@ export const getProjectHandler: RouteHandler<
     const [project] = await db
       .select()
       .from(projectsTable)
-      .where(and(eq(projectsTable.id, projectId), eq(projectsTable.userId, user.id)));
+      .where(
+        and(eq(projectsTable.id, projectId), eq(projectsTable.userId, user.id)),
+      );
 
     if (!project) return c.json({ message: "Project not found" }, 404);
     return c.json(toProjectResponse(project), 200);
@@ -49,7 +51,9 @@ export const updateProjectHandler: RouteHandler<
     const [project] = await db
       .update(projectsTable)
       .set(input)
-      .where(and(eq(projectsTable.id, projectId), eq(projectsTable.userId, user.id)))
+      .where(
+        and(eq(projectsTable.id, projectId), eq(projectsTable.userId, user.id)),
+      )
       .returning();
 
     if (!project) return c.json({ message: "Project not found" }, 404);

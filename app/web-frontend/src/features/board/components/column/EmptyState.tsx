@@ -23,15 +23,15 @@ export const EmptyState = memo(function EmptyState({
   return (
     <div className="flex flex-col items-center justify-center h-full px-6 py-10 text-center select-none">
       {icon && (
-        <div className="mb-2.5 text-slate-400 dark:text-text-muted-hard opacity-60">
+        <div className="mb-2.5 text-text-label dark:text-text-muted-hard">
           {icon}
         </div>
       )}
 
-      <h3 className="text-xs font-medium text-text-label mb-1">{title}</h3>
+      <h3 className="mb-1 text-sm font-medium text-text-label">{title}</h3>
 
       {description && (
-        <p className="text-[11px] text-text-muted-hard">{description}</p>
+        <p className="text-xs text-text-muted-hard">{description}</p>
       )}
 
       {action && <div className="mt-3">{action}</div>}

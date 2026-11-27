@@ -2,7 +2,6 @@ import { db } from "@backend/src/drizzle/connection";
 import { projectsTable } from "@backend/src/drizzle/schemas/workspace";
 import { listProjectsRoute } from "../projects.router";
 
-
 import { eq } from "drizzle-orm";
 import type { RouteHandler } from "@hono/zod-openapi";
 import type { AppEnv } from "@backend/src/types/app-env";
@@ -11,7 +10,10 @@ import { getDbDateStr } from "@backend/utils/dateHelpers";
 import { createLogger } from "@backend/src/logique/logging/logger";
 
 const log = createLogger("projects/list");
-export const listProjectsHandler: RouteHandler<typeof listProjectsRoute, AppEnv> = async (c) => {
+export const listProjectsHandler: RouteHandler<
+  typeof listProjectsRoute,
+  AppEnv
+> = async (c) => {
   const user = c.get("user");
   try {
     const rows = await db
@@ -29,7 +31,10 @@ export const listProjectsHandler: RouteHandler<typeof listProjectsRoute, AppEnv>
       name: p.name,
       slug: p.slug,
       description: p.description,
-      createdAt: p.createdAt instanceof Date ? p.createdAt.toISOString() : getDbDateStr(),
+      createdAt:
+        p.createdAt instanceof Date
+          ? p.createdAt.toISOString()
+          : getDbDateStr(),
     }));
     return c.json(result, 200);
   } catch (err) {

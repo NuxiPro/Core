@@ -3,7 +3,7 @@ import { cardsTable } from "@backend/src/drizzle/schemas/workspace";
 import type { RouteHandler } from "@hono/zod-openapi";
 import type { AppEnv } from "@backend/src/types/app-env";
 import { and, eq } from "drizzle-orm";
-import { createLogger } from "@packages/shared/utils/logger";
+import { createLogger } from "@backend/src/logique/logging/logger";
 import { deletedTaskRoute } from "../task.router";
 
 const log = createLogger("kanban/delete-task");
@@ -12,7 +12,10 @@ const log = createLogger("kanban/delete-task");
  * Handler du contrôleur — pattern kaneo : le contrôleur exporte une fonction,
  * l'instance est créée une seule fois par le module (kanban/index.ts).
  */
-export const deletedTaskHandler: RouteHandler<typeof deletedTaskRoute, AppEnv> = async (c) => {
+export const deletedTaskHandler: RouteHandler<
+  typeof deletedTaskRoute,
+  AppEnv
+> = async (c) => {
   // Authentication check
   const user = c.get("user");
   try {
@@ -24,8 +27,8 @@ export const deletedTaskHandler: RouteHandler<typeof deletedTaskRoute, AppEnv> =
       .returning({ id: cardsTable.id });
 
     if (deleted.length === 0) {
-      log.warn("[deleted-task] Task not found", { taskId: id })
-      return c.json({ message: "Task not found"}, 404)
+      log.warn("[deleted-task] Task not found", { taskId: id });
+      return c.json({ message: "Task not found" }, 404);
     }
 
     return c.json({ success: true }, 200);

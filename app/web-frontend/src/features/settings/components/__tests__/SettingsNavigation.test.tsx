@@ -23,7 +23,7 @@ describe("SettingsNavigation", () => {
     });
 
     expect(generalTab).toHaveAttribute("data-tab", "general");
-    expect(generalTab.className).toContain("border-emerald-500");
+    expect(generalTab.className).toContain("border-primary");
 
     fireEvent.click(profileTab);
 

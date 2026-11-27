@@ -35,6 +35,6 @@
 - `Bun.cron` runs `purge-users` every 2 days at 06:00: deletes users with `emailVerified=false` older than 2 days, in batches of 500 with 1s pause, guarded against overlapping runs. Removed on shutdown.
 - Chain: `CronCenter.ts` registers → `cron-handler.ts` dispatches `scheduled()` → `cron/purge-users.ts` does the work. Never delete these files or the `user_cron_cleanup_idx` index.
 
-## Logging (open point)
+## Logging
 
-- `server.ts` uses the shared logger from `packages/shared/utils/logger`, but `src/logique/logging/logger.ts` still exists and `drizzle/connection` imports from it. Human decision needed: one logger or two.
+- All backend modules, including `server.ts`, use `src/logique/logging/logger.ts` (tslog). The shared logger was removed; `alert` remains available for security events.

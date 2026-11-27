@@ -1,5 +1,5 @@
+// biome-ignore-all lint/suspicious/noConsole: These are small client configuration diagnostics.
 import type { AppType } from "@backend/src/index";
-import { createLogger } from "@packages/shared/utils/logger";
 import type { AuthClient } from "better-auth/client";
 import { createAuthClient } from "better-auth/client";
 import {
@@ -11,7 +11,6 @@ import i18n, { SUPPORTED_LANGUAGES } from "@/src/features/i18n";
 import { reportRateLimited } from "@/src/layout/components/animation/rate-limit-policy";
 import { handleAuthError } from "./auth-guard";
 
-const log = createLogger("client");
 const API_URL = import.meta.env.BACKEND_API_URL as string;
 const AUTH_URL = import.meta.env.BACKEND_AUTH_URL as string;
 
@@ -19,7 +18,9 @@ const AUTH_URL = import.meta.env.BACKEND_AUTH_URL as string;
 export function getActiveLanguage(): (typeof SUPPORTED_LANGUAGES)[number] {
   const current = i18n.language;
   if (!current) {
-    log.warn("No language detected, falling back to 'en'");
+    if (import.meta.env.DEV) {
+      console.warn("No language detected, falling back to 'en'");
+    }
     return "en";
   }
 
@@ -28,7 +29,9 @@ export function getActiveLanguage(): (typeof SUPPORTED_LANGUAGES)[number] {
   );
 
   if (!matched) {
-    log.warn(`Unsupported language '${current}', falling back to 'en'`);
+    if (import.meta.env.DEV) {
+      console.warn(`Unsupported language '${current}', falling back to 'en'`);
+    }
     return "en";
   }
 
@@ -51,10 +54,10 @@ function logExternalUrls(): void {
         parsedUrl.origin !== window.location.origin;
 
       if (isExternal) {
-        log.info(`[${name}] external: ${url}`);
+        console.info(`[${name}] external origin: ${parsedUrl.origin}`);
       }
     } catch {
-      log.error(`[${name}] invalid URL: ${url}`);
+      console.error(`[${name}] invalid URL configuration`);
     }
   }
 }

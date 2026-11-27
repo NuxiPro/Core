@@ -20,18 +20,18 @@ function EditorFallback({ height = 160 }: { height?: number }) {
 
       <div aria-hidden="true" className="h-full animate-pulse">
         <div className="flex h-10 items-center gap-2 border-b border-border-subtle px-3">
-          <span className="h-5 w-5 rounded bg-muted-foreground/10" />
-          <span className="h-5 w-5 rounded bg-muted-foreground/10" />
-          <span className="h-5 w-5 rounded bg-muted-foreground/10" />
+          <span className="h-5 w-5 rounded bg-skeleton" />
+          <span className="h-5 w-5 rounded bg-skeleton" />
+          <span className="h-5 w-5 rounded bg-skeleton" />
           <span className="ml-1 h-4 w-px bg-border-subtle" />
-          <span className="h-5 w-16 rounded bg-muted-foreground/10" />
-          <span className="h-5 w-5 rounded bg-muted-foreground/10" />
+          <span className="h-5 w-16 rounded bg-skeleton" />
+          <span className="h-5 w-5 rounded bg-skeleton" />
         </div>
 
         <div className="space-y-3 px-4 py-4">
-          <span className="block h-3 w-11/12 rounded bg-muted-foreground/10" />
-          <span className="block h-3 w-4/5 rounded bg-muted-foreground/10" />
-          <span className="block h-3 w-3/5 rounded bg-muted-foreground/10" />
+          <span className="block h-3 w-11/12 rounded bg-skeleton" />
+          <span className="block h-3 w-4/5 rounded bg-skeleton" />
+          <span className="block h-3 w-3/5 rounded bg-skeleton" />
         </div>
       </div>
     </div>

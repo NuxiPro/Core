@@ -13,20 +13,20 @@ const statement = {
 export const ac = createAccessControl(statement);
 
 export const admin = ac.newRole({
-  workspace: ["read","create", "update", "delete"],
+  workspace: ["read", "create", "update", "delete"],
   project: ["create", "read", "update", "delete"],
-  task: ["create","read","update", "delete"],
-  archive: ["create", "read","update", "delete"],
+  task: ["create", "read", "update", "delete"],
+  archive: ["create", "read", "update", "delete"],
   billing: ["create", "read", "update", "delete"],
   setting: ["read", "update", "delete"],
   user: ["manage"],
 });
 
 export const user = ac.newRole({
-  workspace: ["read","create", "update", "delete"],
+  workspace: ["read", "create", "update", "delete"],
   project: ["create", "read", "update", "delete"],
-  task: ["create","read","update", "delete"],
-  archive: ["create", "read","update", "delete"],
+  task: ["create", "read", "update", "delete"],
+  archive: ["create", "read", "update", "delete"],
   billing: ["create", "read", "update", "delete"],
   setting: ["read", "update", "delete"],
   user: [],

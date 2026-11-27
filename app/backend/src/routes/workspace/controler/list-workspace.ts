@@ -9,7 +9,10 @@ import type { AppEnv } from "@backend/src/types/app-env";
 
 const log = createLogger("workspaces/list");
 
-export const listWorkspacesHandler: RouteHandler<typeof listWorkspacesRoute, AppEnv> = async (c) => {
+export const listWorkspacesHandler: RouteHandler<
+  typeof listWorkspacesRoute,
+  AppEnv
+> = async (c) => {
   const user = c.get("user");
   try {
     const workspaces = await db
@@ -24,7 +27,9 @@ export const listWorkspacesHandler: RouteHandler<typeof listWorkspacesRoute, App
     const result = workspaces.map((w) => ({
       ...w,
       createdAt:
-        w.createdAt instanceof Date ? w.createdAt.toISOString() : getDbDateStr(),
+        w.createdAt instanceof Date
+          ? w.createdAt.toISOString()
+          : getDbDateStr(),
     }));
     return c.json(result, 200);
   } catch (err) {

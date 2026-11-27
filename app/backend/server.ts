@@ -1,17 +1,20 @@
+import Bun from "bun";
 import { pool } from "./src/drizzle/connection/index";
 import app from "./src/index";
 import { CronCenter } from "./src/lib/CronCenter";
-import { createLogger } from "../../packages/shared/utils/logger";
-import Bun from "bun";
+import { createLogger } from "./src/logique/logging/logger";
 
-const log = createLogger("server");
+const log = createLogger(
+  "server",
+  process.env.NODE_ENV === "production" ? "INFO" : undefined,
+);
 
 const server = Bun.serve({
   port: Number(process.env.PORT) || 8080,
   fetch: app.fetch,
 });
 
-log.info(`Server online at http://localhost:${server.port}`);
+log.info("Server online", { port: server.port });
 
 // ─── Graceful shutdown ───────────────────────────────────────
 const gracefulShutdown = async (signal: string) => {

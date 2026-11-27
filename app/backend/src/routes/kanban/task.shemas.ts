@@ -2,7 +2,6 @@ import { z } from "@hono/zod-openapi";
 import { COLUMN_IDS } from "@packages/shared/config/index-frontend";
 import { priorityStyles } from "@packages/shared/types/task/priority-level";
 
-
 // Schemas for data received from the client
 export const CreateTaskInput = z.object({
   title: z
@@ -21,11 +20,9 @@ export const CreateTaskResponse = z.object({
   positionString: z.string(),
 });
 
-
 export const DeletedTask = z.object({
   id: z.uuid({ version: "v7", message: "Invalid ID: UUID format expected" }),
 });
-
 
 // Get task ===
 export const GetTaskSummaryResponse = z.object({
@@ -53,7 +50,6 @@ export const GetTaskDetailResponse = z.object({
 export const ErrorResponse = z.object({ message: z.string() });
 // ===
 
-
 // === Update a task ===
 export const TaskIdParam = z.object({
   id: z.uuid({ version: "v7", message: "Invalid ID: UUID format expected" }),
@@ -67,10 +63,10 @@ export const UpdateTaskBody = z.object({
     .enum(Object.keys(priorityStyles) as [string, ...string[]])
     .optional(),
   // ISO datetime, null to clear, undefined to leave untouched.
-  dueDate: z.string().datetime({ offset: true }).nullish(),
+  // zod v4: z.iso.datetime() replaces the deprecated z.string().datetime().
+  dueDate: z.iso.datetime({ offset: true }).nullish(),
 });
 // ===
-
 
 // Position / drag & drop handling ===
 export const TaskPositionParam = z.object({
@@ -81,10 +77,10 @@ export const UpdatePositionBody = z.object({
   colId: z.enum(COLUMN_IDS).openapi({ description: "Target column" }),
   overTaskId: z
     .string()
-    .uuid({ version: "v7"})
+    .uuid({ version: "v7" })
     .nullable()
     .openapi({ description: "Hovered ID, null = empty column / column drop" }),
-  insertBefore: z
-    .boolean()
-    .openapi({ description: "true = top half (before), false = bottom half (after)" }),
+  insertBefore: z.boolean().openapi({
+    description: "true = top half (before), false = bottom half (after)",
+  }),
 });

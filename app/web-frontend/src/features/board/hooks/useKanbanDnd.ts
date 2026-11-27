@@ -15,9 +15,6 @@ import type { ColumnId } from "@packages/shared/config/index";
 import { COLUMN_IDS } from "@packages/shared/config/index-frontend";
 import type { TaskSummary } from "@packages/shared/types/task/task";
 import { useRef, useState } from "react";
-import { createLogger } from "@/src/shared/api/logger";
-
-const log = createLogger("KanbanDnd");
 
 // Collision précise : on préfère les cartes aux colonnes, évite que la colonne capte le drop
 const collisionDetection: CollisionDetection = (args) => {
@@ -47,13 +44,11 @@ function isTopHalf(e: DragEndEvent): boolean {
   if (ev && "clientY" in ev) {
     const pointerY = (ev as PointerEvent).clientY + e.delta.y;
     const insertBefore = pointerY < overCenterY;
-    log.debug("isTopHalf", { pointerY, overCenterY, insertBefore });
     return insertBefore;
   }
   // Clavier / pas de pointeur : compare les centres.
   const a = e.active.rect.current.translated ?? e.active.rect.current.initial;
   const insertBefore = a ? (a.top + a.bottom) / 2 < overCenterY : true;
-  log.debug("isTopHalf", { overCenterY, insertBefore });
   return insertBefore;
 }
 
@@ -70,19 +65,17 @@ function targetCol(
 }
 
 // Feedback erreur POST-move : 409 → toast léger (dev only : alert).
-function logMoveError(err: unknown, payload: unknown) {
+function reportMoveError(err: unknown) {
   const msg = err instanceof Error ? err.message : String(err);
   const is409 =
     msg.includes("409") ||
     msg.includes("PositionImpossible") ||
     msg.includes("position");
   if (is409) {
-    log.warn("moveTask: position impossible", { payload, error: msg });
     // simple feedback sans dépendance toast : alert DEV only, sinon silencieux + rollback déjà fait
     if (typeof window !== "undefined" && !import.meta.env.PROD)
       window.alert("Position impossible, réessayez");
   }
-  log.debug("onMoveTask error", { payload, error: String(err) });
 }
 
 export function useKanbanDnd({
@@ -121,12 +114,10 @@ export function useKanbanDnd({
       const t = tasksByColumn[c]?.find((x) => x.id === id);
       if (t) {
         setActiveTask(t);
-        log.debug("dragStart", { activeId: id, colId: t.colId, task: t });
         return;
       }
     }
     setActiveTask(null);
-    log.debug("dragStart: task not found", { activeId: id, tasksByColumn });
   };
 
   // Si on survole la colonne vide, on cible la dernière tâche (append en fin)
@@ -166,23 +157,13 @@ export function useKanbanDnd({
     const activeId = e.active.id as string;
     const overId = e.over?.id as string | undefined;
 
-    log.debug("dragEnd raw", {
-      activeId,
-      overId,
-      delta: e.delta,
-      activeRect: e.active.rect.current.initial,
-      overRect: e.over?.rect,
-    });
-
     if (!overId || activeId === overId) {
-      log.debug("abort: no over or self-drop", { activeId, overId });
       setActiveTask(null);
       return;
     }
 
     const colId = targetCol(overId, tasksByColumn);
     if (!colId) {
-      log.debug("abort: colId not found", { overId, tasksByColumn });
       setActiveTask(null);
       return;
     }
@@ -198,20 +179,7 @@ export function useKanbanDnd({
       insertBefore,
     );
 
-    log.debug("resolved", {
-      activeId,
-      activeCol: activeTask?.colId,
-      overId,
-      colId,
-      isCol,
-      overTaskId,
-      insertBefore,
-      samePos,
-      tasksByColumn,
-    });
-
     if (samePos) {
-      log.debug("abort: isSamePosition true");
       setActiveTask(null);
       return;
     }
@@ -219,23 +187,20 @@ export function useKanbanDnd({
     // Throttle 300ms — évite spam PATCH si drag jitter
     const now = Date.now();
     if (now - lastMoveAt.current < 300) {
-      log.debug("throttled drag", { elapsed: now - lastMoveAt.current });
       setActiveTask(null);
       return;
     }
     lastMoveAt.current = now;
 
     const payload = { taskId: activeId, colId, overTaskId, insertBefore };
-    log.debug("→ onMoveTask", payload);
 
     // Ferme l'overlay immédiatement : la carte réapparaît à sa place
     // sans attendre le réseau (l'update optimiste a déjà bougé la carte).
     setActiveTask(null);
     try {
       await onMoveTask(payload);
-      log.debug("onMoveTask success", payload);
     } catch (err) {
-      logMoveError(err, payload);
+      reportMoveError(err);
       throw err;
     }
   };

@@ -1,3 +1,4 @@
+// biome-ignore-all lint/suspicious/noConsole: Editor diagnostics use the browser console.
 import type { Node as PMNode } from "@tiptap/pm/model";
 import type { Transaction } from "@tiptap/pm/state";
 import { AllSelection, NodeSelection, TextSelection } from "@tiptap/pm/state";
@@ -156,9 +157,9 @@ export function isExtensionAvailable(
 
     if (!warnedMissingExtensions.has(key)) {
       warnedMissingExtensions.add(key);
-      console.warn(
-        `None of the extensions [${key}] were found in the editor schema. Ensure they are included in the editor configuration.`,
-      );
+      if (import.meta.env.DEV) {
+        console.warn("Editor extension missing from schema:", key);
+      }
     }
   }
 
@@ -175,12 +176,16 @@ function findNodeAtPosition(editor: Editor, position: number) {
   try {
     const node = editor.state.doc.nodeAt(position);
     if (!node) {
-      console.warn(`No node found at position ${position}`);
+      if (import.meta.env.DEV) {
+        console.warn("No editor node found at position:", position);
+      }
       return null;
     }
     return node;
-  } catch (error) {
-    console.error(`Error getting node at position ${position}:`, error);
+  } catch {
+    if (import.meta.env.DEV) {
+      console.error("Failed to get editor node at position:", position);
+    }
     return null;
   }
 }

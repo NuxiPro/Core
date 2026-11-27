@@ -2,7 +2,7 @@ import { db } from "@backend/src/drizzle/connection";
 import { userSetting } from "@backend/src/drizzle/schemas";
 import type { AppEnv } from "@backend/src/types/app-env";
 import type { RouteHandler } from "@hono/zod-openapi";
-import { createLogger } from "@packages/shared/utils/logger";
+import { createLogger } from "@backend/src/logique/logging/logger";
 import { eq } from "drizzle-orm";
 import type { updateSettingRoute } from "../setting.router";
 

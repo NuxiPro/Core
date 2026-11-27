@@ -3,9 +3,9 @@
     "lint": "biome lint .",
     "format": "biome format --write .",
     "check": "biome check --write .",
-    "test": "cd frontend && bun run test",
-    "test:run": "cd frontend && bun run test:run",
-    "test:backend": "cd backend && bun test",
+    "test": "cd app/web-frontend && bun run test",
+    "test:run": "cd app/web-frontend && bun run test:run",
+    "test:backend": "cd app/backend && bun test",
     "deploy:frontend": "cd app/web-frontend && bun run build && bunx wrangler pages deploy dist/ --project-name=nuxipro-cloud --branch=main"
   },
   "name": "center",

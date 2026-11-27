@@ -2,7 +2,7 @@ import { db } from "@backend/src/drizzle/connection";
 import { archivedCardsTable } from "@backend/src/drizzle/schemas/workspace";
 import type { AppEnv } from "@backend/src/types/app-env";
 import type { RouteHandler } from "@hono/zod-openapi";
-import { createLogger } from "@packages/shared/utils/logger";
+import { createLogger } from "@backend/src/logique/logging/logger";
 import { and, eq } from "drizzle-orm";
 import type { deleteArchiveRoute } from "../archive.router";
 

@@ -11,7 +11,10 @@ const log = createLogger("Project/deleted-project");
 /**
  * Handler du contrôleur — pattern kaneo
  */
-export const deleteProjectHandler: RouteHandler<typeof DeletedProjectRoute, AppEnv> = async (c) => {
+export const deleteProjectHandler: RouteHandler<
+  typeof DeletedProjectRoute,
+  AppEnv
+> = async (c) => {
   const user = c.get("user");
   try {
     const { id } = c.req.valid("param");
@@ -25,10 +28,13 @@ export const deleteProjectHandler: RouteHandler<typeof DeletedProjectRoute, AppE
     }
     // Journal d'audit : une suppression définitive doit rester traçable
     // (qui, quoi) pour pouvoir être opposée en cas de litige.
-    log.warn("[DELETE /deletedProject] Project permanently deleted by its owner", {
-      projectId: id,
-      userId: user.id,
-    });
+    log.warn(
+      "[DELETE /deletedProject] Project permanently deleted by its owner",
+      {
+        projectId: id,
+        userId: user.id,
+      },
+    );
     return c.json({ success: true }, 200);
   } catch (err) {
     log.error("[DELETE /deletedProject] Failed to delete project", err);

@@ -44,7 +44,7 @@ export function NavProjects({
           <SidebarMenuItem>
             <SidebarMenuButton
               disabled
-              className="text-muted-foreground opacity-40"
+              className="text-muted-foreground disabled:opacity-100"
             >
               <span className="text-[11px]">{t("common.loading")}</span>
             </SidebarMenuButton>
@@ -55,7 +55,7 @@ export function NavProjects({
           <SidebarMenuItem>
             <SidebarMenuButton
               disabled
-              className="text-muted-foreground opacity-40"
+              className="text-muted-foreground disabled:opacity-100"
             >
               <span className="text-[11px]">{t("sidebar.noProjects")}</span>
             </SidebarMenuButton>
@@ -85,9 +85,9 @@ export function NavProjects({
                 >
                   <span
                     aria-hidden
-                    className={`size-2.5 shrink-0 rounded-full transition-colors group-data-[status=active]:bg-emerald-500 group-data-[status=active]:ring-2 group-data-[status=active]:ring-emerald-500/25 ${
+                    className={`size-2.5 shrink-0 rounded-full transition-colors group-data-[status=active]:bg-primary group-data-[status=active]:ring-2 group-data-[status=active]:ring-primary/25 ${
                       isActive
-                        ? "bg-emerald-500 ring-2 ring-emerald-500/25"
+                        ? "bg-primary ring-2 ring-primary/25"
                         : "bg-muted-foreground/50"
                     }`}
                   />

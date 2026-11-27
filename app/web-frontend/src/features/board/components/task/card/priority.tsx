@@ -83,7 +83,7 @@ export const PrioritySelect = memo(function PrioritySelect({
             "transition-all duration-300 ease-spring",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
             "cursor-pointer",
-            "bg-white dark:bg-card border border-border-subtle dark:border-border hover:border-[#cbd0dc] dark:hover:border-border-subtle hover:shadow-sm shadow-sm",
+            "bg-card border border-border-subtle dark:border-border hover:border-border-column dark:hover:border-border-subtle hover:shadow-sm shadow-sm",
           )}
         >
           <div className="flex items-center gap-2">

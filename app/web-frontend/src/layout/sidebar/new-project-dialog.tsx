@@ -35,8 +35,6 @@ export function NewProjectDialog({
   const [description, setDescription] = useState("");
   const [showDescription, setShowDescription] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const animFrameRef = useRef<number>(0);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const descInputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -44,27 +42,10 @@ export function NewProjectDialog({
     if (isOpenByDefault || forceOpen) setOpen(true);
   }, [isOpenByDefault, forceOpen]);
 
-  useEffect(() => {
-    if (!isSubmitting) return;
-    const start = Date.now();
-    const duration = 400;
-    const target = 85;
-    const animate = () => {
-      const elapsed = Date.now() - start;
-      const raw = Math.min(elapsed / duration, 1);
-      const eased = 1 - (1 - raw) ** 3;
-      setProgress(eased * target);
-      if (raw < 1) animFrameRef.current = requestAnimationFrame(animate);
-    };
-    animFrameRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animFrameRef.current);
-  }, [isSubmitting]);
-
   const resetForm = () => {
     setName("");
     setDescription("");
     setShowDescription(false);
-    setProgress(0);
     setIsSubmitting(false);
   };
 
@@ -100,10 +81,6 @@ export function NewProjectDialog({
         workspaceId: currentWorkspace.id,
       });
 
-      cancelAnimationFrame(animFrameRef.current);
-      setProgress(100);
-      await new Promise((r) => setTimeout(r, 200));
-
       queryClient.setQueryData<Project[]>(["projects"], (old) => [
         ...(old ?? []),
         project,
@@ -121,8 +98,6 @@ export function NewProjectDialog({
       resetForm();
       setOpen(false);
     } catch {
-      cancelAnimationFrame(animFrameRef.current);
-      setProgress(0);
       setIsSubmitting(false);
     }
   };
@@ -157,14 +132,6 @@ export function NewProjectDialog({
           nameInputRef.current?.focus();
         }}
       >
-        {/* Progress bar */}
-        <div className="h-1 w-full bg-border-subtle">
-          <div
-            className="h-full bg-text-primary transition-none"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-
         {/* Close button */}
         <DialogClose asChild>
           <button
@@ -239,7 +206,7 @@ export function NewProjectDialog({
             <button
               type="submit"
               disabled={!name.trim() || isSubmitting}
-              className="h-9 px-4 bg-text-primary text-surface-root hover:opacity-90 font-medium text-[13px] rounded-lg transition-colors disabled:opacity-40"
+              className="h-9 px-4 bg-primary text-primary-foreground hover:bg-primary-hover font-medium text-[13px] rounded-lg transition-colors disabled:opacity-40"
             >
               {isSubmitting ? t("sidebar.creating") : t("sidebar.create")}
             </button>

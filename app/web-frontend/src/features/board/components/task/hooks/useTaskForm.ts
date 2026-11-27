@@ -1,14 +1,18 @@
 import type { PriorityLabel } from "@packages/shared/types/task/priority-level";
-import type { Task, TaskSummary } from "@packages/shared/types/task/task";
+import type {
+  ArchivedTask,
+  ArchivedTaskSummary,
+  Task,
+  TaskSummary,
+} from "@packages/shared/types/task/task";
 import { useEffect, useState } from "react";
-import { createLogger } from "@/src/shared/api/logger";
 import { useAsyncHandler } from "@/src/shared/hooks/useAsyncHandler";
 
-const log = createLogger("task/useTaskForm");
-
 // Hook pour gérer l'état du formulaire et la logique de sauvegarde avec gestion d'erreur
+// `ArchivedTaskSummary` = the light list row: no priority/dueDate/description
+// yet, the form only runs once the full detail has arrived.
 export function useTaskForm(
-  task: Task | TaskSummary | null,
+  task: Task | TaskSummary | ArchivedTask | ArchivedTaskSummary | null,
   onUpdate?: (
     id: string,
     updates: {
@@ -27,7 +31,6 @@ export function useTaskForm(
   const { isSaving, handle } = useAsyncHandler({
     onError: (msg) => {
       setError(msg);
-      log.error("Erreur sauvegarde tâche", msg);
     },
   });
 
@@ -38,8 +41,9 @@ export function useTaskForm(
     if (task) {
       setTitle(task.title);
       setDescription("description" in task ? (task.description ?? "") : "");
-      setPriority(task.priority ?? "none");
-      setDueDate(task.dueDate ?? null);
+      // The light summary has no priority/dueDate: default them.
+      setPriority("priority" in task ? (task.priority ?? "none") : "none");
+      setDueDate("dueDate" in task ? (task.dueDate ?? null) : null);
       setError(null);
     }
   }, [task?.id]);

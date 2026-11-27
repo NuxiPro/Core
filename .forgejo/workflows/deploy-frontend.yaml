@@ -16,6 +16,10 @@ jobs:
         uses: oven-sh/setup-bun@v1
       - name: install
         run: bun install
+      - name: Check frontend
+        run: cd app/web-frontend && bun run typecheck && bun run test:run
+      - name: Check backend
+        run: cd app/backend && bun run typecheck && bun test
       - name: Deploy to Cloudflare Pages
         run: bun run deploy:frontend
         env:

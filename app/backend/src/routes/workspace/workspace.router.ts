@@ -43,7 +43,6 @@ export const createWorkspaceRoute = createRoute({
   },
 });
 
-
 export const getWorkspaceRoute = createRoute({
   method: "get",
   path: "/{id}",
@@ -88,7 +87,6 @@ export const getWorkspaceRoute = createRoute({
     },
   },
 });
-
 
 export const listWorkspacesRoute = createRoute({
   method: "get",

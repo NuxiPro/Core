@@ -9,6 +9,89 @@
 
 ---
 
+## Audit — réactivité et qualité (26/11)
+
+**Invariant premium :** aucune attente artificielle ne doit retarder une
+réponse, une mutation ou une navigation. Garder le vrai temps réseau quand
+il est nécessaire, mais afficher le feedback immédiatement. Les animations
+restent courtes, non bloquantes et ne pilotent jamais la mutation.
+
+### Réactivité — frontend
+
+- [x] **Connexion — retirer les attentes artificielles**
+  (`app/web-frontend/src/features/auth/components/LoginForm.tsx`) :
+  le formulaire attend au moins 700 ms après la requête, puis 450 ms avant
+  l’état de succès. Même les erreurs et le lien de vérification attendent
+  700 ms. Afficher chaque résultat dès que la requête répond. Corrigé :
+  succès/erreur traités dès la réponse API.
+- [x] **Suppression d’une tâche — ne pas attendre l’animation**
+  (`app/web-frontend/src/features/board/components/task/card/useTaskCardActions.ts`) :
+  l’appel de suppression part sur `animationend`, donc 160 ms après le clic.
+  Déclencher la mutation immédiatement ; si une sortie visuelle est conservée,
+  elle ne doit pas la retarder. Éviter aussi `scale(0)` et l’animation de
+  propriétés de mise en page dans `global.css`. Corrigé : mutation au clic,
+  animation de suppression retirée.
+- [x] **Création de projet — retirer la pause post-réponse**
+  (`app/web-frontend/src/layout/sidebar/new-project-dialog.tsx`) :
+  le cache et la navigation attendent encore 200 ms après la réponse serveur.
+  Corrigé : cache et navigation mis à jour directement après la réponse.
+- [x] **Navigation — supprimer le temps mort bloquant**
+  (ancien `layout/components/RouteTransition.tsx`) :
+  l’ancienne page reste affichée 80 ms avec les interactions bloquées, puis
+  la nouvelle entre sur 120 ms. Corrigé : affichage direct de la nouvelle route.
+- [x] **Onboarding — retirer la pause fixe après succès**
+  (`app/web-frontend/src/features/onboarding/OnboardingWizard.tsx`) :
+  la redirection attend 400 ms. Garder le feedback si utile, mais ne pas
+  retarder artificiellement l’accès au tableau. **Conserver** l’attente réelle
+  du `PATCH /setting`, nécessaire pour enregistrer le choix. Corrigé :
+  redirection immédiate après la tentative de sauvegarde.
+- [ ] **Transitions des contrôles**
+  (`app/web-frontend/global.css:18-23`) : la règle globale force
+  `transition-duration: 0ms` et neutralise les transitions déclarées par les
+  composants. Vérifier l’intention avant de la changer ; si du feedback est
+  rétabli, le faire uniquement sur les contrôles concernés, avec une durée
+  courte, sans activer globalement les anciennes transitions de 300–400 ms.
+- [x] **Panneau Archive — entrée depuis la droite**
+  (`app/web-frontend/src/features/archive/ArchiveSheet.tsx`) : ouverture
+  depuis le bord droit vers la gauche en 250 ms avec la courbe drawer Apple ;
+  fermeture par le même bord en 280 ms avec une courbe plus douce. En
+  `prefers-reduced-motion`, seul un fondu de 120 ms est utilisé. Le mouvement
+  n’attend pas le chargement des archives et ne bloque pas leurs actions.
+- [x] **Palette du loader au démarrage** (`app/web-frontend/index.html`) :
+  le HTML initial utilisait des couleurs différentes des thèmes de l’app.
+  Les fonds et accents suivent maintenant la palette Ryoku claire ou sombre.
+- [x] **Thème clair lisible et doux** : surfaces claires Ryoku sans grandes
+  zones blanches, accents cyan accessibles, contours de contrôles visibles ;
+  états vides sans opacité affaiblissante. Les thèmes de mise en forme et de
+  priorité restent sémantiques.
+- [x] **Squelettes de chargement adaptatifs** : le squelette partagé et le
+  placeholder TipTap utilisent le token `skeleton` distinct des surfaces ;
+  le chargement des projets reste lisible sans opacité 40 %.
+- [x] **Logger backend** (`app/backend/src/logique/logging/logger.ts`) :
+  implémenté avec tslog, `alert` conservé comme niveau dédié ; les niveaux
+  courants sont limités au développement. Les champs sensibles et secrets
+  usuels sont masqués. Le lien magique reste visible uniquement en local.
+
+### Fiabilité des tests et de la livraison
+
+- [x] Logger déplacé dans le backend et remplacé par tslog ; le frontend
+  utilise seulement quelques appels `console` directs pour ses diagnostics.
+- [x] Corriger les scripts de test racine (`package.json`) : ils pointaient
+  vers `frontend`/`backend`, alors que les workspaces se trouvent dans
+  `app/web-frontend` et `app/backend`. Corrigé.
+- [x] Ajouter au workflow Forgejo
+  (`.forgejo/workflows/deploy-frontend.yaml`) un typecheck et les tests
+  frontend/backend avant le déploiement. Ajouté avant l'étape de déploiement.
+- [ ] Ajouter quelques tests de routes backend pour les contrats prioritaires :
+  authentification, ownership (autre utilisateur → 404), validation des entrées
+  et opérations transactionnelles d’archivage/restauration. Les tests backend
+  présents couvrent surtout des helpers, pas les contrôleurs HTTP.
+- Vérification du lot immédiat : typechecks frontend/backend OK, frontend
+  **66/66** et backend **20/20**, build Vite OK. Le build garde son avertissement
+  de taille sur le chunk lazy `md-editor` (~585 kB non compressé).
+
+---
+
 - [] Ajouter une zone dédier pour les email non vérifier
 - [] Ajouter option personaliser l'archivage donc l'user personalise sont archive comme il veut mais surtout il va aussi avoir un mini fenête qui l'aide à personaliser sont archivage de tâche
 
@@ -21,11 +104,12 @@
 
 ---
 
-## Onboarding — Choix du mode d'archivage (à la création du compte)
+## Onboarding — archivage instantané par défaut
 
-Demander à l'user son mode d'archivage de tâches au moment où il crée son
-workspace (première connexion après inscription). C'est la première brique
-de la personnalisation d'archivage (voir plus haut).
+À la création du workspace, l'onboarding indique que l'archivage instantané
+est sélectionné par défaut : une tâche déposée dans Done part immédiatement
+à l'archive. Le choix temporel reste masqué jusqu'à ce que le mécanisme soit
+réellement disponible.
 
 ### Déjà en place
 
@@ -59,70 +143,27 @@ de la personnalisation d'archivage (voir plus haut).
   modifiable via la fenêtre de personnalisation). Coût proportionnel à
   l'usage réel, zéro travail quand personne ne regarde, résultat
   identique vu de l'écran.
+  **État actuel important :** le sweep n'existe pas encore. En mode `"time"`,
+  déposer une tâche dans Done la laisse sur le board ; ne pas présenter ce mode
+  comme opérationnel avant d'avoir livré et testé le sweep.
 
 ### Reste à faire — Frontend
 
-- [X] Étape insérée dans l'onboarding existant : workspace → **« Comment
-  veux-tu archiver tes tâches ? »** → chargement → succès
-  (`ArchiveModeStep.tsx`).
-- [X] UI de l'étape : 2 cartes radio (⚡ Instantané / ⏱️ Automatique),
-  navigation clavier native, i18n fr/en, tokens du design system.
-  Défaut pré-sélectionné : Instantané.
-- [X] Choix enregistré à la fin de l'onboarding (`PATCH /setting` en même
-  temps que la création du workspace, préférence non bloquante), jamais
-  re-demandé ensuite.
-- [ ] La préférence lue plus tard par la fenêtre de personnalisation
-  d'archivage et par le sweep lazy côté serveur.
+- [x] Fusionner le choix d'archivage dans `WorkspaceStep.tsx` : une carte
+  informative indique « Archivage instantané — sélectionné par défaut » et
+  explique que Done archive directement la tâche. Plus de deuxième écran ni
+  de choix `time` indisponible.
+- [x] Enregistrer `archiveMode: "instant"` à la création du workspace.
+  Le serveur a déjà cette valeur par défaut ; le PATCH reste non bloquant.
+- [x] Dans `ArchivingTab`, signaler le mode temporel comme « En développement »,
+  empêcher de le sélectionner, et permettre aux comptes qui l'avaient déjà
+  enregistré de revenir à l'instantané. Les contrôles de délai sont masqués
+  jusqu'à la livraison du sweep.
+- [ ] La préférence temporelle sera configurable dans les réglages avec le
+  sweep lazy côté serveur, une fois cette fonctionnalité implémentée.
 
 ---
 
 ## Frontend — Settings — Sauvegarde de l’e-mail du profil
 
 - [ ] Implémenter la sauvegarde réelle de l’adresse e-mail dans `app/web-frontend/src/features/settings/hooks/useSettings.ts`.
-
-### Situation actuelle
-
-Le hook `useSettings` détecte déjà les modifications de l’e-mail avec `isProfileDirty` :
-
-```ts
-const isProfileDirty = user ? email !== (user.email || "") : false;
-```
-
-En revanche, `handleSaveProfile` ne sauvegarde pas encore la nouvelle adresse. Pour le moment, il exécute seulement `handle` et affiche un message temporaire indiquant que la modification est appliquée localement :
-
-```ts
-const handleSaveProfile = () =>
-  handle(async () => {
-    setSaveMessage(PATCH_PENDING_MSG);
-  });
-```
-
-Cela signifie que l’utilisateur peut modifier l’adresse dans l’interface, mais que la nouvelle valeur n’est pas envoyée au serveur et sera perdue après un rechargement de la page.
-
-### Implémentation attendue
-
-Utiliser l’API Better Auth déjà disponible via `authClient` pour mettre à jour l’utilisateur, au lieu d’utiliser `patchSettings`. Les préférences générales et les informations d’authentification sont deux responsabilités différentes :
-
-- `patchSettings` doit rester utilisé pour le thème, la langue et les notifications e-mail.
-- `authClient.updateUser` doit être utilisé pour modifier l’adresse e-mail du compte.
-
-Le flux attendu est :
-
-1. Vérifier que l’adresse e-mail a réellement changé avec `isProfileDirty`.
-2. Appeler `authClient.updateUser` avec la nouvelle adresse e-mail.
-3. Afficher un message de succès en anglais lorsque la mise à jour réussit.
-4. Afficher une erreur en anglais lorsque Better Auth refuse la modification.
-5. Rafraîchir ou synchroniser la session utilisateur afin que l’adresse affichée corresponde à la valeur enregistrée.
-6. Réinitialiser l’état dirty après une sauvegarde réussie.
-7. Conserver le comportement spécifique aux comptes OAuth si leur adresse e-mail ne peut pas être modifiée depuis cette interface.
-
-### Tests à ajouter
-
-Ajouter des tests dans `app/web-frontend/src/features/settings/hooks/__tests__/useSettings.test.ts` pour vérifier :
-
-- qu’aucune requête n’est envoyée lorsque l’e-mail n’a pas changé ;
-- que `authClient.updateUser` reçoit la nouvelle adresse lorsque l’e-mail a changé ;
-- que le message de succès est affiché après une sauvegarde réussie ;
-- que l’erreur retournée par Better Auth est affichée en cas d’échec ;
-- que l’adresse e-mail et l’état `isProfileDirty` sont synchronisés après une sauvegarde ;
-- qu’un compte OAuth ne déclenche pas une modification d’e-mail non supportée.

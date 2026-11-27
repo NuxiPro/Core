@@ -22,21 +22,10 @@
     "creatingWorkspace": "Creating « {{name}} »...",
     "workspaceCreate": "Create my space",
     "workspaceCreating": "Creating your personal space...",
-    "welcomeAboard": "Welcome to {{name}}.",
     "continue": "Continue",
-    "archiveModeTitle": "How do you want to archive your tasks?",
-    "archiveModeDescription": "Two ways to keep your board clean — fully handled for you, nothing to manage.",
-    "archiveModeLegend": "Archive mode",
-    "archiveModeInstantTitle": "Instant",
-    "archiveModeInstantBadge": "Recommended to try the tool",
-    "archiveModeInstantDesc": "Tasks dropped in Done are archived right away. Simple and direct.",
-    "archiveModeTimeTitle": "Time-based",
-    "archiveModeTimeDesc": "Your tasks stay in Done, then move to the archive on their own after the delay you pick.",
-    "archiveDelayQuestion": "How often should your tasks move to the archive?",
-    "archiveDelay7": "7 days",
-    "archiveDelay14": "14 days",
-    "archiveDelayCustom": "Custom",
-    "archiveDelayUnit": "days"
+    "instantArchiveTitle": "Instant archiving",
+    "instantArchiveSelected": "Selected by default",
+    "instantArchiveDescription": "Tasks dropped in Done are archived immediately."
   },
   "auth": {
     "continueWithGoogle": "Continue with Google",
@@ -151,6 +140,7 @@
       "light": "Light",
       "dark": "Dark",
       "system": "System",
+      "notifications": "Notifications",
       "emailNotifications": "Email notifications",
       "emailNotificationsDesc": "Receive alerts by email",
       "slackNotifications": "Slack notifications",
@@ -159,7 +149,6 @@
       "themeDesc": "Light or dark theme, applied in real time."
     },
     "project": {
-      "pageDescription": "Edit this project's information.",
       "backToBoard": "Back to board",
       "notFound": "Unable to load this project.",
       "saveError": "Unable to save changes."
@@ -241,14 +230,11 @@
     },
     "archiving": {
       "label": "Archiving",
-      "description": "Choose when finished tasks move to the archive",
+      "description": "Instant archiving is available now; time-based archiving is in development.",
       "timeBasedArchive": "Time-based archive",
-      "timeBasedArchiveDesc": "On: tasks in Done move to the archive on their own after the delay below. Off: they are archived the moment you drop them in Done.",
-      "delay": "Archive after",
-      "delayDesc": "How long a completed task stays in Done before it is archived.",
-      "delay7": "7 days",
-      "delay30": "30 days",
-      "delay90": "90 days",
+      "timeModeStatus": "In development",
+      "timeModeUnavailableDesc": "This mode is not available yet. Instant archiving is the only mode currently supported.",
+      "timeModeStoredDesc": "This saved preference is not supported yet. Tasks in Done will stay there; switch it off to use instant archiving.",
       "retentionNote": "Archived tasks are never lost: restore any of them to the board in one click."
     },
     "archive": {
@@ -285,6 +271,9 @@
     "billing": "Billing",
     "logOut": "Log out",
     "noWorkspace": "No workspace",
+    "newWorkspace": "Create workspace",
+    "workspaceNamePlaceholder": "Tech, Build in public...",
+    "workspaceCreateError": "Unable to create the workspace. Try again.",
     "loadErrorTitle": "Unable to load your workspace or projects",
     "loadErrorDescription": "Your data could not be displayed in the application. Please refresh the page to display it correctly.",
     "refreshPage": "Refresh page",
@@ -332,6 +321,8 @@
     "archivedOn": "Archived on {{date}}",
     "restore": "Restore",
     "restoreLabel": "Restore task {{title}}",
+    "deleteTask": "Delete task",
+    "deleteConfirm": "Click again to delete",
     "openTask": "Open task",
     "close": "Close archives panel",
     "clearSearch": "Clear search",

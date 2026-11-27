@@ -23,7 +23,9 @@ export async function purgeUnverifiedUsers() {
       const targets = await db
         .select({ id: user.id })
         .from(user)
-        .where(and(eq(user.emailVerified, false), lt(user.createdAt, twoDaysAgo)))
+        .where(
+          and(eq(user.emailVerified, false), lt(user.createdAt, twoDaysAgo)),
+        )
         .limit(LIMIT);
 
       if (targets.length === 0) {

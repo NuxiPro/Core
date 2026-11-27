@@ -38,24 +38,14 @@ describe("useTaskCardActions", () => {
     expect(onDelete).not.toHaveBeenCalled();
   });
 
-  it("handleDelete stoppe la propagation, joue l'animation et appelle onDelete après animationend", () => {
+  it("handleDelete stoppe la propagation et appelle onDelete immédiatement", () => {
     const onDelete = vi.fn();
     const onOpenDetail = vi.fn();
     const task = makeTask({ id: "to-del" });
 
-    // Crée un faux élément carte pour vérifier l'ajout de classe
-    const fakeCard = document.createElement("div");
-    fakeCard.setAttribute("data-task-card", "");
-    document.body.appendChild(fakeCard);
-
     const stopPropagation = vi.fn();
     const fakeEvent = {
       stopPropagation,
-      currentTarget: {
-        closest: vi.fn((sel: string) =>
-          sel === "[data-task-card]" ? fakeCard : null,
-        ),
-      },
     } as unknown as React.MouseEvent<HTMLButtonElement>;
 
     const { result } = renderHook(() =>
@@ -65,36 +55,6 @@ describe("useTaskCardActions", () => {
     act(() => result.current.handleDelete(fakeEvent));
 
     expect(stopPropagation).toHaveBeenCalledTimes(1);
-    expect(fakeCard.classList.contains("task-card--deleting")).toBe(true);
-    expect(onDelete).not.toHaveBeenCalled();
-
-    // Simule la fin d'animation
-    act(() => {
-      fakeCard.dispatchEvent(new Event("animationend"));
-    });
-
     expect(onDelete).toHaveBeenCalledWith("to-del");
-
-    document.body.removeChild(fakeCard);
-  });
-
-  it("handleDelete appelle onDelete immédiatement si aucune carte parente n'est trouvée", () => {
-    const onDelete = vi.fn();
-    const task = makeTask({ id: "orphan" });
-
-    const stopPropagation = vi.fn();
-    const fakeEvent = {
-      stopPropagation,
-      currentTarget: {
-        closest: vi.fn(() => null),
-      },
-    } as unknown as React.MouseEvent<HTMLButtonElement>;
-
-    const { result } = renderHook(() => useTaskCardActions({ task, onDelete }));
-
-    act(() => result.current.handleDelete(fakeEvent));
-
-    expect(stopPropagation).toHaveBeenCalledTimes(1);
-    expect(onDelete).toHaveBeenCalledWith("orphan");
   });
 });

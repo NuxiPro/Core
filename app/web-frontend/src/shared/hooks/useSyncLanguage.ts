@@ -1,4 +1,4 @@
-import { createLogger } from "@packages/shared/utils/logger";
+// biome-ignore-all lint/suspicious/noConsole: Report language-setting failures during development.
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import i18n from "@/src/features/i18n";
@@ -11,8 +11,6 @@ import { settingsQueryBase } from "@/src/features/settings/hooks/useSettingsApi"
  * (`settingsQueryBase`) pour que l'ordre de montage des observers soit sans
  * conséquence (sinon : war des options, refetch non déterministes).
  */
-const log = createLogger("i18n/settings");
-
 export function useSyncLanguage() {
   const {
     data: language,
@@ -25,16 +23,16 @@ export function useSyncLanguage() {
 
   useEffect(() => {
     if (isPending) {
-      log.debug("Waiting for server settings");
       return;
     }
 
     if (error) {
-      log.error("Failed to retrieve server language", error);
+      if (import.meta.env.DEV) {
+        console.warn("Failed to retrieve server language");
+      }
       return;
     }
 
-    log.debug("Language received from server", { language });
     if (language && language !== i18n.language) {
       void i18n.changeLanguage(language);
     }

@@ -54,8 +54,8 @@ export function RateLimitBanner() {
           "transition-transform duration-500 ease-out",
           visible ? "translate-x-0" : "-translate-x-full",
           tone === "firm"
-            ? "bg-red-500/[0.08] border-red-500/25 text-red-400"
-            : "bg-amber-500/[0.06] border-amber-500/20 text-amber-400",
+            ? "bg-destructive/[0.08] border-destructive/25 text-destructive"
+            : "bg-destructive/[0.06] border-destructive/20 text-destructive",
         )}
       >
         <strong className="font-semibold">

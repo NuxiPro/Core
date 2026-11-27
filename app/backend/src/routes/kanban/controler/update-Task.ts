@@ -5,14 +5,17 @@ import type { RouteHandler } from "@hono/zod-openapi";
 import type { AppEnv } from "@backend/src/types/app-env";
 import { and, eq } from "drizzle-orm";
 import { updateTaskRoute } from "../task.router";
-import { createLogger } from "@packages/shared/utils/logger";
+import { createLogger } from "@backend/src/logique/logging/logger";
 const log = createLogger("kanban/update-task");
 
 /**
  * Handler du contrôleur — pattern kaneo : le contrôleur exporte une fonction,
  * l'instance est créée une seule fois par le module (kanban/index.ts).
  */
-export const updateTaskHandler: RouteHandler<typeof updateTaskRoute, AppEnv> = async (c) => {
+export const updateTaskHandler: RouteHandler<
+  typeof updateTaskRoute,
+  AppEnv
+> = async (c) => {
   const user = c.get("user");
 
   try {
@@ -57,8 +60,8 @@ export const updateTaskHandler: RouteHandler<typeof updateTaskRoute, AppEnv> = a
     const updatedTask = rows[0];
 
     if (!updatedTask) {
-      log.error("[update-task] Task not found", { taskId: id })
-      return c.json({ message: "Task not found"}, 404)
+      log.error("[update-task] Task not found", { taskId: id });
+      return c.json({ message: "Task not found" }, 404);
     }
 
     return c.json(

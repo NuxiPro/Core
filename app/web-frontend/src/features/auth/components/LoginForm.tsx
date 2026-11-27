@@ -1,3 +1,4 @@
+// biome-ignore-all lint/suspicious/noConsole: Social sign-in failures are reported only during development.
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "@tanstack/react-router";
 import { useState } from "react";
@@ -9,7 +10,6 @@ import { BrandLogo } from "@/src/layout/components/ui/BrandLogo";
 import { Button } from "@/src/layout/components/ui/button";
 import { Input } from "@/src/layout/components/ui/input";
 import { LastUsedBadge } from "@/src/layout/components/ui/last-used-badge";
-import { createLogger } from "@/src/shared/api/logger";
 import { authClient } from "@/src/shared/lib/client";
 import {
   type LoginFields,
@@ -18,18 +18,15 @@ import {
 import { requestMagicLink } from "../api/auth";
 import { MagicLinkSent } from "./MagicLinkSent";
 
-const log = createLogger("auth/login");
-
 const SOCIAL_BUTTON =
-  "w-full h-12 bg-[#0f1011] text-base text-[#f7f8f8] hover:bg-[#141516] border border-[#23252a] font-medium relative active:scale-[0.98] transition-[background-color,transform] duration-200 ease-out";
+  "w-full h-12 bg-card text-base text-card-foreground hover:bg-accent border border-border font-medium relative active:scale-[0.98] transition-[background-color,transform] duration-200 ease-out";
 
 const INPUT =
-  "h-12 text-base bg-[#0f1011] border border-[#23252a] text-[#f7f8f8] placeholder:text-[#8a8f98] focus-visible:ring-1 focus-visible:ring-white/40 focus-visible:border-transparent transition-[border-color,box-shadow] duration-200";
+  "h-12 text-base bg-surface-root border border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:border-transparent transition-[border-color,box-shadow] duration-200";
 
 export default function LoginForm() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [sent, setSent] = useState(false);
   const [showSent, setShowSent] = useState(false);
   // Last used entry method (google, github, email) or null on first visit.
   const [lastUsed] = useState(() => authClient.getLastUsedLoginMethod());
@@ -45,36 +42,29 @@ export default function LoginForm() {
       provider,
       callbackURL: `${window.location.origin}/onboarding`,
     });
-    if (error) log.error(`Erreur connexion ${provider}:`, error);
+    if (error && import.meta.env.DEV) {
+      console.error(`Social sign-in failed: ${provider}`);
+    }
   };
 
   const onSubmit = async (data: LoginFields) => {
-    // Minimum sending beat (~700ms) so the action feels done, not skipped.
-    const startedAt = Date.now();
     const { error } = await requestMagicLink(data.email);
-    const elapsed = Date.now() - startedAt;
-    if (elapsed < 700) {
-      await new Promise((resolve) => setTimeout(resolve, 700 - elapsed));
-    }
     if (error) {
       if ("code" in error && error.code === "EMAIL_NOT_VERIFIED") {
         router.navigate({ to: "/verify-email", search: { email: data.email } });
         return;
       }
-      log.error("Email connection failed", error);
       setError("root", { message: t("errors.incorrectEmail") });
       return;
     }
-    setSent(true);
-    // Let the form implode before swapping in the success state.
-    setTimeout(() => setShowSent(true), 450);
+    setShowSent(true);
   };
 
   return (
-    <div className="relative h-full w-full bg-[#010102] font-sans selection:bg-primary/30">
+    <div className="dark relative h-full w-full bg-background font-sans text-foreground selection:bg-primary/30">
       {isSubmitting && (
-        <div className="fixed inset-x-0 top-0 z-[60] h-[2px] bg-[#23252a]">
-          <div className="auth-loading-bar h-full w-full bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+        <div className="fixed inset-x-0 top-0 z-[60] h-[2px] bg-border">
+          <div className="auth-loading-bar h-full w-full bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
         </div>
       )}
 
@@ -83,10 +73,10 @@ export default function LoginForm() {
           <BrandLogo className="justify-start [&>img]:size-12" />
 
           <div className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-white">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
               {t("auth.welcomeTo")} {t("brand.name")}
             </h1>
-            <p className="text-base text-[#8a8f98]">
+            <p className="text-base text-muted-foreground">
               {t("auth.logInOrCreateHint")}
             </p>
           </div>
@@ -95,14 +85,11 @@ export default function LoginForm() {
             {showSent ? (
               <MagicLinkSent />
             ) : (
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className={`space-y-4 origin-center transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none ${sent ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
-              >
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <RateLimitBanner />
                 <label
                   htmlFor="email"
-                  className="block text-base font-medium text-[#f7f8f8]"
+                  className="block text-base font-medium text-foreground"
                 >
                   {t("auth.emailAddress")}
                 </label>
@@ -115,18 +102,18 @@ export default function LoginForm() {
                   {...register("email")}
                 />
                 {errors.email && (
-                  <p className="text-sm font-medium text-red-400">
+                  <p className="text-sm font-medium text-destructive">
                     {errors.email.message}
                   </p>
                 )}
                 {errors.root && (
-                  <p className="text-sm font-medium text-red-400 text-center">
+                  <p className="text-sm font-medium text-destructive text-center">
                     {errors.root.message}
                   </p>
                 )}
                 <Button
                   type="submit"
-                  className="w-full h-12 bg-white text-base text-black hover:bg-zinc-200 border-0 font-medium relative active:scale-[0.98] transition-[background-color,transform] duration-200 ease-out"
+                  className="w-full h-12 bg-primary text-base text-primary-foreground hover:bg-primary-hover border-0 font-medium relative active:scale-[0.98] transition-[background-color,transform] duration-200 ease-out"
                   disabled={isSubmitting}
                 >
                   {t("auth.continueWithEmail")}
@@ -141,10 +128,10 @@ export default function LoginForm() {
 
             <div className="relative py-2">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[#23252a]" />
+                <div className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-[#010102] px-2 text-[#8a8f98]">
+                <span className="bg-background px-2 text-muted-foreground">
                   {t("auth.or")}
                 </span>
               </div>
@@ -180,7 +167,7 @@ export default function LoginForm() {
           </div>
 
           {!showSent && (
-            <p className="text-base text-[#8a8f98]">
+            <p className="text-base text-muted-foreground">
               {t("auth.magicLinkHint")}
             </p>
           )}

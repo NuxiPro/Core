@@ -57,7 +57,7 @@ export function SettingsNavigation({
             onClick={() => onTabChange(item.id)}
             className={`flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg border-l-2 transition-all duration-150 ${
               isActive
-                ? "bg-[var(--surface-hover)] text-emerald-600 dark:text-emerald-400 border-emerald-500"
+                ? "bg-[var(--surface-hover)] text-primary border-primary"
                 : "bg-transparent text-[var(--text-label)] border-transparent hover:bg-[var(--surface-hover)]/80 hover:text-[var(--text-primary)]"
             }`}
           >
