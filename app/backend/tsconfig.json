@@ -23,6 +23,6 @@
     "forceConsistentCasingInFileNames": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["src/**/*", "../../packages"],
+  "include": ["src/**/*", "../../packages", "utils/bugsink.ts"],
   "exclude": ["node_modules", "./local", "dist"]
 }

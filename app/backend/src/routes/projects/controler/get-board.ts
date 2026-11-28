@@ -1,12 +1,11 @@
 import { db } from "@backend/src/drizzle/connection/index";
 import { projectsTable } from "@backend/src/drizzle/schemas/workspace";
-import { getBoardRoute } from "../projects.router";
 import { getTasksByProject } from "@backend/src/routes/kanban/controler/get-task";
-import { getDbDateStr } from "@backend/utils/dateHelpers";
+import type { AppEnv } from "@backend/src/types/app-env";
+import type { RouteHandler } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
 import { createLogger } from "../../../logique/logging/logger";
-import type { RouteHandler } from "@hono/zod-openapi";
-import type { AppEnv } from "@backend/src/types/app-env";
+import type { getBoardRoute } from "../projects.router";
 
 const log = createLogger("projects/get-board");
 
@@ -40,10 +39,7 @@ export const getBoardHandler: RouteHandler<
         name: project.name,
         slug: project.slug,
         description: project.description,
-        createdAt:
-          project.createdAt instanceof Date
-            ? project.createdAt.toISOString()
-            : getDbDateStr(),
+        createdAt: project.createdAt.toISOString(),
         tasks,
       },
       200,

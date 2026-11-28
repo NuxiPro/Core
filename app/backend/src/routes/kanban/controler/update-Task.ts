@@ -1,11 +1,12 @@
 import { getColIdFromSqlId } from "@backend/src/config";
 import { db } from "@backend/src/drizzle/connection/index";
 import { cardsTable } from "@backend/src/drizzle/schemas/workspace";
-import type { RouteHandler } from "@hono/zod-openapi";
-import type { AppEnv } from "@backend/src/types/app-env";
-import { and, eq } from "drizzle-orm";
-import { updateTaskRoute } from "../task.router";
 import { createLogger } from "@backend/src/logique/logging/logger";
+import type { AppEnv } from "@backend/src/types/app-env";
+import type { RouteHandler } from "@hono/zod-openapi";
+import { and, eq } from "drizzle-orm";
+import type { updateTaskRoute } from "../task.router";
+
 const log = createLogger("kanban/update-task");
 
 /**
@@ -73,9 +74,9 @@ export const updateTaskHandler: RouteHandler<
           description: updatedTask.description ?? "",
           colId: getColIdFromSqlId(updatedTask.quadrant),
           dueDate:
-            updatedTask.dueDate instanceof Date
-              ? updatedTask.dueDate.toISOString()
-              : null,
+            updatedTask.dueDate === null
+              ? null
+              : updatedTask.dueDate.toISOString(),
           priority: updatedTask.priorityLabel ?? "none",
           positionString: updatedTask.positionString,
           createdAt: updatedTask.createdAt.toISOString(),

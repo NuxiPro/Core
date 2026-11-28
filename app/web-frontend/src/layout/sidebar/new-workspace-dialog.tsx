@@ -9,7 +9,6 @@ import { Button } from "@/src/layout/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogTitle,
 } from "@/src/layout/components/ui/dialog";
 import { Input } from "@/src/layout/components/ui/input";
@@ -17,9 +16,11 @@ import { Input } from "@/src/layout/components/ui/input";
 export function NewWorkspaceDialog({
   open,
   onOpenChange,
+  onCreated,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onCreated?: (workspace: Workspace) => void;
 }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -52,6 +53,7 @@ export function NewWorkspaceDialog({
           ? current
           : [...current, workspace];
       });
+      onCreated?.(workspace);
       handleOpenChange(false);
     } catch {
       setHasError(true);

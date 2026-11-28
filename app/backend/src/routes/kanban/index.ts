@@ -1,4 +1,4 @@
-import { createOpenAPIHono } from "@backend/src/lib/openapi";
+import { createOpenAPIHono } from "@backend/src/openapi";
 import { createTaskHandler } from "./controler/create";
 import { deletedTaskHandler } from "./controler/deleted-Task";
 import { getTasksHandler, getTaskDetailHandler } from "./controler/get-task";

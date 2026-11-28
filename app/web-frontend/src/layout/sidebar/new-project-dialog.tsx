@@ -14,10 +14,11 @@ import {
 } from "@/src/layout/components/ui/dialog";
 
 type NewProjectDialogProps = {
-  onCreated?: (projectId: string) => void;
+  onCreated?: (project: Project) => void;
   isOpenByDefault?: boolean;
   forceOpen?: boolean;
   trigger?: React.ReactNode;
+  workspaceId?: string | undefined;
 };
 
 export function NewProjectDialog({
@@ -25,6 +26,7 @@ export function NewProjectDialog({
   isOpenByDefault = false,
   forceOpen = false,
   trigger,
+  workspaceId,
 }: NewProjectDialogProps) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -70,7 +72,9 @@ export function NewProjectDialog({
 
     setIsSubmitting(true);
     try {
-      const currentWorkspace = workspaces[0];
+      const currentWorkspace = workspaceId
+        ? workspaces.find((workspace) => workspace.id === workspaceId)
+        : workspaces[0];
       if (!currentWorkspace) {
         throw new Error(t("errors.noWorkspaceAvailable"));
       }
@@ -87,7 +91,7 @@ export function NewProjectDialog({
       ]);
 
       if (onCreated) {
-        onCreated(project.id);
+        onCreated(project);
       } else {
         navigate({
           to: "/kanban/$projectSlug",

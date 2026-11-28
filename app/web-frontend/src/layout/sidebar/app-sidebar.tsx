@@ -1,4 +1,4 @@
-import { useLocation } from "@tanstack/react-router";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import {
   BuildingIcon,
   Check,
@@ -10,7 +10,7 @@ import type { ComponentProps } from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useProjects } from "@/src/features/board/hooks/useProjects";
-import { useWorkspaces } from "@/src/features/board/hooks/useWorkspaces";
+import { useWorkspaceSelection } from "@/src/features/board/WorkspaceSelectionProvider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,16 +34,43 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { projects, isLoading, isError: projectsError } = useProjects();
-  const { workspaces, isError: workspacesError } = useWorkspaces();
+  const {
+    workspaces,
+    workspacesError,
+    currentWorkspace,
+    selectWorkspace: setCurrentWorkspace,
+  } = useWorkspaceSelection();
   const [createWorkspaceOpen, setCreateWorkspaceOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const slugMatch = location.pathname.match(/\/kanban\/([^/]+)/);
   const slug = slugMatch?.[1] ?? "";
   const matchedProject = findProjectBySlug(projects, slug);
   const activeProjectId = matchedProject?.id;
 
-  const currentWorkspace = workspaces[0];
+  const visibleProjects = currentWorkspace
+    ? projects.filter((project) => project.workspaceId === currentWorkspace.id)
+    : [];
+
+  const selectWorkspace = (workspaceId: string) => {
+    if (workspaceId === currentWorkspace?.id) return;
+
+    setCurrentWorkspace(workspaceId);
+
+    const firstProject = projects.find(
+      (project) => project.workspaceId === workspaceId,
+    );
+    if (firstProject) {
+      navigate({
+        to: "/kanban/$projectSlug",
+        params: { projectSlug: firstProject.slug },
+        replace: true,
+      });
+    } else {
+      navigate({ to: "/kanban", replace: true });
+    }
+  };
 
   const userData = user || {
     name: t("sidebar.defaultUserName"),
@@ -58,19 +85,23 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
         <SidebarHeader className="shrink-0 p-3 pb-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-colors hover:bg-sidebar-accent">
+              <button
+                type="button"
+                className="flex w-full cursor-pointer items-center gap-2 rounded-md p-2 text-left transition-colors hover:bg-sidebar-accent"
+              >
                 <BuildingIcon className="size-4 shrink-0 text-sidebar-foreground" />
                 <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-sidebar-foreground">
                   {currentWorkspace?.name ?? t("sidebar.noWorkspace")}
                 </span>
                 <ChevronDown className="size-3.5 shrink-0 text-sidebar-foreground" />
-              </div>
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" sideOffset={4} className="w-56">
               {workspaces.map((workspace) => (
                 <DropdownMenuItem
                   key={workspace.id}
-                  className="flex items-center gap-2"
+                  className="flex cursor-pointer items-center gap-2"
+                  onSelect={() => selectWorkspace(workspace.id)}
                 >
                   <BuildingIcon className="size-3.5 text-muted-foreground" />
                   <span className="flex-1 truncate">{workspace.name}</span>
@@ -82,7 +113,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onSelect={() => setCreateWorkspaceOpen(true)}
-                className="flex items-center gap-2"
+                className="flex cursor-pointer items-center gap-2"
               >
                 <Plus className="size-3.5 text-muted-foreground" />
                 <span>{t("sidebar.newWorkspace")}</span>
@@ -92,6 +123,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
           <NewWorkspaceDialog
             open={createWorkspaceOpen}
             onOpenChange={setCreateWorkspaceOpen}
+            onCreated={(workspace) => selectWorkspace(workspace.id)}
           />
         </SidebarHeader>
 
@@ -105,6 +137,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
               {t("sidebar.projects")}
             </span>
             <NewProjectDialog
+              workspaceId={currentWorkspace?.id}
               trigger={
                 <button
                   type="button"
@@ -121,7 +154,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
           </div>
           <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto pb-2">
             <NavProjects
-              projects={projects}
+              projects={visibleProjects}
               isLoading={isLoading}
               isError={projectsError}
               activeProjectId={activeProjectId}

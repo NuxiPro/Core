@@ -8,15 +8,20 @@ import { csrf } from "hono/csrf";
 import { createMiddleware } from "hono/factory";
 import { secureHeaders } from "hono/secure-headers";
 import { auth } from "./auth";
-import { apiRateLimit } from "./lib/api-rate-limit";
+import { apiRateLimit } from "./lib/rate-limiting/api-rate-limit";
 import { securityAlert } from "./lib/security-alert";
-import { httpLogger } from "./logique/logging/logger";
+import { createLogger, httpLogger } from "./logique/logging/logger";
 import { projectsModule } from "./routes/projects";
 import { settingModule } from "./routes/setting";
 import { workspaceModule } from "./routes/workspace";
 import type { AppEnv } from "./types/app-env";
+import * as Sentry from "@sentry/bun";
+import { HTTPException } from "hono/http-exception";
 
 export type { AppEnv };
+
+const errorLog = createLogger("http/error");
+const isProduction = process.env.NODE_ENV === "production";
 
 const allowedOrigin = process.env.FRONTEND_URL_ALLOWED;
 if (!allowedOrigin) {
@@ -93,8 +98,27 @@ const app = new OpenAPIHono<AppEnv>({
   .use("*", compress())
   // In production, hide Zod error details
   .onError((err, c) => {
+    if (err instanceof HTTPException) {
+      if (err.status >= 500) {
+        if (isProduction) {
+          Sentry.captureException(err);
+        } else {
+          errorLog.error("HTTP server error", err);
+        }
+      }
+      return err.getResponse();
+    }
+
+    // Handle schema validation failures safely
     if (err.message?.includes("ZodError")) {
       return c.json({ error: "Invalid data" }, 400);
+    }
+
+    // Keep detailed errors in local logs; send them to Bugsink only in production.
+    if (isProduction) {
+      Sentry.captureException(err);
+    } else {
+      errorLog.error("Unhandled server error", err);
     }
     return c.json({ error: "Internal error" }, 500);
   })

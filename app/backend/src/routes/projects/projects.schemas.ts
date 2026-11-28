@@ -26,6 +26,7 @@ export const ProjetReponse = z.object({
   description: z.string().nullable(),
   slug: z.string(),
   createdAt: z.string(),
+  workspaceId: z.uuid({ version: "v7" }),
 });
 
 export const projectIdParams = z.object({
@@ -68,4 +69,5 @@ export const ProjectListItem = z.object({
   slug: z.string(),
   description: z.string().nullable(),
   createdAt: z.string(),
+  workspaceId: z.uuid({ version: "v7" }),
 });

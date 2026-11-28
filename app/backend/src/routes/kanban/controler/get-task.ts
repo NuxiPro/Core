@@ -17,12 +17,11 @@
 import { getColIdFromSqlId } from "@backend/src/config";
 import { db } from "@backend/src/drizzle/connection/index";
 import { cardsTable } from "@backend/src/drizzle/schemas/workspace";
-import type { RouteHandler } from "@hono/zod-openapi";
-import type { AppEnv } from "@backend/src/types/app-env";
-import { getDbDateStr } from "@backend/utils/dateHelpers";
-import { and, eq } from "drizzle-orm";
 import { createLogger } from "@backend/src/logique/logging/logger";
-import { getTasksRoute, getTaskDetailRoute } from "../task.router";
+import type { AppEnv } from "@backend/src/types/app-env";
+import type { RouteHandler } from "@hono/zod-openapi";
+import { and, eq } from "drizzle-orm";
+import type { getTaskDetailRoute, getTasksRoute } from "../task.router";
 
 const log = createLogger("kanban/get-task");
 
@@ -48,13 +47,10 @@ export async function getTasksByProject(projectId: string, userId: string) {
       id: row.id,
       title: row.title,
       colId: getColIdFromSqlId(row.quadrant),
-      dueDate: row.dueDate instanceof Date ? row.dueDate.toISOString() : null,
+      dueDate: row.dueDate === null ? null : row.dueDate.toISOString(),
       priority: row.priorityLabel || "none",
       positionString: row.positionString,
-      createdAt:
-        row.createdAt instanceof Date
-          ? row.createdAt.toISOString()
-          : getDbDateStr(),
+      createdAt: row.createdAt.toISOString(),
     }));
   } catch (err) {
     log.error("[getTasksByProject] erreur DB", { projectId, error: err });
@@ -93,15 +89,11 @@ export async function getTaskById(id: string, userId: string) {
       title: row.title,
       description: row.description ?? "",
       colId: getColIdFromSqlId(row.quadrant),
-      dueDate: row.dueDate instanceof Date ? row.dueDate.toISOString() : null,
+      dueDate: row.dueDate === null ? null : row.dueDate.toISOString(),
       priority: row.priorityLabel ?? "none",
       positionString: row.positionString,
-      createdAt:
-        row.createdAt instanceof Date
-          ? row.createdAt.toISOString()
-          : getDbDateStr(),
-      updatedAt:
-        row.updatedAt instanceof Date ? row.updatedAt.toISOString() : undefined,
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
     };
   } catch (err) {
     log.error("[getTaskById] get task error", { id, error: err });
@@ -152,11 +144,8 @@ export const getTasksHandler: RouteHandler<
       title: row.title,
       colId: getColIdFromSqlId(row.quadrant),
       positionString: row.positionString,
-      dueDate: row.dueDate instanceof Date ? row.dueDate.toISOString() : null,
-      createdAt:
-        row.createdAt instanceof Date
-          ? row.createdAt.toISOString()
-          : getDbDateStr(),
+      dueDate: row.dueDate === null ? null : row.dueDate.toISOString(),
+      createdAt: row.createdAt.toISOString(),
     }));
 
     return c.json(tasks, 200);
@@ -207,14 +196,10 @@ export const getTaskDetailHandler: RouteHandler<
       description: row.description ?? "",
       colId: getColIdFromSqlId(row.quadrant),
       priority: row.priorityLabel ?? "none",
-      dueDate: row.dueDate instanceof Date ? row.dueDate.toISOString() : null,
+      dueDate: row.dueDate === null ? null : row.dueDate.toISOString(),
       positionString: row.positionString,
-      createdAt:
-        row.createdAt instanceof Date
-          ? row.createdAt.toISOString()
-          : getDbDateStr(),
-      updatedAt:
-        row.updatedAt instanceof Date ? row.updatedAt.toISOString() : undefined,
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
     };
 
     return c.json(task, 200);

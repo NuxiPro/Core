@@ -3,7 +3,7 @@ import type { MiddlewareHandler } from "hono";
 import {
   RATE_LIMIT_WINDOW_MS,
   SECURITY_ALERT_THRESHOLD,
-} from "./rate-limit-config";
+} from "./rate-limiting/rate-limit-config";
 
 const log = createLogger("security");
 

@@ -16,12 +16,12 @@
     "packages/*"
   ],
   "dependencies": {
-    "@biomejs/biome": "^2.6.7",
-    "vitest": "^5.1.0"
+    "@biomejs/biome": "^2.6.9",
+    "vitest": "^5.1.2"
   },
   "devDependencies": {
-    "@types/node": "^26.6.6",
-    "knip": "^6.45.1",
+    "@types/node": "^26.6.11",
+    "knip": "^6.49.0",
     "typescript": "^7.0.2"
   }
 }

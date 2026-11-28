@@ -16,22 +16,23 @@
     "typecheck": "bun tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@better-auth/drizzle-adapter": "^1.7.23",
+    "@better-auth/drizzle-adapter": "^1.7.28",
     "@hono/zod-openapi": "^1.6.3",
-    "@types/node": "^26.6.6",
-    "better-auth": "^1.7.23",
+    "@sentry/bun": "^11.20.0",
+    "@types/node": "^26.6.11",
+    "better-auth": "^1.7.28",
     "dotenv": "^18.0.10",
     "drizzle-orm": "^0.45.4",
     "fractional-indexing": "^4.0.0",
-    "hono": "^4.13.18",
+    "hono": "^4.13.23",
     "pg": "^8.23.1",
     "tslog": "^5.5.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@types/bun": "^1.4.4",
+    "@types/bun": "^1.4.5",
     "@types/pg": "^8.23.1",
-    "bun-types": "^1.4.4",
+    "bun-types": "^1.4.5",
     "drizzle-kit": "^0.31.11",
     "typescript": "^7.0.2"
   }

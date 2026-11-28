@@ -10,6 +10,7 @@ import { FolderPlusIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useProjects } from "@/src/features/board/hooks/useProjects";
+import { useWorkspaceSelection } from "@/src/features/board/WorkspaceSelectionProvider";
 import { NewProjectDialog } from "@/src/layout/sidebar/new-project-dialog";
 
 export const Route = createFileRoute("/_dashboard/kanban/")({
@@ -20,23 +21,28 @@ function KanbanIndex() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { projects, isLoading, isError } = useProjects();
+  const { currentWorkspace, workspacesLoading, workspacesError } =
+    useWorkspaceSelection();
   const hasNavigated = useRef(false);
+  const workspaceProjects = currentWorkspace
+    ? projects.filter((project) => project.workspaceId === currentWorkspace.id)
+    : [];
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || workspacesLoading) return;
     if (hasNavigated.current) return;
-    if (projects.length === 0) return;
+    if (workspaceProjects.length === 0) return;
 
     hasNavigated.current = true;
-    const first = projects[0];
+    const first = workspaceProjects[0];
     navigate({
       to: "/kanban/$projectSlug",
       params: { projectSlug: first.slug },
       replace: true,
     });
-  }, [projects, isLoading, navigate]);
+  }, [workspaceProjects, isLoading, workspacesLoading, navigate]);
 
-  if (isLoading) {
+  if (isLoading || workspacesLoading) {
     return (
       <div className="h-full min-h-0 w-full flex items-center justify-center">
         <div className="text-sm text-text-muted">Loading...</div>
@@ -44,9 +50,9 @@ function KanbanIndex() {
     );
   }
 
-  if (isError) return null;
+  if (isError || workspacesError) return null;
 
-  if (projects.length === 0) {
+  if (workspaceProjects.length === 0) {
     return (
       <div className="h-full min-h-0 w-full flex items-center justify-center px-6 py-12">
         <div className="flex w-full max-w-lg flex-col items-center text-center">
@@ -61,14 +67,12 @@ function KanbanIndex() {
           </p>
           <NewProjectDialog
             forceOpen
-            onCreated={(projectId) => {
-              const project = projects.find((p) => p.id === projectId);
-              if (project) {
-                navigate({
-                  to: "/kanban/$projectSlug",
-                  params: { projectSlug: project.slug },
-                });
-              }
+            workspaceId={currentWorkspace?.id}
+            onCreated={(project) => {
+              navigate({
+                to: "/kanban/$projectSlug",
+                params: { projectSlug: project.slug },
+              });
             }}
             trigger={
               <button

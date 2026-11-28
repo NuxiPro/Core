@@ -1,10 +1,17 @@
+import { createLogger } from "@backend/src/logique/logging/logger";
 import { plunk } from "./plunk";
 
-// Le logger sera branché ici si besoin d'un retry ou d'un fallback.
+const log = createLogger("email/magic-link");
+
 export const sendEmail = async (
   to: string,
   url: string,
   lang: string = "en",
 ) => {
-  return plunk.sendMagicLink(to, url, lang);
+  try {
+    return await plunk.sendMagicLink(to, url, lang);
+  } catch {
+    log.error("Magic-link email delivery failed");
+    throw new Error("Magic-link email delivery failed");
+  }
 };

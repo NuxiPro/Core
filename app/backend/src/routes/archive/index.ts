@@ -1,4 +1,4 @@
-import { createOpenAPIHono } from "@backend/src/lib/openapi";
+import { createOpenAPIHono } from "@backend/src/openapi";
 import {
   archiveTaskRoute,
   deleteArchiveRoute,

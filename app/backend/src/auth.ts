@@ -5,7 +5,7 @@ import { addOAuthServerContext, createAuthMiddleware } from "better-auth/api";
 import { admin, lastLoginMethod, magicLink } from "better-auth/plugins";
 import { db } from "./drizzle/connection/index";
 import * as schema from "./drizzle/schemas/index";
-import { RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS } from "./lib/rate-limit-config";
+import { RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS } from "./lib/rate-limiting/rate-limit-config";
 import { toLang } from "./logique/InitUserAccount/01-ensure-default-settings";
 import { seedAccountDefaults } from "./logique/InitUserAccount/seed";
 import {

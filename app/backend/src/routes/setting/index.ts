@@ -1,4 +1,4 @@
-import { createOpenAPIHono } from "@backend/src/lib/openapi";
+import { createOpenAPIHono } from "@backend/src/openapi";
 import { getSettingHandler } from "./controler/getSetting";
 import { updateSetting } from "./controler/updateSetting";
 import { getSettingRoute, updateSettingRoute } from "./setting.router";

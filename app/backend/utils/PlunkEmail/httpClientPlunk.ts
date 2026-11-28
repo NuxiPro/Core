@@ -20,7 +20,7 @@ export interface TransactionalEmailEvent {
 const token = process.env.PLUNK_SECRET_KEY;
 const template = process.env.PLUNK_MAGIC_LINK_TEMPLATE_ID;
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === "production") {
   if (token) throw new Error("Plunk: PLUNK_SECRET_KEY manquant");
   if (template) throw new Error("Plunk: PLUNK_MAGIC_LINK_TEMPLATE_ID manquant");
 }

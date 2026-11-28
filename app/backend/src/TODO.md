@@ -1,18 +1,8 @@
 # TODO — missing routes
 
-## Projects
-- [ ] `PATCH /projects/:id` (`updateProject.ts`) — rename + edit description from project settings. Frontend already calls a save (`SettingsDialog` → `update-general.ts`) but the backend route does not exist.
-
 ## Workspaces
 - [ ] `PATCH /workspaces/:id` — rename from settings (only create / list / get exist).
 - [ ] `DELETE /workspaces/:id` — delete a workspace (only create / list / get exist).
-
-Pattern for all three: scope by `userId`, `requirePermission`, `404` when not found, no cascade surprise (tasks cascade with their project, see `cardsTable.projectId` `onDelete: "cascade"`).
-
-## Settings (global)
-- [ ] `GET /api/v1/setting/general` + `PATCH /api/v1/setting/general` — global settings (language, timezone, notifications). Frontend already calls them (`update-general.ts`), backend module does not exist.
-- [ ] `GET /api/v1/setting/notification` + `PATCH /api/v1/setting/notification` — notification settings. Frontend already calls them (`features/settings/api/index.ts` : `getNotificationSettings` / `updateNotificationSettings`, exports morts tant que les routes n'existent pas).
-- [ ] Fix frontend inconsistency: `$get` uses `api.v1.setting.general` but `$patch` uses `api.setting.general` (missing `/v1`).
 
 ## Archive (feature)
 - [ ] Archive routes (only `ArchiveTask.md` spec exists, no code): instant archive + time-based archive, transactional move `cardsTable` → `archivedCardsTable`, unarchive (PATCH boolean), delete archived, get archived.

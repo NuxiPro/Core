@@ -1,10 +1,10 @@
 import { db } from "@backend/src/drizzle/connection";
 import { projectsTable } from "@backend/src/drizzle/schemas/workspace";
+import { createLogger } from "@backend/src/logique/logging/logger";
 import type { AppEnv } from "@backend/src/types/app-env";
 import type { RouteHandler } from "@hono/zod-openapi";
 import { and, eq } from "drizzle-orm";
-import { createLogger } from "@backend/src/logique/logging/logger";
-import { getProjectRoute, updateProjectRoute } from "../projects.router";
+import type { getProjectRoute, updateProjectRoute } from "../projects.router";
 
 const log = createLogger("projects/settings");
 
@@ -14,6 +14,7 @@ const toProjectResponse = (project: typeof projectsTable.$inferSelect) => ({
   description: project.description,
   slug: project.slug,
   createdAt: project.createdAt.toISOString(),
+  workspaceId: project.workspaceId,
 });
 
 export const getProjectHandler: RouteHandler<

@@ -1,11 +1,10 @@
 import { db } from "@backend/src/drizzle/connection";
 import { WorkspacesTable } from "@backend/src/drizzle/schemas";
-import { listWorkspacesRoute } from "../workspace.router";
 import { createLogger } from "@backend/src/logique/logging/logger";
-import { getDbDateStr } from "@backend/utils/dateHelpers";
-import { eq } from "drizzle-orm";
-import type { RouteHandler } from "@hono/zod-openapi";
 import type { AppEnv } from "@backend/src/types/app-env";
+import type { RouteHandler } from "@hono/zod-openapi";
+import { eq } from "drizzle-orm";
+import type { listWorkspacesRoute } from "../workspace.router";
 
 const log = createLogger("workspaces/list");
 
@@ -26,10 +25,7 @@ export const listWorkspacesHandler: RouteHandler<
       .orderBy(WorkspacesTable.createdAt);
     const result = workspaces.map((w) => ({
       ...w,
-      createdAt:
-        w.createdAt instanceof Date
-          ? w.createdAt.toISOString()
-          : getDbDateStr(),
+      createdAt: w.createdAt.toISOString(),
     }));
     return c.json(result, 200);
   } catch (err) {

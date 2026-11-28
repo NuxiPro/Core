@@ -3,11 +3,17 @@ import { pool } from "./src/drizzle/connection/index";
 import app from "./src/index";
 import { CronCenter } from "./src/lib/CronCenter";
 import { createLogger } from "./src/logique/logging/logger";
+import { configureErrorReporting } from "./utils/bugsink";
 
 const log = createLogger(
   "server",
   process.env.NODE_ENV === "production" ? "INFO" : undefined,
 );
+
+// Send errors to Bugsink only in production.
+if (process.env.NODE_ENV === "production") {
+  configureErrorReporting();
+}
 
 const server = Bun.serve({
   port: Number(process.env.PORT) || 8080,
@@ -16,7 +22,6 @@ const server = Bun.serve({
 
 log.info("Server online", { port: server.port });
 
-// ─── Graceful shutdown ───────────────────────────────────────
 const gracefulShutdown = async (signal: string) => {
   log.warn(`Signal ${signal} received — graceful shutdown in progress`);
 

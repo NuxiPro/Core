@@ -1,13 +1,10 @@
 import { db } from "@backend/src/drizzle/connection";
 import { projectsTable } from "@backend/src/drizzle/schemas/workspace";
-import { listProjectsRoute } from "../projects.router";
-
-import { eq } from "drizzle-orm";
-import type { RouteHandler } from "@hono/zod-openapi";
-import type { AppEnv } from "@backend/src/types/app-env";
-import { getDbDateStr } from "@backend/utils/dateHelpers";
-
 import { createLogger } from "@backend/src/logique/logging/logger";
+import type { AppEnv } from "@backend/src/types/app-env";
+import type { RouteHandler } from "@hono/zod-openapi";
+import { eq } from "drizzle-orm";
+import type { listProjectsRoute } from "../projects.router";
 
 const log = createLogger("projects/list");
 export const listProjectsHandler: RouteHandler<
@@ -23,6 +20,7 @@ export const listProjectsHandler: RouteHandler<
         slug: projectsTable.slug,
         description: projectsTable.description,
         createdAt: projectsTable.createdAt,
+        workspaceId: projectsTable.workspaceId,
       })
       .from(projectsTable)
       .where(eq(projectsTable.userId, user.id));
@@ -31,10 +29,8 @@ export const listProjectsHandler: RouteHandler<
       name: p.name,
       slug: p.slug,
       description: p.description,
-      createdAt:
-        p.createdAt instanceof Date
-          ? p.createdAt.toISOString()
-          : getDbDateStr(),
+      createdAt: p.createdAt.toISOString(),
+      workspaceId: p.workspaceId,
     }));
     return c.json(result, 200);
   } catch (err) {

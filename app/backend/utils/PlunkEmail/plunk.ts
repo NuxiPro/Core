@@ -5,9 +5,9 @@ import {
   type TransactionalEmailEvent,
 } from "./httpClientPlunk";
 
-const BASE_URL = "https://next-api.useplunk.com";
+// Plunk API URL
+const BASE_URL = process.env.PLUNK_API_URL as string;
 
-// --- SERVICE PLUNK ---
 export const plunk = {
   // Prévu pour d'autres actions du système (factures, notifications, etc.)
   sendTransactional: (data: TransactionalEmailEvent) =>

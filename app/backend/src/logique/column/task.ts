@@ -1,5 +1,5 @@
 import type { CreateTaskInput } from "@backend/src/routes/kanban/task.shemas";
-import { getDbDateStr } from "@backend/utils/dateHelpers";
+import { nowIsoDateTime } from "@backend/utils/dateHelpers";
 import { uuid } from "@backend/utils/uuid";
 import type { z } from "@hono/zod-openapi";
 import type { Task } from "@packages/shared/types/task/task";
@@ -21,7 +21,7 @@ export function buildTask(
   prevPosition: string | null = null,
   nextPosition: string | null = null,
 ): Omit<Task, "userId"> {
-  const now = getDbDateStr();
+  const now = nowIsoDateTime();
 
   let positionString: string;
   try {
